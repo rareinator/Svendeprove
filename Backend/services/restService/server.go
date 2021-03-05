@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 )
 
 type server struct {
-	router *mux.Router
+	router         *mux.Router
+	journalService journal.JournalServiceClient
 }
 
 func newServer() *server {
@@ -26,7 +30,22 @@ func (s *server) ServeHTTP() {
 
 func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Server is op and running!!!! :D POG"))
+	w.Write([]byte("Server is op and running!!!!"))
+}
+
+func (s *server) handleJournalHealth(w http.ResponseWriter, r *http.Request) {
+	j := &journal.Journal{
+		Intro: "hello from the client",
+	}
+
+	responseJournal, err := s.journalService.GetJournal(context.Background(), &j)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Printf("Error getting in contact with the journal service %v",err))
+	} else {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(responseJournal.Intro))
+	}
 }
 
 func (s *server) handleJournalSave(w http.ResponseWriter, r *http.Request) {
