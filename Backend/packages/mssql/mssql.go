@@ -10,7 +10,7 @@ type MSSQL struct {
 	db *gorm.DB
 }
 
-func newConnection(dsn string) (MSSQL, error) {
+func NewConnection(dsn string) (MSSQL, error) {
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return *&MSSQL{}, err
@@ -22,7 +22,7 @@ func newConnection(dsn string) (MSSQL, error) {
 	return *mssql, nil
 }
 
-func (m *MSSQL) getJournal(id int32) (DBJournal, error) {
+func (m *MSSQL) GetJournal(id int32) (DBJournal, error) {
 	var journal DBJournal
 	m.db.First(&journal, 1)
 

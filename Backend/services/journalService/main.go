@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"google.golang.org/grpc"
 )
@@ -24,8 +25,13 @@ func execute() error {
 	if err != nil {
 		return err
 	}
-
-	js := journal.JournalServer{}
+	sql, err := mssql.NewConnection(os.Getenv("MSSQL_URI"))
+	if err != nil {
+		return err
+	}
+	js := journal.JournalServer{
+		DB: sql,
+	}
 
 	grpcServer := grpc.NewServer()
 

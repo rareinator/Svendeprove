@@ -29,12 +29,12 @@ func (s *server) ServeHTTP() {
 
 func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Server is op and running!!!!"))
+	w.Write([]byte("Server is up and running!!!!"))
 }
 
 func (s *server) handleJournalHealth(w http.ResponseWriter, r *http.Request) {
-	j := &journal.Journal{
-		Intro: "hello from the client",
+	j := &journal.JournalRequest{
+		JournalId: 1,
 	}
 
 	responseJournal, err := s.journalService.GetJournal(context.Background(), j)

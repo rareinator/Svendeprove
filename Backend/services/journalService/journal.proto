@@ -9,7 +9,11 @@ message Journal {
   int32 CreatedBy = 5;
 }
 
+message JournalRequest {
+  int32 JournalId = 1;
+}
+
 service JournalService {
-  rpc GetJournal(Journal) returns (Journal) {}
+  rpc GetJournal(JournalRequest) returns (Journal) {}
   rpc CreateJournal(Journal) returns (Journal) {}
 }
