@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -38,10 +37,10 @@ func (s *server) handleJournalHealth(w http.ResponseWriter, r *http.Request) {
 		Intro: "hello from the client",
 	}
 
-	responseJournal, err := s.journalService.GetJournal(context.Background(), &j)
+	responseJournal, err := s.journalService.GetJournal(context.Background(), j)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Printf("Error getting in contact with the journal service %v",err))
+		w.Write([]byte(fmt.Sprintf("Error getting in contact with the journal service %v", err)))
 	} else {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(responseJournal.Intro))
