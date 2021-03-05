@@ -1,0 +1,40 @@
+﻿<CascadingValue Value="this">
+    <ul class="nav nav-tabs menu" role="tablist">
+        @foreach (var tabPage in Pages)
+        {
+            <li class="nav-item">
+                <a class="nav-link @GetClass(tabPage)" @onclick="@( () => ActivatePage(tabPage))">@tabPage.Text</a> 
+            </li>
+        }
+    </ul>
+    <div class="tab-content">
+        @ChildContent
+    </div>
+    
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public TabPage ActivePage { get; set; }
+    List<TabPage> Pages = new List<TabPage>();
+
+    internal void AddPage(TabPage tabPage)
+    {
+        Pages.Add(tabPage);
+        if (Pages.Count == 1)
+            ActivePage = tabPage;
+        StateHasChanged();
+    }
+
+    string GetClass(TabPage page)
+    {
+        return page == ActivePage ? "active" : "";
+    }
+
+    void ActivatePage(TabPage page)
+    {
+        ActivePage = page;
+    }
+}
