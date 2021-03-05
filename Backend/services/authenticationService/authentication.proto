@@ -1,0 +1,35 @@
+syntax = "proto3";
+option go_package = ".;authentication";
+
+message User {
+  string Username = 1;
+  string HashedPassword = 2;
+}
+
+message Salt {
+  string Salt = 1;
+}
+
+message SaltRequest {
+  string Username = 1;
+}
+
+message TokenResponse {
+  string Token = 1;
+  bool Success = 2;
+}
+
+message TokenRequest {
+  string token = 1;
+}
+
+message ValidatorResponse {
+  bool valid = 1;
+}
+
+
+service AuthenticationService {
+  rpc Login(User) returns (TokenResponse) {}
+  rpc GetSalt(SaltRequest) returns (Salt) {}
+  rpc Validatetoken(TokenRequest) returns (ValidatorResponse) {}
+}
