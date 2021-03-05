@@ -1,1 +1,0 @@
-module github.com/rareinator/Svendeprove/Backend/services/journalService/journal
