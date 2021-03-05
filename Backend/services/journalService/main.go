@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"google.golang.org/grpc"
 )
@@ -17,6 +18,8 @@ func main() {
 }
 
 func execute() error {
+	godotenv.Load()
+
 	lis, err := net.Listen("tcp", ":9000")
 	if err != nil {
 		return err
