@@ -1,6 +1,10 @@
 syntax = "proto3";
 option go_package = ".;journal";
 
+message Empty {
+
+}
+
 message Journal {
   int32 JournalId = 1;
   string CreationTime = 2;
@@ -13,7 +17,27 @@ message JournalRequest {
   int32 JournalId = 1;
 }
 
+message PatientRequest {
+  int32 PatientId = 1;
+}
+
+message Status {
+  bool Success = 1;
+}
+
+message Health {
+  string Message = 1;
+}
+
+message Journals {
+  repeated Journal journals = 1;
+}
+
 service JournalService {
   rpc GetJournal(JournalRequest) returns (Journal) {}
   rpc CreateJournal(Journal) returns (Journal) {}
+  rpc DeleteJournal(JournalRequest) returns (Status) {}
+  rpc GetHealth(Empty) returns (Health) {}
+  rpc UpdateJournal(Journal) returns (Journal) {}
+  rpc GetJournalsByPatient(PatientRequest) returns (Journals) {}
 }

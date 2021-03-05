@@ -20,6 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 type JournalServiceClient interface {
 	GetJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Journal, error)
 	CreateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error)
+	DeleteJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Status, error)
+	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
+	UpdateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error)
+	GetJournalsByPatient(ctx context.Context, in *PatientRequest, opts ...grpc.CallOption) (*Journals, error)
 }
 
 type journalServiceClient struct {
@@ -48,12 +52,52 @@ func (c *journalServiceClient) CreateJournal(ctx context.Context, in *Journal, o
 	return out, nil
 }
 
+func (c *journalServiceClient) DeleteJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Status, error) {
+	out := new(Status)
+	err := c.cc.Invoke(ctx, "/JournalService/DeleteJournal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalServiceClient) GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error) {
+	out := new(Health)
+	err := c.cc.Invoke(ctx, "/JournalService/GetHealth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalServiceClient) UpdateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error) {
+	out := new(Journal)
+	err := c.cc.Invoke(ctx, "/JournalService/UpdateJournal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalServiceClient) GetJournalsByPatient(ctx context.Context, in *PatientRequest, opts ...grpc.CallOption) (*Journals, error) {
+	out := new(Journals)
+	err := c.cc.Invoke(ctx, "/JournalService/GetJournalsByPatient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JournalServiceServer is the server API for JournalService service.
 // All implementations must embed UnimplementedJournalServiceServer
 // for forward compatibility
 type JournalServiceServer interface {
 	GetJournal(context.Context, *JournalRequest) (*Journal, error)
 	CreateJournal(context.Context, *Journal) (*Journal, error)
+	DeleteJournal(context.Context, *JournalRequest) (*Status, error)
+	GetHealth(context.Context, *Empty) (*Health, error)
+	UpdateJournal(context.Context, *Journal) (*Journal, error)
+	GetJournalsByPatient(context.Context, *PatientRequest) (*Journals, error)
 	mustEmbedUnimplementedJournalServiceServer()
 }
 
@@ -66,6 +110,18 @@ func (UnimplementedJournalServiceServer) GetJournal(context.Context, *JournalReq
 }
 func (UnimplementedJournalServiceServer) CreateJournal(context.Context, *Journal) (*Journal, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateJournal not implemented")
+}
+func (UnimplementedJournalServiceServer) DeleteJournal(context.Context, *JournalRequest) (*Status, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteJournal not implemented")
+}
+func (UnimplementedJournalServiceServer) GetHealth(context.Context, *Empty) (*Health, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
+}
+func (UnimplementedJournalServiceServer) UpdateJournal(context.Context, *Journal) (*Journal, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateJournal not implemented")
+}
+func (UnimplementedJournalServiceServer) GetJournalsByPatient(context.Context, *PatientRequest) (*Journals, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJournalsByPatient not implemented")
 }
 func (UnimplementedJournalServiceServer) mustEmbedUnimplementedJournalServiceServer() {}
 
@@ -116,6 +172,78 @@ func _JournalService_CreateJournal_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JournalService_DeleteJournal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JournalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalServiceServer).DeleteJournal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/JournalService/DeleteJournal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalServiceServer).DeleteJournal(ctx, req.(*JournalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalService_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalServiceServer).GetHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/JournalService/GetHealth",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalServiceServer).GetHealth(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalService_UpdateJournal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Journal)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalServiceServer).UpdateJournal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/JournalService/UpdateJournal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalServiceServer).UpdateJournal(ctx, req.(*Journal))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalService_GetJournalsByPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalServiceServer).GetJournalsByPatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/JournalService/GetJournalsByPatient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalServiceServer).GetJournalsByPatient(ctx, req.(*PatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JournalService_ServiceDesc is the grpc.ServiceDesc for JournalService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +258,22 @@ var JournalService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateJournal",
 			Handler:    _JournalService_CreateJournal_Handler,
+		},
+		{
+			MethodName: "DeleteJournal",
+			Handler:    _JournalService_DeleteJournal_Handler,
+		},
+		{
+			MethodName: "GetHealth",
+			Handler:    _JournalService_GetHealth_Handler,
+		},
+		{
+			MethodName: "UpdateJournal",
+			Handler:    _JournalService_UpdateJournal_Handler,
+		},
+		{
+			MethodName: "GetJournalsByPatient",
+			Handler:    _JournalService_GetJournalsByPatient_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

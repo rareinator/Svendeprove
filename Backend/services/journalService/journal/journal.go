@@ -30,3 +30,7 @@ func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest)
 
 	return result, nil
 }
+
+func (j *JournalServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
+	return &Health{Message: "Journal service is up and running 🚀"}, nil
+}
