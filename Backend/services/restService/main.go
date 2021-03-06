@@ -18,7 +18,7 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../.env")
+	godotenv.Load("../../.env")
 
 	srv := newServer()
 

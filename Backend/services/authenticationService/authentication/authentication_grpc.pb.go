@@ -19,7 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthenticationServiceClient interface {
 	GetHealth(ctx context.Context, in *AEmpty, opts ...grpc.CallOption) (*AHealth, error)
-	Login(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
+	LoginPatient(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
+	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
 	GetSalt(ctx context.Context, in *SaltRequest, opts ...grpc.CallOption) (*Salt, error)
 	Validatetoken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
 }
@@ -41,9 +42,18 @@ func (c *authenticationServiceClient) GetHealth(ctx context.Context, in *AEmpty,
 	return out, nil
 }
 
-func (c *authenticationServiceClient) Login(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error) {
+func (c *authenticationServiceClient) LoginPatient(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error) {
 	out := new(TokenResponse)
-	err := c.cc.Invoke(ctx, "/AuthenticationService/Login", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AuthenticationService/LoginPatient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authenticationServiceClient) LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
+	err := c.cc.Invoke(ctx, "/AuthenticationService/LoginEmployee", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +83,8 @@ func (c *authenticationServiceClient) Validatetoken(ctx context.Context, in *Tok
 // for forward compatibility
 type AuthenticationServiceServer interface {
 	GetHealth(context.Context, *AEmpty) (*AHealth, error)
-	Login(context.Context, *User) (*TokenResponse, error)
+	LoginPatient(context.Context, *User) (*TokenResponse, error)
+	LoginEmployee(context.Context, *User) (*TokenResponse, error)
 	GetSalt(context.Context, *SaltRequest) (*Salt, error)
 	Validatetoken(context.Context, *TokenRequest) (*ValidatorResponse, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
@@ -86,8 +97,11 @@ type UnimplementedAuthenticationServiceServer struct {
 func (UnimplementedAuthenticationServiceServer) GetHealth(context.Context, *AEmpty) (*AHealth, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
-func (UnimplementedAuthenticationServiceServer) Login(context.Context, *User) (*TokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+func (UnimplementedAuthenticationServiceServer) LoginPatient(context.Context, *User) (*TokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginPatient not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) LoginEmployee(context.Context, *User) (*TokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginEmployee not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) GetSalt(context.Context, *SaltRequest) (*Salt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSalt not implemented")
@@ -126,20 +140,38 @@ func _AuthenticationService_GetHealth_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthenticationService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthenticationService_LoginPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(User)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthenticationServiceServer).Login(ctx, in)
+		return srv.(AuthenticationServiceServer).LoginPatient(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AuthenticationService/Login",
+		FullMethod: "/AuthenticationService/LoginPatient",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthenticationServiceServer).Login(ctx, req.(*User))
+		return srv.(AuthenticationServiceServer).LoginPatient(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthenticationService_LoginEmployee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).LoginEmployee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AuthenticationService/LoginEmployee",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).LoginEmployee(ctx, req.(*User))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -192,8 +224,12 @@ var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthenticationService_GetHealth_Handler,
 		},
 		{
-			MethodName: "Login",
-			Handler:    _AuthenticationService_Login_Handler,
+			MethodName: "LoginPatient",
+			Handler:    _AuthenticationService_LoginPatient_Handler,
+		},
+		{
+			MethodName: "LoginEmployee",
+			Handler:    _AuthenticationService_LoginEmployee_Handler,
 		},
 		{
 			MethodName: "GetSalt",

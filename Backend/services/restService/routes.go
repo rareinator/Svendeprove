@@ -12,5 +12,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/journal/byPatient/{id:[0-9]+}", s.handleJournalByPatient).Methods("GET")
 
 	s.router.HandleFunc("/authentication/health", s.handleAuthenticationHealth).Methods("GET")
+	// s.router.HandleFunc("/authentication/patient/login", s.handleAuthentication)
+	s.router.HandleFunc("/authentication/employee/login", s.handleAuthenticationEmployeeLogin).Methods("POST")
 
 }

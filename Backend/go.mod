@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/denisenkom/go-mssqldb v0.9.0 // indirect
+	github.com/go-ldap/ldap/v3 v3.2.4
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.3.0

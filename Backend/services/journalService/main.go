@@ -19,12 +19,18 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../.env")
+	godotenv.Load("../../.env")
+
+	fmt.Println("journal service listening on")
+	fmt.Println(os.Getenv("JOURNAL_SERVICE_ADDR"))
 
 	lis, err := net.Listen("tcp", os.Getenv("JOURNAL_SERVICE_ADDR"))
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(os.Getenv("MSSQL_URI"))
+
 	sql, err := mssql.NewConnection(os.Getenv("MSSQL_URI"))
 	if err != nil {
 		return err
