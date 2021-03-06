@@ -5,15 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 )
 
 type server struct {
-	router         *mux.Router
-	journalService journal.JournalServiceClient
+	router                *mux.Router
+	journalService        journal.JournalServiceClient
+	authenticationService authentication.AuthenticationServiceClient
 }
 
 func newServer() *server {
@@ -24,9 +27,9 @@ func newServer() *server {
 }
 
 func (s *server) ServeHTTP() {
-	address := ":8080"
+	address := os.Getenv("REST_SERVICE_ADDR")
 	fmt.Printf("🚀 Listening on address: %v ", address)
-	http.ListenAndServe(":8080", s.router)
+	http.ListenAndServe(address, s.router)
 }
 
 func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +38,7 @@ func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) handleJournalHealth(w http.ResponseWriter, r *http.Request) {
-	j := &journal.Empty{}
+	j := &journal.JEmpty{}
 
 	response, err := s.journalService.GetHealth(context.Background(), j)
 	if err != nil {
@@ -85,4 +88,18 @@ func (s *server) handleJournalDelete(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) handleJournalByPatient(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func (s *server) handleAuthenticationHealth(w http.ResponseWriter, r *http.Request) {
+	e := &authentication.AEmpty{}
+
+	response, err := s.authenticationService.GetHealth(context.Background(), e)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Error getting in contact with the authentication service %v", err)))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(response.Message))
 }

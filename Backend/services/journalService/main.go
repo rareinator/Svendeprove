@@ -19,9 +19,9 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load()
+	godotenv.Load("../.env")
 
-	lis, err := net.Listen("tcp", ":9000")
+	lis, err := net.Listen("tcp", os.Getenv("JOURNAL_SERVICE_ADDR"))
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func execute() error {
 	journal.RegisterJournalServiceServer(grpcServer, &js)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("Faild to start gRPC server over port 9000: %v", err)
+		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
 	}
 
 	return nil

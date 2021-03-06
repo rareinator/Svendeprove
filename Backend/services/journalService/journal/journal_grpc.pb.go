@@ -21,7 +21,7 @@ type JournalServiceClient interface {
 	GetJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Journal, error)
 	CreateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error)
 	DeleteJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Status, error)
-	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
+	GetHealth(ctx context.Context, in *JEmpty, opts ...grpc.CallOption) (*JHealth, error)
 	UpdateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error)
 	GetJournalsByPatient(ctx context.Context, in *PatientRequest, opts ...grpc.CallOption) (*Journals, error)
 }
@@ -61,8 +61,8 @@ func (c *journalServiceClient) DeleteJournal(ctx context.Context, in *JournalReq
 	return out, nil
 }
 
-func (c *journalServiceClient) GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error) {
-	out := new(Health)
+func (c *journalServiceClient) GetHealth(ctx context.Context, in *JEmpty, opts ...grpc.CallOption) (*JHealth, error) {
+	out := new(JHealth)
 	err := c.cc.Invoke(ctx, "/JournalService/GetHealth", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ type JournalServiceServer interface {
 	GetJournal(context.Context, *JournalRequest) (*Journal, error)
 	CreateJournal(context.Context, *Journal) (*Journal, error)
 	DeleteJournal(context.Context, *JournalRequest) (*Status, error)
-	GetHealth(context.Context, *Empty) (*Health, error)
+	GetHealth(context.Context, *JEmpty) (*JHealth, error)
 	UpdateJournal(context.Context, *Journal) (*Journal, error)
 	GetJournalsByPatient(context.Context, *PatientRequest) (*Journals, error)
 	mustEmbedUnimplementedJournalServiceServer()
@@ -114,7 +114,7 @@ func (UnimplementedJournalServiceServer) CreateJournal(context.Context, *Journal
 func (UnimplementedJournalServiceServer) DeleteJournal(context.Context, *JournalRequest) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteJournal not implemented")
 }
-func (UnimplementedJournalServiceServer) GetHealth(context.Context, *Empty) (*Health, error) {
+func (UnimplementedJournalServiceServer) GetHealth(context.Context, *JEmpty) (*JHealth, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
 func (UnimplementedJournalServiceServer) UpdateJournal(context.Context, *Journal) (*Journal, error) {
@@ -191,7 +191,7 @@ func _JournalService_DeleteJournal_Handler(srv interface{}, ctx context.Context,
 }
 
 func _JournalService_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(JEmpty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func _JournalService_GetHealth_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/JournalService/GetHealth",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JournalServiceServer).GetHealth(ctx, req.(*Empty))
+		return srv.(JournalServiceServer).GetHealth(ctx, req.(*JEmpty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

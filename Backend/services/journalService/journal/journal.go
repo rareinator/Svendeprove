@@ -2,14 +2,16 @@ package journal
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 )
 
 type JournalServer struct {
-	DB mssql.MSSQL
 	UnimplementedJournalServiceServer
+	DB            mssql.MSSQL
+	ListenAddress string
 }
 
 func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest) (*Journal, error) {
@@ -31,6 +33,6 @@ func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest)
 	return result, nil
 }
 
-func (j *JournalServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
-	return &Health{Message: "Journal service is up and running 🚀"}, nil
+func (j *JournalServer) GetHealth(ctx context.Context, e *JEmpty) (*JHealth, error) {
+	return &JHealth{Message: fmt.Sprintf("Journal service is up and running on: %v 🚀", j.ListenAddress)}, nil
 }

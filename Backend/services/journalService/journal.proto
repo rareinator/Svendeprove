@@ -1,7 +1,7 @@
 syntax = "proto3";
 option go_package = ".;journal";
 
-message Empty {
+message JEmpty {
 
 }
 
@@ -25,7 +25,7 @@ message Status {
   bool Success = 1;
 }
 
-message Health {
+message JHealth {
   string Message = 1;
 }
 
@@ -37,7 +37,7 @@ service JournalService {
   rpc GetJournal(JournalRequest) returns (Journal) {}
   rpc CreateJournal(Journal) returns (Journal) {}
   rpc DeleteJournal(JournalRequest) returns (Status) {}
-  rpc GetHealth(Empty) returns (Health) {}
+  rpc GetHealth(JEmpty) returns (JHealth) {}
   rpc UpdateJournal(Journal) returns (Journal) {}
   rpc GetJournalsByPatient(PatientRequest) returns (Journals) {}
 }

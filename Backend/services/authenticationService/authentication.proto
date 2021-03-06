@@ -1,13 +1,20 @@
 syntax = "proto3";
 option go_package = ".;authentication";
 
+message Response {
+  bool Success = 1;
+  string Message = 2;
+}
+
 message User {
   string Username = 1;
   string HashedPassword = 2;
+  optional Response Status = 3;
 }
 
 message Salt {
   string Salt = 1;
+  optional Response Status = 2;
 }
 
 message SaltRequest {
@@ -17,6 +24,7 @@ message SaltRequest {
 message TokenResponse {
   string Token = 1;
   bool Success = 2;
+  optional Response Status = 3;
 }
 
 message TokenRequest {
@@ -25,10 +33,20 @@ message TokenRequest {
 
 message ValidatorResponse {
   bool valid = 1;
+  optional Response Status = 2;
+}
+
+message AHealth {
+  string Message = 1;
+}
+
+message AEmpty {
+
 }
 
 
 service AuthenticationService {
+  rpc GetHealth(AEmpty) returns (AHealth) {}
   rpc Login(User) returns (TokenResponse) {}
   rpc GetSalt(SaltRequest) returns (Salt) {}
   rpc Validatetoken(TokenRequest) returns (ValidatorResponse) {}
