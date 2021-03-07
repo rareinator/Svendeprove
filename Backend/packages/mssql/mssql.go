@@ -28,3 +28,9 @@ func (m *MSSQL) GetJournal(id int32) (DBJournal, error) {
 
 	return journal, nil
 }
+
+func (m *MSSQL) InsertToken(token *DBToken) error {
+	m.db.Create(token)
+
+	return nil
+}

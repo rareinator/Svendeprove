@@ -1,9 +1,9 @@
 package ldap
 
-type UserRole string
+type UserRole int32
 
 const (
-	Doctor   UserRole = "Doctor"
-	Nurse    UserRole = "Nurse"
-	Employee UserRole = "Employee"
+	Doctor   UserRole = 1
+	Nurse    UserRole = 2
+	Employee UserRole = 3
 )

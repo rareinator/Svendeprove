@@ -10,7 +10,7 @@ import (
 
 type JournalServer struct {
 	UnimplementedJournalServiceServer
-	DB            mssql.MSSQL
+	DB            *mssql.MSSQL
 	ListenAddress string
 }
 

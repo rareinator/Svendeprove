@@ -36,7 +36,7 @@ func execute() error {
 		return err
 	}
 	js := journal.JournalServer{
-		DB: sql,
+		DB: &sql,
 	}
 
 	grpcServer := grpc.NewServer()

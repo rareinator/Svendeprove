@@ -13,3 +13,15 @@ type DBJournal struct {
 func (DBJournal) TableName() string {
 	return "Journal"
 }
+
+type DBToken struct {
+	Token      string    `gorm:"column:Token"`
+	Role       int32     `gorm:"column:Role"`
+	Username   string    `gorm:"column:Username"`
+	IssuedAt   time.Time `gorm:"column:IssuedAt"`
+	ValidUntil time.Time `gorm:"column:ValidUntil"`
+}
+
+func (DBToken) TableName() string {
+	return "Tokens"
+}

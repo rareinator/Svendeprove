@@ -3,13 +3,17 @@ package authentication
 import (
 	context "context"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/rareinator/Svendeprove/Backend/packages/ldap"
+	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 )
 
 type AuthenticationServer struct {
 	UnimplementedAuthenticationServiceServer
 	Ldap          *ldap.LDAP
+	DB            *mssql.MSSQL
 	ListenAddress string
 }
 
@@ -25,5 +29,17 @@ func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*Tok
 		return nil, err
 	}
 
-	return &TokenResponse{Token: string(role)}, nil
+	tokenID := uuid.New()
+
+	dbToken := mssql.DBToken{
+		Token:      tokenID.String(),
+		Role:       int32(role),
+		Username:   u.Username,
+		IssuedAt:   time.Now(),
+		ValidUntil: time.Now().Add(time.Minute * 15),
+	}
+
+	a.DB.InsertToken(&dbToken)
+
+	return &TokenResponse{Token: dbToken.Token}, nil
 }

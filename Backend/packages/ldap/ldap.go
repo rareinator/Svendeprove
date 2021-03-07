@@ -12,7 +12,7 @@ type LDAP struct {
 
 func (l *LDAP) AuthenticateUser(username, password string) (UserRole, error) {
 	if err := l.Conn.Bind(username, password); err != nil {
-		return "", err
+		return 0, err
 	}
 
 	//Should find the group, and then return that instead of hardcoded doctor
