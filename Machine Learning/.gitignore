@@ -1,3 +1,4 @@
 .vscode
+.deployment
 __pychache__
 *.pyc
