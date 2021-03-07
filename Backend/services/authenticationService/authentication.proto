@@ -33,7 +33,8 @@ message TokenRequest {
 
 message ValidatorResponse {
   bool valid = 1;
-  optional Response Status = 2;
+  int32 Role = 2;
+  optional Response Status = 3;
 }
 
 message AHealth {
@@ -50,5 +51,5 @@ service AuthenticationService {
   rpc LoginPatient(User) returns (TokenResponse) {}
   rpc LoginEmployee(User) returns (TokenResponse) {}
   rpc GetSalt(SaltRequest) returns (Salt) {}
-  rpc Validatetoken(TokenRequest) returns (ValidatorResponse) {}
+  rpc ValidateToken(TokenRequest) returns (ValidatorResponse) {}
 }

@@ -43,3 +43,19 @@ func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*Tok
 
 	return &TokenResponse{Token: dbToken.Token}, nil
 }
+
+func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenRequest) (*ValidatorResponse, error) {
+
+	dbToken, err := a.DB.GetToken(tr.Token)
+	if err != nil {
+		return &ValidatorResponse{
+			Valid: false,
+			Role:  0,
+		}, err
+	}
+
+	return &ValidatorResponse{
+		Valid: true,
+		Role:  dbToken.Role,
+	}, nil
+}

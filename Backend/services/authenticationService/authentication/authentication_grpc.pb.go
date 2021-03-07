@@ -22,7 +22,7 @@ type AuthenticationServiceClient interface {
 	LoginPatient(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
 	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
 	GetSalt(ctx context.Context, in *SaltRequest, opts ...grpc.CallOption) (*Salt, error)
-	Validatetoken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
+	ValidateToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
 }
 
 type authenticationServiceClient struct {
@@ -69,9 +69,9 @@ func (c *authenticationServiceClient) GetSalt(ctx context.Context, in *SaltReque
 	return out, nil
 }
 
-func (c *authenticationServiceClient) Validatetoken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error) {
+func (c *authenticationServiceClient) ValidateToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error) {
 	out := new(ValidatorResponse)
-	err := c.cc.Invoke(ctx, "/AuthenticationService/Validatetoken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AuthenticationService/ValidateToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ type AuthenticationServiceServer interface {
 	LoginPatient(context.Context, *User) (*TokenResponse, error)
 	LoginEmployee(context.Context, *User) (*TokenResponse, error)
 	GetSalt(context.Context, *SaltRequest) (*Salt, error)
-	Validatetoken(context.Context, *TokenRequest) (*ValidatorResponse, error)
+	ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
 }
 
@@ -106,8 +106,8 @@ func (UnimplementedAuthenticationServiceServer) LoginEmployee(context.Context, *
 func (UnimplementedAuthenticationServiceServer) GetSalt(context.Context, *SaltRequest) (*Salt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSalt not implemented")
 }
-func (UnimplementedAuthenticationServiceServer) Validatetoken(context.Context, *TokenRequest) (*ValidatorResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Validatetoken not implemented")
+func (UnimplementedAuthenticationServiceServer) ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) mustEmbedUnimplementedAuthenticationServiceServer() {}
 
@@ -194,20 +194,20 @@ func _AuthenticationService_GetSalt_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthenticationService_Validatetoken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthenticationService_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthenticationServiceServer).Validatetoken(ctx, in)
+		return srv.(AuthenticationServiceServer).ValidateToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AuthenticationService/Validatetoken",
+		FullMethod: "/AuthenticationService/ValidateToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthenticationServiceServer).Validatetoken(ctx, req.(*TokenRequest))
+		return srv.(AuthenticationServiceServer).ValidateToken(ctx, req.(*TokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,8 +236,8 @@ var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthenticationService_GetSalt_Handler,
 		},
 		{
-			MethodName: "Validatetoken",
-			Handler:    _AuthenticationService_Validatetoken_Handler,
+			MethodName: "ValidateToken",
+			Handler:    _AuthenticationService_ValidateToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

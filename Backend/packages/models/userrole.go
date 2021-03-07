@@ -1,4 +1,4 @@
-package ldap
+package models
 
 type UserRole int32
 
