@@ -1,14 +1,55 @@
 ﻿@page "/Administration"
-@layout AdminLayout
+@layout AdminLayout 
 
-<div class="container">
-    <div class="row align-items-center">
-        <div class="col-lg-12 text-center">
-            <h1>Oversigt</h1>
-        </div>
+<div class="d-flex justify-content-center align-items-center flex-column">
+    <h1>Oversigt</h1>
+    <p>Her kan du se journaler, Undersøgelser óg Indlæggelser for en patient. Samt oprette </p>
+
+    <div style="flex: 0 0 100px">
+        <input class="form-control" list="datalistOptions" placeholder="Søg efter patient...">
+        <datalist id="datalistOptions">
+            @* REPLACE WITH PATIENTS FROM API *@
+            <option value="Patient1 - 123456-0000" />
+            <option value="Patient2 - 987654-1234" />
+            <option value="Patient3 - 123456-0000" />
+            <option value="Patient4 - 123456-0000" />
+            <option value="Patient5 - 123456-0000" />
+        </datalist>
     </div>
 </div>
 
+<TabControl>
+    <TabPage Text="Journaler">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Senest opdateret</th>
+                    <th>Hospital</th>
+                    <th>Afdeling</th>
+                    <th>Diagnose</th>
+                    <th>Notater</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* REPLACE WITH DATA FROM API *@
+                    <tr>
+                        <td>08.03.2021</td>
+                        <td>Hospital1</td>
+                        <td>Afdeling1</td>
+                        <td>Diagnose1</td>
+                        <td><a href="#">sadf</a></td>
+                    </tr>
+            </tbody>
+        </table>
+    </TabPage>
+    <TabPage Text="Undersøgelser">
 
+    </TabPage>
+    <TabPage Text="Indlæggelser">
 
+    </TabPage>
+</TabControl>
 
+@code {
+
+}
