@@ -12,6 +12,27 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 )
 
+type corsHandler struct {
+	router *mux.Router
+}
+
+func (ch *corsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "*")
+
+	ch.router.ServeHTTP(w, r)
+}
+
+func (s *server) handleCors() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "*")
+		w.Header().Add("Access-Control-Allow-Headers", "*")
+	}
+}
+
 func (s *server) authenticatePatient(next http.HandlerFunc, idKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

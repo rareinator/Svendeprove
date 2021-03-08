@@ -14,7 +14,6 @@ import (
 
 func (s *server) handleHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("🚀 Server is up and running!!!!"))
 	}
@@ -22,7 +21,6 @@ func (s *server) handleHealth() http.HandlerFunc {
 
 func (s *server) handleJournalHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		j := &journal.JEmpty{}
 
 		response, err := s.journalService.GetHealth(context.Background(), j)
@@ -38,7 +36,6 @@ func (s *server) handleJournalHealth() http.HandlerFunc {
 
 func (s *server) handleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		var journal journal.Journal
 		json.NewDecoder(r.Body).Decode(&journal)
 
@@ -50,7 +47,6 @@ func (s *server) handleJournalSave() http.HandlerFunc {
 
 func (s *server) handleJournalRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		vars := mux.Vars(r)
 		i, err := strconv.Atoi(vars["id"])
 		if err != nil {
@@ -77,19 +73,16 @@ func (s *server) handleJournalRead() http.HandlerFunc {
 
 func (s *server) handleJournalUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 	}
 }
 
 func (s *server) handleJournalDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 	}
 }
 
 func (s *server) handleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		vars := mux.Vars(r)
 		patientId, err := strconv.Atoi(vars["id"])
 		if err != nil {
@@ -97,8 +90,6 @@ func (s *server) handleJournalByPatient() http.HandlerFunc {
 			w.Write([]byte("No journals found for that patient id"))
 			return
 		}
-
-		fmt.Println("huggo")
 
 		pr := &journal.PatientRequest{
 			PatientId: int32(patientId),
@@ -111,21 +102,13 @@ func (s *server) handleJournalByPatient() http.HandlerFunc {
 			return
 		}
 
-		fmt.Printf("length: %d\n\r", len(response.Journals))
-
-		var jsonResponse struct {
-			Journals []*journal.Journal `json:"Journals"`
-		}
-		jsonResponse.Journals = response.Journals
-
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(jsonResponse)
+		json.NewEncoder(w).Encode(response.Journals)
 	}
 }
 
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 
 		e := &authentication.AEmpty{}
 
@@ -143,8 +126,6 @@ func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 
 func (s *server) handleAuthenticationEmployeeLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-
 		var login struct {
 			Username string
 			Password string
@@ -171,8 +152,6 @@ func (s *server) handleAuthenticationEmployeeLogin() http.HandlerFunc {
 
 func (s *server) handleAuthenticationPatientLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-
 		var login struct {
 			Username string
 			Password string

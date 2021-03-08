@@ -3,6 +3,8 @@ package main
 import "github.com/rareinator/Svendeprove/Backend/packages/models"
 
 func (s *server) routes() {
+	s.router.Methods("OPTIONS").Handler(s.handleCors())
+
 	s.router.Handle("/health", s.handleHealth()).Methods("GET")
 
 	//Journal methods

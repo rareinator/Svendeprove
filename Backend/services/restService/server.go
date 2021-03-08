@@ -26,5 +26,10 @@ func newServer() *server {
 func (s *server) ServeHTTP() {
 	address := os.Getenv("REST_SERVICE_ADDR")
 	fmt.Printf("🚀 Listening on address: %v ", address)
-	http.ListenAndServe(address, s.router)
+
+	corsHandler := &corsHandler{
+		router: s.router,
+	}
+
+	http.ListenAndServe(address, corsHandler)
 }
