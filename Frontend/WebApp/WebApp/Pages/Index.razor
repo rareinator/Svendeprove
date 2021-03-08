@@ -1,13 +1,47 @@
 ﻿@page "/"
 
 <div class="h-100 container">
-    <div class="h-100 row align-items-center">
-        <div class="col-lg-12 text-center">
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6 text-center">
             <h1>Velkommen til HOSPI Inc.</h1>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <input class="form-control input d-inline-block" placeholder="Username" @bind-value="username" @bind-value:event="onchange" required />
+        </div>
+    </div>
+    <div class="row text-center mt-1">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <input class="form-control input d-inline-block" type="password" placeholder="Password" @bind-value="password" @bind-value:event="onchange" required />
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <button class="btn btn-success w-100">Login</button>
         </div>
     </div>
 </div>
 
 
+@code{
+    string username;
+    string password;
 
+
+    private async void Login()
+    {
+        CreateCookie();
+    }
+
+    private async void CreateCookie()
+    {
+    }
+
+
+}
 
