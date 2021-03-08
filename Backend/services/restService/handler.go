@@ -90,6 +90,36 @@ func (s *server) handleJournalDelete() http.HandlerFunc {
 func (s *server) handleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
+		vars := mux.Vars(r)
+		patientId, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("No journals found for that patient id"))
+			return
+		}
+
+		fmt.Println("huggo")
+
+		pr := &journal.PatientRequest{
+			PatientId: int32(patientId),
+		}
+
+		response, err := s.journalService.GetJournalsByPatient(context.Background(), pr)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(fmt.Sprintf("Error getting in contact with the journal service %v", err)))
+			return
+		}
+
+		fmt.Printf("length: %d\n\r", len(response.Journals))
+
+		var jsonResponse struct {
+			Journals []*journal.Journal `json:"Journals"`
+		}
+		jsonResponse.Journals = response.Journals
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(jsonResponse)
 	}
 }
 

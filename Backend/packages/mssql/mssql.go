@@ -2,9 +2,13 @@ package mssql
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 //MSSQL is the main connector used to talk to the microsoft SQL database
@@ -13,7 +17,16 @@ type MSSQL struct {
 }
 
 func NewConnection(dsn string) (MSSQL, error) {
-	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second, // Slow SQL threshold
+			LogLevel:      logger.Info, // Log level
+			Colorful:      false,       // Disable color
+		},
+	)
+
+	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{Logger: newLogger})
 	if err != nil {
 		return *&MSSQL{}, err
 	}
@@ -29,6 +42,15 @@ func (m *MSSQL) GetJournal(id int32) (DBJournal, error) {
 	m.db.First(&journal, 1)
 
 	return journal, nil
+}
+
+func (m *MSSQL) GetJournalsByPatient(id int32) ([]*DBJournal, error) {
+	var journals []*DBJournal
+	result := m.db.Find(&journals).Where("PatientId = ?", id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return journals, nil
 }
 
 func (m *MSSQL) LoginPatient(username string, password string) (*DBPatient, error) {
@@ -73,10 +95,15 @@ func (m *MSSQL) InsertToken(token *DBToken) error {
 
 func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 	var token DBToken
+	fmt.Printf("Getting token for: %v\n\r", tokenID)
 	m.db.First(&token, "Token = ?", tokenID)
+
 	if token.Username == "" {
+		fmt.Println("huh")
 		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
 	}
+
+	fmt.Printf("role: %d patientID: %d username: %v", token.Role, token.PatientID, token.Username)
 
 	return &token, nil
 }

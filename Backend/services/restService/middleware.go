@@ -15,9 +15,14 @@ import (
 func (s *server) authenticatePatient(next http.HandlerFunc, idKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		for _, value := range vars {
+			fmt.Println(value)
+		}
+
 		patientID, err := strconv.Atoi(vars[idKey])
 		if err != nil {
 			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("mentally challenged i tell yah"))
 		}
 
 		reqToken := r.Header.Get("Authorization")
@@ -36,8 +41,12 @@ func (s *server) authenticatePatient(next http.HandlerFunc, idKey string) http.H
 				return
 			}
 
+			fmt.Printf("response: %v\n\r", response.PatientID)
+			fmt.Printf("vars: %v\n\r", patientID)
+
 			if (!response.Valid) || (response.PatientID != int32(patientID)) {
 				w.WriteHeader(http.StatusForbidden)
+				w.Write([]byte("i know man iz baaad!!!!"))
 				return
 			}
 		}

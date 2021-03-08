@@ -17,7 +17,7 @@ func (DBJournal) TableName() string {
 type DBToken struct {
 	Token      string    `gorm:"column:Token"`
 	Role       int32     `gorm:"column:Role"`
-	PatientID  int32     `gorm:"column:PatientID"`
+	PatientID  int32     `gorm:"column:PatientId"`
 	Username   string    `gorm:"column:Username"`
 	IssuedAt   time.Time `gorm:"column:IssuedAt"`
 	ValidUntil time.Time `gorm:"column:ValidUntil"`
