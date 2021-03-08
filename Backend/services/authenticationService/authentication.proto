@@ -8,7 +8,7 @@ message Response {
 
 message User {
   string Username = 1;
-  string HashedPassword = 2;
+  string Password = 2;
   optional Response Status = 3;
 }
 
@@ -34,7 +34,8 @@ message TokenRequest {
 message ValidatorResponse {
   bool valid = 1;
   int32 Role = 2;
-  optional Response Status = 3;
+  int32 PatientID = 3;
+  optional Response Status = 4;
 }
 
 message AHealth {

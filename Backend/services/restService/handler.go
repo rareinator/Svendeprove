@@ -16,7 +16,7 @@ func (s *server) handleHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Server is up and running!!!!"))
+		w.Write([]byte("🚀 Server is up and running!!!!"))
 	}
 }
 
@@ -39,6 +39,9 @@ func (s *server) handleJournalHealth() http.HandlerFunc {
 func (s *server) handleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
+		var journal journal.Journal
+		json.NewDecoder(r.Body).Decode(&journal)
+
 		fmt.Println("should do handle save stuff here")
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Test"))
@@ -120,8 +123,8 @@ func (s *server) handleAuthenticationEmployeeLogin() http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&login)
 
 		a := &authentication.User{
-			Username:       login.Username,
-			HashedPassword: login.Password,
+			Username: login.Username,
+			Password: login.Password,
 		}
 
 		response, err := s.authenticationService.LoginEmployee(context.Background(), a)
@@ -133,5 +136,34 @@ func (s *server) handleAuthenticationEmployeeLogin() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handleAuthenticationPatientLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		var login struct {
+			Username string
+			Password string
+		}
+
+		json.NewDecoder(r.Body).Decode(&login)
+
+		a := &authentication.User{
+			Username: login.Username,
+			Password: login.Password,
+		}
+
+		response, err := s.authenticationService.LoginPatient(context.Background(), a)
+		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("Error logging in"))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+
 	}
 }

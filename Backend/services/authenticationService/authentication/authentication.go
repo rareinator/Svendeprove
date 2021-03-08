@@ -2,6 +2,8 @@ package authentication
 
 import (
 	context "context"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"time"
 
@@ -21,9 +23,45 @@ func (a *AuthenticationServer) GetHealth(ctx context.Context, e *AEmpty) (*AHeal
 	return &AHealth{Message: fmt.Sprintf("Authentication service is up and running on: %v 🚀", a.ListenAddress)}, nil
 }
 
+func (a *AuthenticationServer) LoginPatient(ctx context.Context, u *User) (*TokenResponse, error) {
+	salt, err := a.DB.GetPatientSalt(u.Username)
+	if err != nil {
+		return nil, err
+	}
+	h := sha256.New()
+	h.Write([]byte(u.Password + salt))
+	hashedPassword := h.Sum(nil)
+
+	basePassword := base64.StdEncoding.EncodeToString(hashedPassword)
+
+	fmt.Println(basePassword)
+
+	user, err := a.DB.LoginPatient(u.Username, basePassword)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenID := uuid.New()
+
+	dbToken := mssql.DBToken{
+		Token:      tokenID.String(),
+		PatientID:  user.PatientId,
+		Username:   u.Username,
+		IssuedAt:   time.Now(),
+		ValidUntil: time.Now().Add(time.Minute * 15),
+	}
+
+	if err := a.DB.InsertToken(&dbToken); err != nil {
+		return nil, err
+	}
+
+	return &TokenResponse{Token: dbToken.Token}, nil
+
+}
+
 func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*TokenResponse, error) {
 
-	role, err := a.Ldap.AuthenticateUser(u.Username, u.HashedPassword)
+	role, err := a.Ldap.AuthenticateUser(u.Username, u.Password)
 	if err != nil {
 		fmt.Printf("Failed to authenticate user: %v", err)
 		return nil, err
@@ -49,13 +87,15 @@ func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenReque
 	dbToken, err := a.DB.GetToken(tr.Token)
 	if err != nil {
 		return &ValidatorResponse{
-			Valid: false,
-			Role:  0,
+			Valid:     false,
+			Role:      0,
+			PatientID: 0,
 		}, err
 	}
 
 	return &ValidatorResponse{
-		Valid: true,
-		Role:  dbToken.Role,
+		Valid:     true,
+		Role:      dbToken.Role,
+		PatientID: dbToken.PatientID,
 	}, nil
 }
