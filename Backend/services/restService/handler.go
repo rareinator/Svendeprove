@@ -12,6 +12,19 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 )
 
+func (s *server) returnError(w http.ResponseWriter, statusCode int, Message string) {
+	var errorMessage struct {
+		Code    int
+		Message string
+	}
+
+	w.WriteHeader(statusCode)
+	errorMessage.Code = statusCode
+	errorMessage.Message = Message
+
+	json.NewEncoder(w).Encode(&errorMessage)
+}
+
 func (s *server) handleHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -25,8 +38,7 @@ func (s *server) handleJournalHealth() http.HandlerFunc {
 
 		response, err := s.journalService.GetHealth(context.Background(), j)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error getting in contact with the journal service %v", err)))
+			s.returnError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting in contact with the journal service %v", err))
 		} else {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(response.Message))
@@ -36,12 +48,11 @@ func (s *server) handleJournalHealth() http.HandlerFunc {
 
 func (s *server) handleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var journal journal.Journal
-		json.NewDecoder(r.Body).Decode(&journal)
+		// var journal journal.Journal
+		// json.NewDecoder(r.Body).Decode(&journal)
 
 		fmt.Println("should do handle save stuff here")
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Test"))
+		s.returnError(w, http.StatusBadGateway, "test")
 	}
 }
 
@@ -50,8 +61,7 @@ func (s *server) handleJournalRead() http.HandlerFunc {
 		vars := mux.Vars(r)
 		i, err := strconv.Atoi(vars["id"])
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("No journal found for that id"))
+			s.returnError(w, http.StatusNotFound, "No journal found for that id")
 			return
 		}
 
@@ -61,8 +71,7 @@ func (s *server) handleJournalRead() http.HandlerFunc {
 
 		response, err := s.journalService.GetJournal(context.Background(), j)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("No journal found for that id"))
+			s.returnError(w, http.StatusNotFound, "No journal found for that id")
 			return
 		}
 
@@ -84,21 +93,19 @@ func (s *server) handleJournalDelete() http.HandlerFunc {
 func (s *server) handleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientId, err := strconv.Atoi(vars["id"])
+		patientID, err := strconv.Atoi(vars["id"])
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("No journals found for that patient id"))
+			s.returnError(w, http.StatusNotFound, "No journals found for that patientId")
 			return
 		}
 
 		pr := &journal.PatientRequest{
-			PatientId: int32(patientId),
+			PatientId: int32(patientID),
 		}
 
 		response, err := s.journalService.GetJournalsByPatient(context.Background(), pr)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error getting in contact with the journal service %v", err)))
+			s.returnError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting in contact with the journal service %v", err))
 			return
 		}
 
@@ -114,8 +121,7 @@ func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 
 		response, err := s.authenticationService.GetHealth(context.Background(), e)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error getting in contact with the authentication service %v", err)))
+			s.returnError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting in contact with the authentication service %v", err))
 			return
 		}
 
@@ -140,8 +146,7 @@ func (s *server) handleAuthenticationEmployeeLogin() http.HandlerFunc {
 
 		response, err := s.authenticationService.LoginEmployee(context.Background(), a)
 		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(fmt.Sprintf("Error logging in")))
+			s.returnError(w, http.StatusForbidden, "Error logging in")
 			return
 		}
 
@@ -166,13 +171,11 @@ func (s *server) handleAuthenticationPatientLogin() http.HandlerFunc {
 
 		response, err := s.authenticationService.LoginPatient(context.Background(), a)
 		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("Error logging in"))
+			s.returnError(w, http.StatusForbidden, "Error logging in")
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
-
 	}
 }

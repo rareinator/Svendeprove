@@ -42,8 +42,8 @@ func (s *server) authenticatePatient(next http.HandlerFunc, idKey string) http.H
 
 		patientID, err := strconv.Atoi(vars[idKey])
 		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("mentally challenged i tell yah"))
+			s.returnError(w, http.StatusForbidden, "Could not convert the id to an int")
+			return
 		}
 
 		reqToken := r.Header.Get("Authorization")
@@ -57,17 +57,12 @@ func (s *server) authenticatePatient(next http.HandlerFunc, idKey string) http.H
 
 			response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(fmt.Sprintf("Error getting in contact with the authentication service %v", err)))
+				s.returnError(w, http.StatusForbidden, fmt.Sprintf("%v", err))
 				return
 			}
 
-			fmt.Printf("response: %v\n\r", response.PatientID)
-			fmt.Printf("vars: %v\n\r", patientID)
-
 			if (!response.Valid) || (response.PatientID != int32(patientID)) {
-				w.WriteHeader(http.StatusForbidden)
-				w.Write([]byte("i know man iz baaad!!!!"))
+				s.returnError(w, http.StatusForbidden, "Could not log you in succesfully")
 				return
 			}
 		}
@@ -89,19 +84,18 @@ func (s *server) authenticateRole(next http.HandlerFunc, role models.UserRole) h
 
 			response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(fmt.Sprintf("Error getting in contact with the authentication service %v", err)))
+				s.returnError(w, http.StatusForbidden, fmt.Sprintf("%v", err))
 				return
 			}
 
 			if (!response.Valid) || (response.Role != int32(role)) {
-				w.WriteHeader(http.StatusForbidden)
+				s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
 				return
 			}
 
 			next(w, r)
 		} else {
-			w.WriteHeader(http.StatusForbidden)
+			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")
 		}
 	}
 }
