@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource, reqparse
 
-from common.data import data
+from api.common.data import data
 
 class Diagnosis(Resource):
     def get(self):

@@ -1,8 +1,8 @@
 from flask import Flask, request, redirect
 from flask_restful import Api
 
-from resources.diagnosis import Diagnosis
-from resources.scan import Scan
+from api.resources.diagnosis import Diagnosis
+from api.resources.scan import Scan
 
 app = Flask(__name__)
 api = Api(app)

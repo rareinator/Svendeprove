@@ -1,18 +1,25 @@
 import os
 import tempfile
 
+import pytest
+
 from unittest import TestCase
-from api import app
+from api.app import app
 
-class TestResourceDiagnosis(TestCase):
-    def setUp(self):
-        self.app = app.test_client()
+@pytest.fixture
+def client():
+    return app.test_client()
 
-    def test_diagnosis_count(self):
-        response = self.app.get("/diagnosis")
-        data = response.json
-        assert len(data) > 10
 
+def test_diagnosis_count(client):
+    response = client.get("/diagnosis")
+    data = response.json
+    assert len(data) > 10
+
+def test_diagnosis_partial_name(client):
+    response = client.get("/diagnosis?name=abdominal")
+    data = response.json
+    assert len(data) == 6
     # def test_diagnosis_name_filter(self):
     #     assert
 
