@@ -128,3 +128,21 @@ func (j *JournalServer) DeleteJournalDocument(ctx context.Context, jdr *JournalD
 
 	return &Status{Success: true}, nil
 }
+
+func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalDocument) (*JournalDocument, error) {
+	dbJournalDocument := mssql.DBJournalDocument{
+		DocumentId:      jdr.DocumentId,
+		Message:         jdr.Message,
+		DocumentStoreId: jdr.DocumentStoreId,
+		JournalId:       jdr.JournalId,
+		DocumentType:    jdr.DocumentType,
+		CreatedBy:       jdr.CreatedBy,
+	}
+
+	if err := j.DB.UpdateJournalDocument(&dbJournalDocument); err != nil {
+		return nil, err
+	}
+
+	return jdr, nil
+
+}

@@ -187,6 +187,31 @@ func (s *server) handleJournalDocumentDelete() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleJournalDocumentUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No journal document found with that id")
+			return
+		}
+
+		var journalDocument journalService.JournalDocument
+		json.NewDecoder(r.Body).Decode(&journalDocument)
+
+		journalDocument.DocumentId = int32(ID)
+
+		response, err := s.journalService.UpdateJournalDocument(context.Background(), &journalDocument)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

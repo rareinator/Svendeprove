@@ -37,6 +37,41 @@ func NewConnection(dsn string) (MSSQL, error) {
 	return *mssql, nil
 }
 
+func (m *MSSQL) InsertToken(token *DBToken) error {
+	if token.Role == 0 {
+		m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
+			token.Token,
+			token.PatientID,
+			token.Username,
+			token.IssuedAt,
+			token.ValidUntil)
+	} else {
+		m.db.Exec("INSERT INTO Tokens (Token,Role,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
+			token.Token,
+			token.Role,
+			token.Username,
+			token.IssuedAt,
+			token.ValidUntil)
+	}
+
+	return nil
+}
+
+func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
+	var token DBToken
+	fmt.Printf("Getting token for: %v\n\r", tokenID)
+	m.db.First(&token, "Token = ?", tokenID)
+
+	if token.Username == "" {
+		fmt.Println("huh")
+		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
+	}
+
+	fmt.Printf("role: %d patientID: %d username: %v", token.Role, token.PatientID, token.Username)
+
+	return &token, nil
+}
+
 func (m *MSSQL) GetJournal(id int32) (DBJournal, error) {
 	var journal DBJournal
 	m.db.First(&journal, 1)
@@ -91,41 +126,6 @@ func (m *MSSQL) UpdateJournal(journal *DBJournal) error {
 	return nil
 }
 
-func (m *MSSQL) InsertToken(token *DBToken) error {
-	if token.Role == 0 {
-		m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
-			token.Token,
-			token.PatientID,
-			token.Username,
-			token.IssuedAt,
-			token.ValidUntil)
-	} else {
-		m.db.Exec("INSERT INTO Tokens (Token,Role,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
-			token.Token,
-			token.Role,
-			token.Username,
-			token.IssuedAt,
-			token.ValidUntil)
-	}
-
-	return nil
-}
-
-func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
-	var token DBToken
-	fmt.Printf("Getting token for: %v\n\r", tokenID)
-	m.db.First(&token, "Token = ?", tokenID)
-
-	if token.Username == "" {
-		fmt.Println("huh")
-		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
-	}
-
-	fmt.Printf("role: %d patientID: %d username: %v", token.Role, token.PatientID, token.Username)
-
-	return &token, nil
-}
-
 func (m *MSSQL) DeleteJournal(journal *DBJournal) error {
 	result := m.db.Where("JournalId = ?", journal.JournalId).Delete(journal)
 	if result.Error != nil {
@@ -137,6 +137,21 @@ func (m *MSSQL) DeleteJournal(journal *DBJournal) error {
 
 func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error {
 	result := m.db.Where("DocumentId = ?", journalDocument.DocumentId).Delete(journalDocument)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error {
+	var result *gorm.DB
+	if journalDocument.DocumentStoreId == 0 {
+		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId", "DocumentStoreId").Save(&journalDocument)
+	} else {
+		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId").Save(&journalDocument)
+	}
+
 	if result.Error != nil {
 		return result.Error
 	}
