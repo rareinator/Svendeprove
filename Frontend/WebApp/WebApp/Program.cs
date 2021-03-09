@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Blazored.Modal;
 
 namespace WebApp
 {
@@ -21,7 +22,7 @@ namespace WebApp
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://cloud.m9ssen.me:56060") });
             builder.Services.AddScoped<IPatientData, PatientData>();
 
-    
+            builder.Services.AddBlazoredModal();
 
             await builder.Build().RunAsync();
         }
