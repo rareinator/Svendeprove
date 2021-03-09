@@ -1,0 +1,33 @@
+﻿@if (journals == null)
+{
+    <p><em>Venligst vælg en patient!</em></p>
+}
+else if (journals.Count == 0) {
+    <p><em>Patienten har ingen journaler endnu!</em></p>
+}
+else
+{
+    <table class="table text-center table-hover">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 30%">Oprettet Dato</th>
+                <th style="width: 60%">Intro</th>
+                <th style="width: 10%">Noter</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var journal in journals)
+            {
+                <tr>
+                    <td>@journal.CreationTime</td>
+                    <td>@journal.Intro</td>
+                    <td><a href="#"><i class="fas fa-notes-medical"></i></a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Parameter]
+    public List<JournalModel> journals { get; set; }
+}

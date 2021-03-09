@@ -1,13 +1,76 @@
 ﻿@page "/Administration"
 
-<div class="container">
-    <div class="row align-items-center">
-        <div class="col-lg-12 text-center">
-            <h1>Oversigt</h1>
-        </div>
+@inject IPatientData PatientData
+
+<div class="d-flex justify-content-center align-items-center flex-column">
+    <h1>Oversigt</h1>
+    <p>Her kan du se journaler, Undersøgelser óg Indlæggelser for en patient. Samt oprette </p>
+    
+    <div class="m-4 w-25">
+        <BlazoredTypeahead SearchMethod="GetPatientsLocal"
+                           TValue="PatientModel"
+                           TItem="PatientModel"
+                           Value="selectedPatient"
+                           ValueChanged="SelectedPatientChanged"
+                           ValueExpression="@(() => selectedPatient)"
+                           DisableClear="true"
+                           placeholder="Søg efter patient navn...">
+            <SelectedTemplate>
+                @context.Name - @context.SocialIdNr
+            </SelectedTemplate>
+            <ResultTemplate Context="patient">
+                @patient.Name @patient.SocialIdNr (PatientId: @patient.PatientId)
+            </ResultTemplate>
+        </BlazoredTypeahead>
     </div>
+
 </div>
 
+<TabControl>
+    <TabPage Text="Journaler">
+
+        <div class="d-flex flex-column p-4">
+            @if (selectedPatient != null)
+            {
+                <p><b>Patient:</b> @selectedPatient.Name</p>
+                <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                @*<p><b>Addresse: @selectedPatient.Address</b> </p>
+            <p><b>By: @selectedPatient.City</b> </p>
+            <p><b>Post Nr: @selectedPatient.PostalCode</b> </p>
+            <p><b>Land: @selectedPatient.Country</b> </p>*@
+            }
+
+            <Journals journals="journals" />
+        </div>
+        </TabPage>
+    <TabPage Text="Undersøgelser">
+
+    </TabPage>
+    <TabPage Text="Indlæggelser">
+
+    </TabPage>
+</TabControl>
+
+@code {
+    private List<PatientModel> patients;
+    private PatientModel selectedPatient;
+
+    private List<JournalModel> journals;
+
+    protected override void OnInitialized()
+    {
+        patients = PatientData.GetPatients();
+    }
+
+    private async Task<IEnumerable<PatientModel>> GetPatientsLocal(string searchText)
+    {
+        return await Task.FromResult(patients.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
+    }
 
 
-
+    private async Task SelectedPatientChanged(PatientModel patient)
+    {
+        selectedPatient = patient;
+        journals = PatientData.GetPatientJournals(patient.PatientId);
+    }
+}
