@@ -73,6 +73,15 @@ func (m *MSSQL) GetPatientSalt(username string) (string, error) {
 	return patient.Salt, nil
 }
 
+func (m *MSSQL) CreateJournal(journal *DBJournal) error {
+	result := m.db.Omit("JournalId").Create(journal)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (m *MSSQL) InsertToken(token *DBToken) error {
 	if token.Role == 0 {
 		m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",

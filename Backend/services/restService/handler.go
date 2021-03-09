@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
-	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
+	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
+	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 )
 
 func (s *server) returnError(w http.ResponseWriter, statusCode int, Message string) {
@@ -34,7 +34,7 @@ func (s *server) handleHealth() http.HandlerFunc {
 
 func (s *server) handleJournalHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		j := &journal.JEmpty{}
+		j := &journalService.JEmpty{}
 
 		response, err := s.journalService.GetHealth(context.Background(), j)
 		if err != nil {
@@ -48,11 +48,18 @@ func (s *server) handleJournalHealth() http.HandlerFunc {
 
 func (s *server) handleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// var journal journal.Journal
-		// json.NewDecoder(r.Body).Decode(&journal)
+		var journal journalService.Journal
+		json.NewDecoder(r.Body).Decode(&journal)
+		fmt.Println(journal.CreatedBy)
 
-		fmt.Println("should do handle save stuff here")
-		s.returnError(w, http.StatusBadGateway, "test")
+		response, err := s.journalService.CreateJournal(context.Background(), &journal)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+
 	}
 }
 
@@ -65,7 +72,7 @@ func (s *server) handleJournalRead() http.HandlerFunc {
 			return
 		}
 
-		j := &journal.JournalRequest{
+		j := &journalService.JournalRequest{
 			JournalId: int32(i),
 		}
 
@@ -99,7 +106,7 @@ func (s *server) handleJournalByPatient() http.HandlerFunc {
 			return
 		}
 
-		pr := &journal.PatientRequest{
+		pr := &journalService.PatientRequest{
 			PatientId: int32(patientID),
 		}
 
@@ -117,7 +124,7 @@ func (s *server) handleJournalByPatient() http.HandlerFunc {
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		e := &authentication.AEmpty{}
+		e := &authenticationService.AEmpty{}
 
 		response, err := s.authenticationService.GetHealth(context.Background(), e)
 		if err != nil {
@@ -139,7 +146,7 @@ func (s *server) handleAuthenticationEmployeeLogin() http.HandlerFunc {
 
 		json.NewDecoder(r.Body).Decode(&login)
 
-		a := &authentication.User{
+		a := &authenticationService.User{
 			Username: login.Username,
 			Password: login.Password,
 		}
@@ -164,7 +171,7 @@ func (s *server) handleAuthenticationPatientLogin() http.HandlerFunc {
 
 		json.NewDecoder(r.Body).Decode(&login)
 
-		a := &authentication.User{
+		a := &authenticationService.User{
 			Username: login.Username,
 			Password: login.Password,
 		}

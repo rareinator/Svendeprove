@@ -9,22 +9,25 @@ message Response {
 message User {
   string Username = 1;
   string Password = 2;
-  optional Response Status = 3;
 }
 
 message Salt {
   string Salt = 1;
-  optional Response Status = 2;
 }
 
 message SaltRequest {
   string Username = 1;
 }
 
+message EmployeeTokenResponse {
+  string Token = 1;
+  int32 Role = 2;
+  bool Success = 3;
+}
+
 message TokenResponse {
   string Token = 1;
   bool Success = 2;
-  optional Response Status = 3;
 }
 
 message TokenRequest {
@@ -35,7 +38,6 @@ message ValidatorResponse {
   bool valid = 1;
   int32 Role = 2;
   int32 PatientID = 3;
-  optional Response Status = 4;
 }
 
 message AHealth {
@@ -50,7 +52,7 @@ message AEmpty {
 service AuthenticationService {
   rpc GetHealth(AEmpty) returns (AHealth) {}
   rpc LoginPatient(User) returns (TokenResponse) {}
-  rpc LoginEmployee(User) returns (TokenResponse) {}
+  rpc LoginEmployee(User) returns (EmployeeTokenResponse) {}
   rpc GetSalt(SaltRequest) returns (Salt) {}
   rpc ValidateToken(TokenRequest) returns (ValidatorResponse) {}
 }

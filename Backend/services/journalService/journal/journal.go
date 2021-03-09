@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 )
@@ -59,5 +60,26 @@ func (j *JournalServer) GetJournalsByPatient(ctx context.Context, pr *PatientReq
 	}
 
 	return journals, nil
+
+}
+
+func (j *JournalServer) CreateJournal(ctx context.Context, journal *Journal) (*Journal, error) {
+	parsedTime, err := time.Parse("02/01/2006 15:04:05", journal.CreationTime)
+	if err != nil {
+		return nil, err
+	}
+
+	dbJournal := mssql.DBJournal{
+		CreationTime: parsedTime,
+		Intro:        journal.Intro,
+		PatientId:    journal.PatientId,
+		CreatedBy:    journal.CreatedBy,
+	}
+
+	if err := j.DB.CreateJournal(&dbJournal); err != nil {
+		return nil, err
+	}
+
+	return journal, nil
 
 }

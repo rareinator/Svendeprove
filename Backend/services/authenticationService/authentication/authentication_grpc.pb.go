@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AuthenticationServiceClient interface {
 	GetHealth(ctx context.Context, in *AEmpty, opts ...grpc.CallOption) (*AHealth, error)
 	LoginPatient(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
-	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
+	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*EmployeeTokenResponse, error)
 	GetSalt(ctx context.Context, in *SaltRequest, opts ...grpc.CallOption) (*Salt, error)
 	ValidateToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
 }
@@ -51,8 +51,8 @@ func (c *authenticationServiceClient) LoginPatient(ctx context.Context, in *User
 	return out, nil
 }
 
-func (c *authenticationServiceClient) LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error) {
-	out := new(TokenResponse)
+func (c *authenticationServiceClient) LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*EmployeeTokenResponse, error) {
+	out := new(EmployeeTokenResponse)
 	err := c.cc.Invoke(ctx, "/AuthenticationService/LoginEmployee", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (c *authenticationServiceClient) ValidateToken(ctx context.Context, in *Tok
 type AuthenticationServiceServer interface {
 	GetHealth(context.Context, *AEmpty) (*AHealth, error)
 	LoginPatient(context.Context, *User) (*TokenResponse, error)
-	LoginEmployee(context.Context, *User) (*TokenResponse, error)
+	LoginEmployee(context.Context, *User) (*EmployeeTokenResponse, error)
 	GetSalt(context.Context, *SaltRequest) (*Salt, error)
 	ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
@@ -100,7 +100,7 @@ func (UnimplementedAuthenticationServiceServer) GetHealth(context.Context, *AEmp
 func (UnimplementedAuthenticationServiceServer) LoginPatient(context.Context, *User) (*TokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginPatient not implemented")
 }
-func (UnimplementedAuthenticationServiceServer) LoginEmployee(context.Context, *User) (*TokenResponse, error) {
+func (UnimplementedAuthenticationServiceServer) LoginEmployee(context.Context, *User) (*EmployeeTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginEmployee not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) GetSalt(context.Context, *SaltRequest) (*Salt, error) {

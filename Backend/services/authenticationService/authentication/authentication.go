@@ -59,7 +59,7 @@ func (a *AuthenticationServer) LoginPatient(ctx context.Context, u *User) (*Toke
 
 }
 
-func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*TokenResponse, error) {
+func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*EmployeeTokenResponse, error) {
 
 	role, err := a.Ldap.AuthenticateUser(u.Username, u.Password)
 	if err != nil {
@@ -79,7 +79,7 @@ func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*Tok
 
 	a.DB.InsertToken(&dbToken)
 
-	return &TokenResponse{Token: dbToken.Token}, nil
+	return &EmployeeTokenResponse{Token: dbToken.Token, Role: int32(role)}, nil
 }
 
 func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenRequest) (*ValidatorResponse, error) {
