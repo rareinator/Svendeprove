@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-deployment
+spec:
+  replicas: 1
+  selector:
+     matchLabels:
+       app: rest
+  template:
+    metadata:
+      labels:
+        app: rest
+    spec:
+      terminationGracePeriodSeconds: 30
+      hostname: restinst
+      containers:
+      - name: rest
+        image: mongo
+        ports:
+        - containerPort: 27017
+        env:
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-deployment
+spec:
+  selector:
+    app: rest
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer

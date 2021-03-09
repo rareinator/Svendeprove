@@ -12,6 +12,10 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 )
 
+type authenticationConfig struct {
+	allowedRoles   []models.UserRole
+	allowedPatient string
+}
 type corsHandler struct {
 	router *mux.Router
 }
@@ -27,75 +31,65 @@ func (ch *corsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) handleCors() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Access-Control-Allow-Methods", "*")
-		w.Header().Add("Access-Control-Allow-Headers", "*")
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
-func (s *server) authenticatePatient(next http.HandlerFunc, idKey string) http.HandlerFunc {
+func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		for _, value := range vars {
-			fmt.Println(value)
-		}
 
-		patientID, err := strconv.Atoi(vars[idKey])
-		if err != nil {
-			s.returnError(w, http.StatusForbidden, "Could not convert the id to an int")
+		reqToken := r.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		reqToken = splitToken[1]
+		if reqToken == "" {
+			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")
 			return
 		}
 
-		reqToken := r.Header.Get("Authorization")
-		if reqToken != "" {
-			splitToken := strings.Split(reqToken, "Bearer ")
-			reqToken = splitToken[1]
-
-			tokenRequest := &authentication.TokenRequest{
-				Token: reqToken,
-			}
-
-			response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
-			if err != nil {
-				s.returnError(w, http.StatusForbidden, fmt.Sprintf("%v", err))
-				return
-			}
-
-			if (!response.Valid) || (response.PatientID != int32(patientID)) {
-				s.returnError(w, http.StatusForbidden, "Could not log you in succesfully")
-				return
-			}
+		tokenRequest := &authentication.TokenRequest{
+			Token: reqToken,
 		}
 
-		next(w, r)
-	}
-}
+		allowed := false
 
-func (s *server) authenticateRole(next http.HandlerFunc, role models.UserRole) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		reqToken := r.Header.Get("Authorization")
-		if reqToken != "" {
-			splitToken := strings.Split(reqToken, "Bearer ")
-			reqToken = splitToken[1]
+		response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
+		if err != nil {
+			s.returnError(w, http.StatusForbidden, fmt.Sprintf("%v", err))
+			return
+		}
+		if !response.Valid {
+			s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
+			return
+		}
 
-			tokenRequest := &authentication.TokenRequest{
-				Token: reqToken,
-			}
-
-			response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
+		if config.allowedPatient != "" {
+			patientID, err := strconv.Atoi(vars[config.allowedPatient])
 			if err != nil {
-				s.returnError(w, http.StatusForbidden, fmt.Sprintf("%v", err))
+				s.returnError(w, http.StatusForbidden, "Could not convert the id to an int")
 				return
 			}
-
-			if (!response.Valid) || (response.Role != int32(role)) {
+			if response.PatientID != int32(patientID) {
 				s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
 				return
 			}
-
-			next(w, r)
-		} else {
-			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")
+			allowed = true
 		}
+
+		if len(config.allowedRoles) > 0 {
+			for _, allowedRole := range config.allowedRoles {
+				if response.Role == int32(allowedRole) {
+					allowed = true
+					break
+				}
+			}
+		}
+
+		if !allowed {
+			s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
+			return
+		}
+
+		next(w, r)
 	}
 }
