@@ -158,3 +158,18 @@ func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error 
 
 	return nil
 }
+
+func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error {
+	var result *gorm.DB
+	if journalDocument.DocumentStoreId == 0 {
+		result = m.db.Omit("DocumentId", "DocumentStoreId").Create(&journalDocument)
+	} else {
+		result = m.db.Omit("DocumentId", "DocumentStoreId").Create(&journalDocument)
+	}
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

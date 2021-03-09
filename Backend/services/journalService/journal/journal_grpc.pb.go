@@ -28,6 +28,7 @@ type JournalServiceClient interface {
 	UpdateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error)
 	GetJournalDocumentsForJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error)
 	GetJournalDocument(ctx context.Context, in *JournalDocumentRequest, opts ...grpc.CallOption) (*JournalDocument, error)
+	CreateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error)
 }
 
 type journalServiceClient struct {
@@ -128,6 +129,15 @@ func (c *journalServiceClient) GetJournalDocument(ctx context.Context, in *Journ
 	return out, nil
 }
 
+func (c *journalServiceClient) CreateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error) {
+	out := new(JournalDocument)
+	err := c.cc.Invoke(ctx, "/JournalService/CreateJournalDocument", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JournalServiceServer is the server API for JournalService service.
 // All implementations must embed UnimplementedJournalServiceServer
 // for forward compatibility
@@ -142,6 +152,7 @@ type JournalServiceServer interface {
 	UpdateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error)
 	GetJournalDocumentsForJournal(context.Context, *JournalRequest) (*JournalDocuments, error)
 	GetJournalDocument(context.Context, *JournalDocumentRequest) (*JournalDocument, error)
+	CreateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error)
 	mustEmbedUnimplementedJournalServiceServer()
 }
 
@@ -178,6 +189,9 @@ func (UnimplementedJournalServiceServer) GetJournalDocumentsForJournal(context.C
 }
 func (UnimplementedJournalServiceServer) GetJournalDocument(context.Context, *JournalDocumentRequest) (*JournalDocument, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJournalDocument not implemented")
+}
+func (UnimplementedJournalServiceServer) CreateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateJournalDocument not implemented")
 }
 func (UnimplementedJournalServiceServer) mustEmbedUnimplementedJournalServiceServer() {}
 
@@ -372,6 +386,24 @@ func _JournalService_GetJournalDocument_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JournalService_CreateJournalDocument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JournalDocument)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalServiceServer).CreateJournalDocument(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/JournalService/CreateJournalDocument",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalServiceServer).CreateJournalDocument(ctx, req.(*JournalDocument))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JournalService_ServiceDesc is the grpc.ServiceDesc for JournalService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -418,6 +450,10 @@ var JournalService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetJournalDocument",
 			Handler:    _JournalService_GetJournalDocument_Handler,
+		},
+		{
+			MethodName: "CreateJournalDocument",
+			Handler:    _JournalService_CreateJournalDocument_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

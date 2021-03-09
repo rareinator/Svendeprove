@@ -66,7 +66,14 @@ func (s *server) routes() {
 				allowedPatient: "",
 			})).Methods("POST")
 
-	//update journal document, doctor and nurse
+	s.router.Handle("/journal/document", //Create journal document
+		s.authenticate(
+			s.handleJournalDocumentSave(),
+			&authenticationConfig{
+				allowedRoles:   []models.UserRole{models.Doctor, models.Employee},
+				allowedPatient: "",
+			})).Methods("POST")
+
 	//get journal documents, doctor nurse, and patient
 	//get journal document, doctor, nurse and patient
 

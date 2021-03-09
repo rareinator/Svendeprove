@@ -50,7 +50,6 @@ func (s *server) handleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var journal journalService.Journal
 		json.NewDecoder(r.Body).Decode(&journal)
-		fmt.Println(journal.CreatedBy)
 
 		response, err := s.journalService.CreateJournal(context.Background(), &journal)
 		if err != nil {
@@ -209,6 +208,22 @@ func (s *server) handleJournalDocumentUpdate() http.HandlerFunc {
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
 
+	}
+}
+
+func (s *server) handleJournalDocumentSave() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var journalDocument journalService.JournalDocument
+		json.NewDecoder(r.Body).Decode(&journalDocument)
+
+		response, err := s.journalService.CreateJournalDocument(context.Background(), &journalDocument)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
 	}
 }
 

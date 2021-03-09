@@ -64,13 +64,8 @@ func (j *JournalServer) GetJournalsByPatient(ctx context.Context, pr *PatientReq
 }
 
 func (j *JournalServer) CreateJournal(ctx context.Context, journal *Journal) (*Journal, error) {
-	parsedTime, err := time.Parse("02/01/2006 15:04:05", journal.CreationTime)
-	if err != nil {
-		return nil, err
-	}
-
 	dbJournal := mssql.DBJournal{
-		CreationTime: parsedTime,
+		CreationTime: time.Now(),
 		Intro:        journal.Intro,
 		PatientId:    journal.PatientId,
 		CreatedBy:    journal.CreatedBy,
@@ -145,4 +140,20 @@ func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalD
 
 	return jdr, nil
 
+}
+
+func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDocument) (*JournalDocument, error) {
+	dbJD := mssql.DBJournalDocument{
+		Message:         jd.Message,
+		DocumentStoreId: jd.DocumentStoreId,
+		JournalId:       jd.JournalId,
+		DocumentType:    jd.DocumentType,
+		CreatedBy:       jd.CreatedBy,
+	}
+
+	if err := j.DB.CreateJournalDocument(&dbJD); err != nil {
+		return nil, err
+	}
+
+	return jd, nil
 }
