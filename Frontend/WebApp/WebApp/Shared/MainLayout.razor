@@ -1,23 +1,78 @@
 ﻿@inherits LayoutComponentBase
 
-
-@if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
-{
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-}
-
-<div class="main">
+<CascadingValue Value="@User" Name="User">
     @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
     {
-        <div class="top-row px-4">
-            <h4>Velkommen</h4>
-            <h4 class="ml-md-auto">Patient</h4>
-        </div>
+        if (User.Role == "Patient")
+        {
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+        }
+        else
+        {
+            <div class="sidebar">
+                <AdminNavMenu />
+            </div>
+        }
     }
 
-    <div class="content px-4">
-        @Body
+    <div class="main">
+
+        @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
+        {
+            <div class="top-row px-4">
+                <h4>Velkommen</h4>
+                <h4 class="ml-md-auto">@User.Username</h4>
+            </div>
+        }
+        <div class="content px-4">
+            @Body
+        </div>
     </div>
-</div>
+</CascadingValue>
+@code{
+
+    public UserModel User = new UserModel();
+
+}
+
+@functions{
+
+    protected override void OnInitialized()
+    {
+        IUserUpdateService.OnUserUpdate += Handle;
+
+        base.OnInitialized();
+    }
+
+    protected void Handle(UserModel args)
+    {
+        User = args;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //Get cookie
+        string cookieJson = await JSRuntime.InvokeAsync<string>("getCookie", "Data");
+        //Deserialize json
+        //Fill data to user object
+        try
+        {
+            if(cookieJson != "")
+            {
+                User = JsonSerializer.Deserialize<UserModel>(cookieJson);
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+    }
+}

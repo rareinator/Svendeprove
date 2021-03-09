@@ -1,5 +1,14 @@
 ﻿@page "/"
 
+
+@if (error)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+
 <div class="h-100 container">
     <div class="row">
         <div class="col-lg-3"></div>
@@ -7,41 +16,84 @@
             <h1>Velkommen til HOSPI Inc.</h1>
         </div>
     </div>
-    <div class="row text-center">
+    <div class="row mt-2">
         <div class="col-4"></div>
         <div class="col-4">
-            <input class="form-control input d-inline-block" placeholder="Username" @bind-value="username" @bind-value:event="onchange" required />
+            <button class="btn btn-outline-info" @onclick="Toggle">@Caption</button>
         </div>
     </div>
-    <div class="row text-center mt-1">
-        <div class="col-4"></div>
-        <div class="col-4">
-            <input class="form-control input d-inline-block" type="password" placeholder="Password" @bind-value="password" @bind-value:event="onchange" required />
+
+    <form @onsubmit="Login">
+        <div class="row text-center mt-1">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <input class="form-control input d-inline-block" placeholder="Username" @bind-value="User.Username" @bind-value:event="onchange" required />
+            </div>
         </div>
-    </div>
-    <div class="row mt-1">
-        <div class="col-4"></div>
-        <div class="col-4">
-            <button class="btn btn-success w-100">Login</button>
+        <div class="row text-center mt-1">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <input class="form-control input d-inline-block" type="password" placeholder="Password" @bind-value="User.Password" @bind-value:event="onchange" required />
+            </div>
         </div>
-    </div>
+        <div class="row mt-1">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <button class="btn btn-success w-100" type="submit">Login</button>
+            </div>
+        </div>
+    </form>
+
 </div>
 
-
 @code{
-    string username;
-    string password;
 
+    [CascadingParameter(Name = "User")]
+    public UserModel User { get; set; }
+    bool error = false;
+    string errorMessage;
 
     private async void Login()
     {
-        CreateCookie();
+        Console.WriteLine("Login");
+        if (clicked)
+        {
+            MyNavigationManager.NavigateTo("/Administration/");
+        }
+        else
+        {
+
+            User.Token = await IUserData.Login(User);
+            if (User.Token != "" && User.Token != null)
+            {
+                User.Password = "";
+                User.Role = "Patient";
+                //Create JSon with User Data
+                string cookieJson = JsonSerializer.Serialize<UserModel>(User);
+                //Insert crypt in cookie
+                await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 15);
+                IUserUpdateService.UpdateUser(User);
+                MyNavigationManager.NavigateTo("/Journals");
+            }
+            else
+            {
+                error = true;
+                errorMessage = "Could not login";
+                StateHasChanged();
+            }
+        }
     }
 
-    private async void CreateCookie()
+    private string Caption => clicked ? "Patient" : "Ansatte";
+
+
+    private bool clicked = false;
+
+
+    private void Toggle()
     {
+        clicked = !clicked;
+        Console.WriteLine(DateTime.Now);
     }
-
-
 }
 
