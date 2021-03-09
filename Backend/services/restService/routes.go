@@ -70,12 +70,25 @@ func (s *server) routes() {
 		s.authenticate(
 			s.handleJournalDocumentSave(),
 			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor, models.Employee},
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
 			})).Methods("POST")
 
-	//get journal documents, doctor nurse, and patient
-	//get journal document, doctor, nurse and patient
+	s.router.Handle("/journal/document/byJournal/{id:[0-9]+}", //Get journal documents by journalID
+		s.authenticate(
+			s.handleJournalDocumentByJournal(),
+			&authenticationConfig{
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
+			})).Methods("GET")
+
+	s.router.Handle("/journal/document/{id:[0-9]+}", //Get journal document
+		s.authenticate(
+			s.handleJournalDocumentRead(),
+			&authenticationConfig{
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
+			})).Methods("GET")
 
 	// Authentication methods
 	s.router.Handle("/authentication/health", s.handleAuthenticationHealth()).Methods("GET")

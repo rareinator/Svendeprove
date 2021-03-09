@@ -227,6 +227,53 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		journalID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No journal documents found for that journal id")
+			return
+		}
+
+		pr := &journalService.JournalRequest{
+			JournalId: int32(journalID),
+		}
+
+		response, err := s.journalService.GetJournalDocumentsByJournal(context.Background(), pr)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response.JournalDocuments)
+	}
+}
+
+func (s *server) handleJournalDocumentRead() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		journalDocumentID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No journal document found for that id")
+			return
+		}
+
+		j := journalService.JournalDocumentRequest{
+			JournalDocumentId: int32(journalDocumentID),
+		}
+
+		response, err := s.journalService.GetJournalDocument(context.Background(), &j)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

@@ -60,7 +60,7 @@ service JournalService {
 
   rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
   rpc UpdateJournalDocument(JournalDocument) returns (JournalDocument) {}
-  rpc GetJournalDocumentsForJournal(JournalRequest) returns (JournalDocuments) {}
+  rpc GetJournalDocumentsByJournal(JournalRequest) returns (JournalDocuments) {}
   rpc GetJournalDocument(JournalDocumentRequest) returns (JournalDocument) {}
   rpc CreateJournalDocument(JournalDocument) returns (JournalDocument) {}
 }

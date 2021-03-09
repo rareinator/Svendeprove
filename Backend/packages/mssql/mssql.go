@@ -173,3 +173,23 @@ func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error 
 
 	return nil
 }
+
+func (m *MSSQL) GetJournalDocumentsByJournal(journalID int32) ([]*DBJournalDocument, error) {
+	var journalDocuments []*DBJournalDocument
+	result := m.db.Find(&journalDocuments).Where("JournalId = ?", journalID)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return journalDocuments, nil
+}
+
+func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument, error) {
+	var journalDocument DBJournalDocument
+	result := m.db.Where("DocumentId = ?", journalDocumentID).First(&journalDocument)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &journalDocument, nil
+}

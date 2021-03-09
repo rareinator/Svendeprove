@@ -3,7 +3,6 @@ package journal
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
@@ -16,8 +15,6 @@ type JournalServer struct {
 }
 
 func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest) (*Journal, error) {
-	log.Printf("Received journal from client: %v", journal.JournalId)
-
 	dbJournal, err := j.DB.GetJournal(journal.JournalId)
 	if err != nil {
 		return nil, err
@@ -156,4 +153,49 @@ func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDo
 	}
 
 	return jd, nil
+}
+
+func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *JournalRequest) (*JournalDocuments, error) {
+	journalDocuments := JournalDocuments{
+		JournalDocuments: make([]*JournalDocument, 0),
+	}
+
+	dbJournalDocuments, err := j.DB.GetJournalDocumentsByJournal(jr.JournalId)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbJournalDocument := range dbJournalDocuments {
+		journalDocument := &JournalDocument{
+			DocumentId:      dbJournalDocument.DocumentId,
+			Message:         dbJournalDocument.Message,
+			DocumentStoreId: dbJournalDocument.DocumentStoreId,
+			JournalId:       dbJournalDocument.JournalId,
+			DocumentType:    dbJournalDocument.DocumentType,
+			CreatedBy:       dbJournalDocument.CreatedBy,
+		}
+
+		journalDocuments.JournalDocuments = append(journalDocuments.JournalDocuments, journalDocument)
+	}
+
+	return &journalDocuments, nil
+
+}
+
+func (j *JournalServer) GetJournalDocument(ctx context.Context, jdr *JournalDocumentRequest) (*JournalDocument, error) {
+	dbJournalDocument, err := j.DB.GetJournalDocument(jdr.JournalDocumentId)
+	if err != nil {
+		return nil, err
+	}
+
+	result := JournalDocument{
+		DocumentId:      dbJournalDocument.DocumentId,
+		Message:         dbJournalDocument.Message,
+		DocumentStoreId: dbJournalDocument.DocumentStoreId,
+		JournalId:       dbJournalDocument.JournalId,
+		DocumentType:    dbJournalDocument.DocumentType,
+		CreatedBy:       dbJournalDocument.CreatedBy,
+	}
+
+	return &result, nil
 }

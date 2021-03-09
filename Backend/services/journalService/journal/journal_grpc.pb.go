@@ -26,7 +26,7 @@ type JournalServiceClient interface {
 	GetJournalsByPatient(ctx context.Context, in *PatientRequest, opts ...grpc.CallOption) (*Journals, error)
 	DeleteJournalDocument(ctx context.Context, in *JournalDocumentRequest, opts ...grpc.CallOption) (*Status, error)
 	UpdateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error)
-	GetJournalDocumentsForJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error)
+	GetJournalDocumentsByJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error)
 	GetJournalDocument(ctx context.Context, in *JournalDocumentRequest, opts ...grpc.CallOption) (*JournalDocument, error)
 	CreateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error)
 }
@@ -111,9 +111,9 @@ func (c *journalServiceClient) UpdateJournalDocument(ctx context.Context, in *Jo
 	return out, nil
 }
 
-func (c *journalServiceClient) GetJournalDocumentsForJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error) {
+func (c *journalServiceClient) GetJournalDocumentsByJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error) {
 	out := new(JournalDocuments)
-	err := c.cc.Invoke(ctx, "/JournalService/GetJournalDocumentsForJournal", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/JournalService/GetJournalDocumentsByJournal", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ type JournalServiceServer interface {
 	GetJournalsByPatient(context.Context, *PatientRequest) (*Journals, error)
 	DeleteJournalDocument(context.Context, *JournalDocumentRequest) (*Status, error)
 	UpdateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error)
-	GetJournalDocumentsForJournal(context.Context, *JournalRequest) (*JournalDocuments, error)
+	GetJournalDocumentsByJournal(context.Context, *JournalRequest) (*JournalDocuments, error)
 	GetJournalDocument(context.Context, *JournalDocumentRequest) (*JournalDocument, error)
 	CreateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error)
 	mustEmbedUnimplementedJournalServiceServer()
@@ -184,8 +184,8 @@ func (UnimplementedJournalServiceServer) DeleteJournalDocument(context.Context, 
 func (UnimplementedJournalServiceServer) UpdateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateJournalDocument not implemented")
 }
-func (UnimplementedJournalServiceServer) GetJournalDocumentsForJournal(context.Context, *JournalRequest) (*JournalDocuments, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetJournalDocumentsForJournal not implemented")
+func (UnimplementedJournalServiceServer) GetJournalDocumentsByJournal(context.Context, *JournalRequest) (*JournalDocuments, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJournalDocumentsByJournal not implemented")
 }
 func (UnimplementedJournalServiceServer) GetJournalDocument(context.Context, *JournalDocumentRequest) (*JournalDocument, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJournalDocument not implemented")
@@ -350,20 +350,20 @@ func _JournalService_UpdateJournalDocument_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _JournalService_GetJournalDocumentsForJournal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _JournalService_GetJournalDocumentsByJournal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(JournalRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(JournalServiceServer).GetJournalDocumentsForJournal(ctx, in)
+		return srv.(JournalServiceServer).GetJournalDocumentsByJournal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/JournalService/GetJournalDocumentsForJournal",
+		FullMethod: "/JournalService/GetJournalDocumentsByJournal",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JournalServiceServer).GetJournalDocumentsForJournal(ctx, req.(*JournalRequest))
+		return srv.(JournalServiceServer).GetJournalDocumentsByJournal(ctx, req.(*JournalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -444,8 +444,8 @@ var JournalService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _JournalService_UpdateJournalDocument_Handler,
 		},
 		{
-			MethodName: "GetJournalDocumentsForJournal",
-			Handler:    _JournalService_GetJournalDocumentsForJournal_Handler,
+			MethodName: "GetJournalDocumentsByJournal",
+			Handler:    _JournalService_GetJournalDocumentsByJournal_Handler,
 		},
 		{
 			MethodName: "GetJournalDocument",
