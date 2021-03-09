@@ -1,11 +1,10 @@
 ﻿@page "/Administration"
 
-@inject IPatientData PatientData
 
 <div class="d-flex justify-content-center align-items-center flex-column">
     <h1>Oversigt</h1>
     <p>Her kan du se journaler, Undersøgelser óg Indlæggelser for en patient. Samt oprette </p>
-    
+
     <div class="m-4 w-25">
         <BlazoredTypeahead SearchMethod="GetPatientsLocal"
                            TValue="PatientModel"
@@ -34,15 +33,12 @@
             {
                 <p><b>Patient:</b> @selectedPatient.Name</p>
                 <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                @*<p><b>Addresse: @selectedPatient.Address</b> </p>
-            <p><b>By: @selectedPatient.City</b> </p>
-            <p><b>Post Nr: @selectedPatient.PostalCode</b> </p>
-            <p><b>Land: @selectedPatient.Country</b> </p>*@
+                <button @onclick="ShowModal" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Journal</button>
             }
 
             <Journals journals="journals" />
         </div>
-        </TabPage>
+    </TabPage>
     <TabPage Text="Undersøgelser">
 
     </TabPage>
@@ -52,6 +48,8 @@
 </TabControl>
 
 @code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+
     private List<PatientModel> patients;
     private PatientModel selectedPatient;
 
@@ -72,5 +70,21 @@
     {
         selectedPatient = patient;
         journals = PatientData.GetPatientJournals(patient.PatientId);
+    }
+
+    private async Task ShowModal()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateJournal.Patient), selectedPatient);
+
+        var createJournal = Modal.Show<CreateJournal>("Opret Journal", parameters);
+        var result = await createJournal.Result;
+
+
+        if (!result.Cancelled)
+        {
+            PatientData.InsertPatientJournal((JournalModel)result.Data);
+            journals.Add((JournalModel)result.Data);
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Blazored.Modal;
 
 namespace WebApp
 {
@@ -22,6 +23,8 @@ namespace WebApp
             builder.Services.AddScoped<IUserData, UserData>();
             builder.Services.AddSingleton<IUserUpdateService, UserUpdateService>();
             builder.Services.AddScoped<IPatientData, PatientData>();
+
+            builder.Services.AddBlazoredModal();
 
             await builder.Build().RunAsync();
         }

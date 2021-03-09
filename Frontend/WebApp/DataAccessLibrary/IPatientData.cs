@@ -8,5 +8,7 @@ namespace DataAccessLibrary
     {
         List<PatientModel> GetPatients();
         List<JournalModel> GetPatientJournals(int patientId);
+        PatientModel GetPatient(int patientId);
+        void InsertPatientJournal(JournalModel journal);
     }
 }
