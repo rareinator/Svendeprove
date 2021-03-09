@@ -82,6 +82,15 @@ func (m *MSSQL) CreateJournal(journal *DBJournal) error {
 	return nil
 }
 
+func (m *MSSQL) UpdateJournal(journal *DBJournal) error {
+	result := m.db.Where("JournalId = ?", journal.JournalId).Omit("JournalId").Save(&journal)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (m *MSSQL) InsertToken(token *DBToken) error {
 	if token.Role == 0 {
 		m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",

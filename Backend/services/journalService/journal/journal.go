@@ -83,3 +83,24 @@ func (j *JournalServer) CreateJournal(ctx context.Context, journal *Journal) (*J
 	return journal, nil
 
 }
+
+func (j *JournalServer) UpdateJournal(ctx context.Context, journal *Journal) (*Journal, error) {
+	parsedtime, err := time.Parse("02/01/2006 15:04:05", journal.CreationTime)
+	if err != nil {
+		return nil, err
+	}
+
+	dbJournal := mssql.DBJournal{
+		JournalId:    journal.JournalId,
+		CreationTime: parsedtime,
+		Intro:        journal.Intro,
+		PatientId:    journal.PatientId,
+		CreatedBy:    journal.CreatedBy,
+	}
+
+	if err := j.DB.UpdateJournal(&dbJournal); err != nil {
+		return nil, err
+	}
+
+	return journal, nil
+}

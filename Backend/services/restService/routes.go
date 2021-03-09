@@ -34,13 +34,13 @@ func (s *server) routes() {
 				allowedPatient: "",
 			})).Methods("POST")
 
-	s.router.Handle("/journal/{id:[0-9]+", // Delete journal
-		s.authenticate(
-			s.handleJournalDelete(),
-			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor},
-				allowedPatient: "",
-			})).Methods("DELETE")
+	// s.router.Handle("/journal/{id:[0-9]+", // Delete journal
+	// 	s.authenticate(
+	// 		s.handleJournalDelete(),
+	// 		&authenticationConfig{
+	// 			allowedRoles:   []models.UserRole{models.Doctor},
+	// 			allowedPatient: "",
+	// 		})).Methods("DELETE")
 
 	s.router.Handle("/journal/byPatient/{id:[0-9]+}", //Get patient journals
 		s.authenticate(

@@ -55,6 +55,7 @@ func (s *server) handleJournalSave() http.HandlerFunc {
 		response, err := s.journalService.CreateJournal(context.Background(), &journal)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
@@ -89,11 +90,25 @@ func (s *server) handleJournalRead() http.HandlerFunc {
 
 func (s *server) handleJournalUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-	}
-}
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No journal found for that id")
+		}
 
-func (s *server) handleJournalDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+		var journal journalService.Journal
+		json.NewDecoder(r.Body).Decode(&journal)
+
+		journal.JournalId = int32(ID)
+
+		response, err := s.journalService.UpdateJournal(context.Background(), &journal)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
 	}
 }
 
