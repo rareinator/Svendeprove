@@ -33,6 +33,23 @@ message Journals {
   repeated Journal journals = 1;
 }
 
+message JournalDocument {
+  int32 DocumentId = 1;
+  string Message = 2;
+  int32 DocumentStoreId = 3;
+  int32 JournalId = 4;
+  string DocumentType = 5;
+  int32 CreatedBy = 6;
+}
+
+message JournalDocuments {
+  repeated JournalDocument JournalDocuments = 1;
+}
+
+message JournalDocumentRequest {
+  int32 JournalDocumentId = 1;
+}
+
 service JournalService {
   rpc GetJournal(JournalRequest) returns (Journal) {}
   rpc CreateJournal(Journal) returns (Journal) {}
@@ -40,4 +57,9 @@ service JournalService {
   rpc GetHealth(JEmpty) returns (JHealth) {}
   rpc UpdateJournal(Journal) returns (Journal) {}
   rpc GetJournalsByPatient(PatientRequest) returns (Journals) {}
+
+  rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
+  rpc UpdateJournalDocument(JournalDocument) returns (JournalDocument) {}
+  rpc GetJournalDocumentsForJournal(JournalRequest) returns (JournalDocuments) {}
+  rpc GetJournalDocument(JournalDocumentRequest) returns (JournalDocument) {}
 }

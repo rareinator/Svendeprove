@@ -2,6 +2,19 @@ package mssql
 
 import "time"
 
+type DBJournalDocument struct {
+	DocumentId      int32  `gorm:"column:DocumentId"`
+	Message         string `gorm:"column:Message"`
+	DocumentStoreId int32  `gorm:"column:DocumentStoreId"`
+	JournalId       int32  `gorm:"column:Journalid"`
+	DocumentType    string `gorm:"column:DocumentType"`
+	CreatedBy       int32  `gorm:"column:CreatedBy"`
+}
+
+func (DBJournalDocument) TableName() string {
+	return "Document"
+}
+
 type DBJournal struct {
 	JournalId    int32     `gorm:"column:JournalId"`
 	CreationTime time.Time `gorm:"column:CreationTime"`

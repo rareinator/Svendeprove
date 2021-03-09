@@ -134,3 +134,12 @@ func (m *MSSQL) DeleteJournal(journal *DBJournal) error {
 
 	return nil
 }
+
+func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error {
+	result := m.db.Where("DocumentId = ?", journalDocument.DocumentId).Delete(journalDocument)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

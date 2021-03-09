@@ -131,7 +131,7 @@ func (s *server) handleJournalDelete() http.HandlerFunc {
 			return
 		}
 
-		s.returnError(w, http.StatusInternalServerError, "Something unknown went horribly wrong!!!")
+		s.returnError(w, http.StatusInternalServerError, "Something unknown went horribly wrong!!! ☠️☠️☠️")
 	}
 }
 
@@ -156,6 +156,34 @@ func (s *server) handleJournalByPatient() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response.Journals)
+	}
+}
+
+func (s *server) handleJournalDocumentDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No journal document found with that id")
+			return
+		}
+
+		jdr := journalService.JournalDocumentRequest{
+			JournalDocumentId: int32(ID),
+		}
+
+		response, err := s.journalService.DeleteJournalDocument(context.Background(), &jdr)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if !response.Success {
+			s.returnError(w, http.StatusInternalServerError, "Something went horribly wrong!!! ☠️☠️☠️")
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }
 

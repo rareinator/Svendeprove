@@ -50,7 +50,14 @@ func (s *server) routes() {
 				allowedPatient: "id",
 			})).Methods("GET")
 
-	//delete journal document, doctor and nurse
+	s.router.Handle("/journal/document/{id:[0-9]+}", //Delete journal documents
+		s.authenticate(
+			s.handleJournalDocumentDelete(),
+			&authenticationConfig{
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
+			})).Methods("DELETE")
+
 	//update journal document, doctor and nurse
 	//get journal documents, doctor nurse, and patient
 	//get journal document, doctor, nurse and patient
