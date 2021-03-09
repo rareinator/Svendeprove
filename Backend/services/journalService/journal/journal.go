@@ -104,3 +104,15 @@ func (j *JournalServer) UpdateJournal(ctx context.Context, journal *Journal) (*J
 
 	return journal, nil
 }
+
+func (j *JournalServer) DeleteJournal(ctx context.Context, jr *JournalRequest) (*Status, error) {
+	dbJournal := mssql.DBJournal{
+		JournalId: jr.JournalId,
+	}
+
+	if err := j.DB.DeleteJournal(&dbJournal); err != nil {
+		return &Status{Success: false}, err
+	}
+
+	return &Status{Success: true}, nil
+}

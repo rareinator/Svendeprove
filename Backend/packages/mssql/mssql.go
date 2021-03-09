@@ -125,3 +125,12 @@ func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 
 	return &token, nil
 }
+
+func (m *MSSQL) DeleteJournal(journal *DBJournal) error {
+	result := m.db.Where("JournalId = ?", journal.JournalId).Delete(journal)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

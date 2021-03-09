@@ -112,6 +112,29 @@ func (s *server) handleJournalUpdate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleJournalDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No journal found for that id")
+		}
+
+		response, err := s.journalService.DeleteJournal(context.Background(), &journalService.JournalRequest{JournalId: int32(ID)})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if response.Success {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		s.returnError(w, http.StatusInternalServerError, "Something unknown went horribly wrong!!!")
+	}
+}
+
 func (s *server) handleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
