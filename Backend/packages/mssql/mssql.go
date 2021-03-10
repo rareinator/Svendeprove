@@ -338,3 +338,12 @@ func (m *MSSQL) GetPatientDiagnose(id int32) (*DBPatientDiagnose, error) {
 	}
 	return &patientDiagnose, nil
 }
+
+func (m *MSSQL) UpdatePatientDiagnose(pd *DBPatientDiagnose) error {
+	result := m.db.Where("PatientDiagnoseId = ?", pd.PatientDiagnoseId).Omit("PatientDiagnoseid", "CreationTime").Save(&pd)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

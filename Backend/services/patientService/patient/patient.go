@@ -249,3 +249,18 @@ func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *PRequest) (*
 
 	return &patientDiagnose, nil
 }
+
+func (p *PatientServer) UpdatePatientDiagnose(ctx context.Context, pd *PatientDiagnose) (*PatientDiagnose, error) {
+	dbPatientDiagnose := mssql.DBPatientDiagnose{
+		PatientDiagnoseId: pd.PatientDiagnoseId,
+		PatientId:         pd.PatientId,
+		SymptomId:         pd.SymptomId,
+		DiagnoseId:        pd.DiagnoseId,
+	}
+
+	if err := p.DB.UpdatePatientDiagnose(&dbPatientDiagnose); err != nil {
+		return nil, err
+	}
+
+	return pd, nil
+}
