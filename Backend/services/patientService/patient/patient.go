@@ -264,3 +264,15 @@ func (p *PatientServer) UpdatePatientDiagnose(ctx context.Context, pd *PatientDi
 
 	return pd, nil
 }
+
+func (p *PatientServer) DeletePatientDiagnose(ctx context.Context, pr *PRequest) (*PStatus, error) {
+	dbPatientDiagnose := mssql.DBPatientDiagnose{
+		PatientDiagnoseId: pr.Id,
+	}
+
+	if err := p.DB.DeletePatientDiagnose(&dbPatientDiagnose); err != nil {
+		return &PStatus{Success: false}, err
+	}
+
+	return &PStatus{Success: true}, nil
+}

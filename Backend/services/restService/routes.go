@@ -219,4 +219,13 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("POST")
 
+	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+}",
+		s.authenticate(
+			s.handlePatientDiagnoseDelete(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("DELETE")
+
 }

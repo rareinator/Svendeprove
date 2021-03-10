@@ -588,6 +588,30 @@ func (s *server) handlePatientDiagnoseUpdate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientDiagnoseDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No patient Diagnosis found for that id")
+			return
+		}
+
+		response, err := s.patientService.DeletePatientDiagnose(context.Background(), &patientService.PRequest{Id: int32(ID)})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if response.Success {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		s.returnError(w, http.StatusInternalServerError, "Something unknown went horribly wrong!!! ☠️☠️☠️")
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

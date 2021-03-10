@@ -347,3 +347,12 @@ func (m *MSSQL) UpdatePatientDiagnose(pd *DBPatientDiagnose) error {
 
 	return nil
 }
+
+func (m *MSSQL) DeletePatientDiagnose(patientDiagnose *DBPatientDiagnose) error {
+	result := m.db.Where("PatientDiagnoseId = ?", patientDiagnose.PatientDiagnoseId).Delete(patientDiagnose)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
