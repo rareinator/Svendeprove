@@ -421,6 +421,19 @@ func (s *server) handleDiagnoseGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleDiagnosesGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response, err := s.patientService.GetDiagnoses(context.Background(), &patientService.PEmpty{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response.Diagnoses)
+	}
+}
+
 func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

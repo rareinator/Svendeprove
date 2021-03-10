@@ -36,8 +36,8 @@
 * [x] DeletePatient /patient/{id:[0-9]+} DELETE
 
 #### Diagnose
-* [ ] GetDiagnose /diagnose/{id:[0-9]+} GET
-* [ ] GetDiagnoses /diagnose GET
+* [x] GetDiagnose /diagnose/{id:[0-9]+} GET
+* [x] GetDiagnoses /diagnose GET
 
 #### Symptom
 * [ ] GetSymptom /symptom/{id:[0-9]+} GET
