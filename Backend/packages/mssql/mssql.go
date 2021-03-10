@@ -254,3 +254,18 @@ func (m *MSSQL) DeletePatient(patient *DBPatient) error {
 
 	return nil
 }
+
+func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error {
+	var result *gorm.DB
+	if patientDiagnose.DiagnoseId == 0 {
+		result = m.db.Omit("PatientDiagnoseId", "DiagnoseId").Create(patientDiagnose)
+	} else {
+		result = m.db.Omit("PatientDiagnoseId").Create(patientDiagnose)
+	}
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

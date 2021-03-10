@@ -397,6 +397,22 @@ func (s *server) handlePatientDelete() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var patientDiagnose patientService.PatientDiagnose
+		json.NewDecoder(r.Body).Decode(&patientDiagnose)
+
+		response, err := s.patientService.CreatePatientDiagnose(context.Background(), &patientDiagnose)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

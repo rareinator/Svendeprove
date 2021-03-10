@@ -3,6 +3,7 @@ package patient
 import (
 	context "context"
 	"fmt"
+	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 )
@@ -87,4 +88,26 @@ func (p *PatientServer) DeletePatient(ctx context.Context, pr *PRequest) (*PStat
 	}
 
 	return &PStatus{Success: true}, nil
+}
+
+func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
+	parsedTime, err := time.Parse("02/01/2006 15:04:05", patientDiagnose.CreationTime)
+	if err != nil {
+		return nil, err
+	}
+
+	dbPatientDiagnose := mssql.DBPatientDiagnose{
+		PatientDiagnoseId: patientDiagnose.PatientDiagnoseId,
+		PatientId:         patientDiagnose.PatientId,
+		SymptomId:         patientDiagnose.SymptomId,
+		DiagnoseId:        patientDiagnose.DiagnoseId,
+		CreationTime:      parsedTime,
+	}
+
+	if err := p.DB.CreatePatientDiagnose(&dbPatientDiagnose); err != nil {
+		return nil, err
+	}
+
+	return patientDiagnose, nil
+
 }

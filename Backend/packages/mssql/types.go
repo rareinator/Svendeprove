@@ -60,3 +60,15 @@ type DBPatient struct {
 func (DBPatient) TableName() string {
 	return "Patient"
 }
+
+type DBPatientDiagnose struct {
+	PatientDiagnoseId int32
+	PatientId         int32
+	SymptomId         int32
+	DiagnoseId        int32
+	CreationTime      time.Time
+}
+
+func (DBPatientDiagnose) TableName() string {
+	return "PatientDiagnose"
+}

@@ -24,16 +24,39 @@ message Patient {
   string Username = 8;
 }
 
-message Patients {
-  repeated Patient patients = 1;
-}
-
 message PRequest {
   int32 Id = 1;
 }
 
+message PatientDiagnose {
+  int32 PatientDiagnoseId = 1;
+  int32 PatientId = 2;
+  int32 DiagnoseId = 3;
+  int32 SymptomId = 4;
+  string CreationTime = 5;
+}
 
+message PatientDiagnoses {
+  repeated PatientDiagnoses PatientDiagnoses = 1;
+}
 
+message PatientSymptom {
+  int32 SymptomId = 1;
+  string Description = 2;
+}
+
+message PatientSymptoms {
+  repeated PatientSymptom PatientSymptoms = 1;
+}
+
+message Diagnose {
+  int32 DiagnoseId = 1;
+  string Description = 2;
+}
+
+message Diagnoses {
+  repeated Diagnose Diagnoses = 1;
+}
 
 
 service PatientService {
@@ -43,4 +66,22 @@ service PatientService {
   rpc UpdatePatient(Patient) returns (Patient) {}
   rpc DeletePatient(PRequest) returns (PStatus) {}
 
+  rpc CreateDiagnose(Diagnose) returns (Diagnose) {}
+  rpc GetDiagnose(PRequest) returns (Diagnose) {}
+  rpc GetDiagnoses(PEmpty) returns (Diagnoses) {}
+  rpc UpdateDiagnose(Diagnose) returns (Diagnose) {}
+  rpc DeleteDiagnose(PRequest) returns (PStatus) {}
+
+
+  rpc CreatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
+  rpc GetPatientDiagnoses(PRequest) returns (PatientDiagnoses) {}
+  rpc GetPatientDiagnose(PRequest) returns (PatientDiagnose) {}
+  rpc UpdatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
+  rpc DeletePatientDiagnose(PRequest) returns (PStatus) {}
+
+  rpc CreatePatientSymptom(PatientSymptom) returns (PatientSymptom) {}
+  rpc GetPatientSymptoms(PRequest) returns (PatientSymptoms) {}
+  rpc GetPatientSymptom(PRequest) returns (PatientSymptom) {}
+  rpc UpdatePatientSymptom(PatientSymptom) returns (PatientSymptom) {}
+  rpc DeletepatientSymptom(PRequest) returns (PStatus) {}
 }
