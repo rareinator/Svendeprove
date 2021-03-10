@@ -255,6 +255,16 @@ func (m *MSSQL) DeletePatient(patient *DBPatient) error {
 	return nil
 }
 
+func (m *MSSQL) GetDiagnose(id int32) (*DBDiagnose, error) {
+	var diagnose DBDiagnose
+	result := m.db.First(&diagnose, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &diagnose, nil
+}
+
 func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error {
 	var result *gorm.DB
 	if patientDiagnose.DiagnoseId == 0 {

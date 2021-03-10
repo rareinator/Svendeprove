@@ -90,18 +90,28 @@ func (p *PatientServer) DeletePatient(ctx context.Context, pr *PRequest) (*PStat
 	return &PStatus{Success: true}, nil
 }
 
-func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
-	parsedTime, err := time.Parse("02/01/2006 15:04:05", patientDiagnose.CreationTime)
+func (p *PatientServer) GetDiagnose(ctx context.Context, pr *PRequest) (*Diagnose, error) {
+	dbDiagnose, err := p.DB.GetDiagnose(pr.Id)
 	if err != nil {
 		return nil, err
 	}
 
+	result := Diagnose{
+		DiagnoseId:  dbDiagnose.DiagnoseId,
+		Description: dbDiagnose.Description,
+	}
+
+	return &result, nil
+
+}
+
+func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: patientDiagnose.PatientDiagnoseId,
 		PatientId:         patientDiagnose.PatientId,
 		SymptomId:         patientDiagnose.SymptomId,
 		DiagnoseId:        patientDiagnose.DiagnoseId,
-		CreationTime:      parsedTime,
+		CreationTime:      time.Now(),
 	}
 
 	if err := p.DB.CreatePatientDiagnose(&dbPatientDiagnose); err != nil {

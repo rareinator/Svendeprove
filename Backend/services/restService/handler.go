@@ -397,10 +397,41 @@ func (s *server) handlePatientDelete() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleDiagnoseGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
+			return
+		}
+
+		p := patientService.PRequest{
+			Id: int32(id),
+		}
+
+		response, err := s.patientService.GetDiagnose(context.Background(), &p)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		patientID, err := strconv.Atoi(vars["patientID"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "patient with that id not found")
+			return
+		}
 		var patientDiagnose patientService.PatientDiagnose
 		json.NewDecoder(r.Body).Decode(&patientDiagnose)
+		patientDiagnose.PatientId = int32(patientID)
 
 		response, err := s.patientService.CreatePatientDiagnose(context.Background(), &patientDiagnose)
 		if err != nil {
