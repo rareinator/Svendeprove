@@ -228,7 +228,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("DELETE")
 
-	s.router.Handle("/patient/{patientID:[0-9]}/diagnose/{diagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
+	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
 		s.authenticate(
 			s.handlePatientSymptomCreate(),
 			&authenticationConfig{
@@ -236,5 +236,14 @@ func (s *server) routes() {
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
+
+	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom",
+		s.authenticate(
+			s.handlePatientSymptomsGet(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient:      "patientID",
+				allowRelatedPatient: false,
+			})).Methods("GET")
 
 }

@@ -285,3 +285,32 @@ func (p *PatientServer) CreateDiagnoseSymptom(ctx context.Context, diagnoseSympt
 
 	return diagnoseSymptom, nil
 }
+
+func (p *PatientServer) GetDiagnoseSymptoms(ctx context.Context, pr *PRequest) (*DiagnoseSymptoms, error) {
+	diagnoseSymptoms := DiagnoseSymptoms{
+		DiagnoseSymptoms: make([]*DiagnoseSymptom, 0),
+	}
+
+	dbDiagnoseSymptoms, err := p.DB.GetPatientDiagnoseSymptoms(pr.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbDiagnoseSymptom := range dbDiagnoseSymptoms {
+		diagDescription, err := p.DB.GetSymptom(dbDiagnoseSymptom.SymptomId)
+		if err != nil {
+			return nil, err
+		}
+
+		diagnoseSymptom := DiagnoseSymptom{
+			SymptomId:         dbDiagnoseSymptom.SymptomId,
+			PatientDiagnoseId: dbDiagnoseSymptom.PatientDiagnoseId,
+			Description:       diagDescription.Description,
+		}
+
+		diagnoseSymptoms.DiagnoseSymptoms = append(diagnoseSymptoms.DiagnoseSymptoms, &diagnoseSymptom)
+	}
+
+	return &diagnoseSymptoms, nil
+
+}

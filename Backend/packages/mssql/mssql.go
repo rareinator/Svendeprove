@@ -365,3 +365,13 @@ func (m *MSSQL) CreatePatientDiagnoseSymptom(patientDiagnoseSymptom *DBPatientDi
 
 	return nil
 }
+
+func (m *MSSQL) GetPatientDiagnoseSymptoms(patientDiagnoseId int32) ([]*DBPatientDiagnoseSymptom, error) {
+	var patientDiagnoseSymptoms []*DBPatientDiagnoseSymptom
+	result := m.db.Find(&patientDiagnoseSymptoms).Where("PatientDiagnoseId = ?", patientDiagnoseId)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return patientDiagnoseSymptoms, nil
+}
