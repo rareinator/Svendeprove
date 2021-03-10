@@ -176,7 +176,7 @@ func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error 
 
 func (m *MSSQL) GetJournalDocumentsByJournal(journalID int32) ([]*DBJournalDocument, error) {
 	var journalDocuments []*DBJournalDocument
-	result := m.db..Where("JournalId = ?", journalID).Find(&journalDocuments)
+	result := m.db.Where("JournalId = ?", journalID).Find(&journalDocuments)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
+	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 	"google.golang.org/grpc"
 )
 
@@ -36,8 +37,16 @@ func execute() error {
 	}
 	defer authenticationConn.Close()
 
+	var patientConn *grpc.ClientConn
+	patientConn, err = grpc.Dial(os.Getenv("PATIENT_SERVICE_ADDR"), grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	defer patientConn.Close()
+
 	srv.journalService = journal.NewJournalServiceClient(journalConn)
 	srv.authenticationService = authentication.NewAuthenticationServiceClient(authenticationConn)
+	srv.patientService = patient.NewPatientServiceClient(patientConn)
 
 	srv.ServeHTTP()
 

@@ -100,9 +100,10 @@ func (s *server) routes() {
 	s.router.Handle("/authentication/employee/login", s.handleAuthenticationEmployeeLogin()).Methods("POST")
 
 	// Patient methods
+	s.router.Handle("/patient/health", s.handlePatientHealth()).Methods("GET")
+
 	//get all patients, doctor and nurse
 	//get one patient, doctor nurse and correct patient
 	//save new patient, doctor, nurse and employee
 	//update patient, doctor, nurse and employee
-	//
 }

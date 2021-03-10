@@ -11,6 +11,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
+	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 )
 
 func (s *server) returnError(w http.ResponseWriter, statusCode int, Message string) {
@@ -288,6 +289,21 @@ func (s *server) handleJournalDocumentRead() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handlePatientHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		p := &patientService.PEmpty{}
+
+		response, err := s.patientService.GetHealth(context.Background(), p)
+		if err != nil {
+			s.returnError(w, http.StatusAccepted, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(response.Message))
 	}
 }
 

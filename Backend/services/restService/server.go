@@ -8,12 +8,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
+	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 )
 
 type server struct {
 	router                *mux.Router
 	journalService        journal.JournalServiceClient
 	authenticationService authentication.AuthenticationServiceClient
+	patientService        patient.PatientServiceClient
 }
 
 func newServer() *server {

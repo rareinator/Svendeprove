@@ -1,0 +1,46 @@
+syntax = "proto3";
+option go_package = ".;patient";
+
+message PEmpty {
+
+}
+
+message PHealth {
+  string Message = 1;
+}
+
+message PStatus {
+  bool Success = 1;
+}
+
+message Patient {
+  string Name = 1;
+  string Address = 2;
+  string City = 3;
+  string PostalCode = 4;
+  string Country = 5;
+  string SocialIdNr = 6;
+  string Username = 7;
+}
+
+message Patients {
+  repeated Patient patients = 1;
+}
+
+message PRequest {
+  int32 Id = 1;
+}
+
+
+
+
+
+service PatientService {
+  rpc GetHealth(PEmpty) returns (PHealth) {}
+  rpc CreatePatient(Patient) returns (Patient) {}
+  rpc ReadPatient(PRequest) returns (Patient) {}
+  rpc UpdatePatient(Patient) returns (Patient) {}
+  rpc DeletePatient(PRequest) returns (PStatus) {}
+  rpc GetPatientsByHospital(PRequest) returns (Patients) {}
+
+}
