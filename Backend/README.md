@@ -2,23 +2,27 @@
 
 ## API routes
 
+* [x] Health /health GET
+
 ### Authentication
 * [x] Health /authentication/health GET
 * [x] PatientLogin /authentication/patient/login POST
 * [x] EmployeeLogin /authentication/patient/login POSt
 
 ### Journal
+* [x] Health /journal/health GET
 * [x] CreateJournal /journal POST
 * [x] ReadJournal /journal/{id:[0-9]+} GET
 * [x] UpdateJournal /journal/{id:[0-9]+} POST
 * [x] DeleteJournal /journal/{id:[0-9]+} DELETE
 * [x] JournalByPatient /journal/byPatient/{id:[0-9]+} GET
+* [ ] UploadJournalDocumentsToML /journal/ml POST
 
 #### Journal Documents
-* [x] CreateJournalDocuments /journal/document POST
-* [x] ReadJournalDocuments /journal/document/{id:[0-9]+} GET
-* [x] UpdateJournalDocuments /journal/document/{id:[0-9]+} POST
-* [x] DeleteJournalDocuments /journal/document/{id:[0-9]+} DELETE
+* [x] CreateJournalDocument /journal/document POST
+* [x] ReadJournalDocument /journal/document/{id:[0-9]+} GET
+* [x] UpdateJournalDocument /journal/document/{id:[0-9]+} POST
+* [x] DeleteJournalDocument /journal/document/{id:[0-9]+} DELETE
 * [x] JournalDocumentsByJournal /journal/document/byJournal/{id:[0-9]+} GET
 
 ### Patient
@@ -39,4 +43,9 @@
 
 
 ### User administration
-* [ ] GetEmployee /useradmin/{id[0-9]+} GET
+* [ ] GetEmployee /useradmin/{id:[0-9]+} GET
+
+### IOT
+* [ ] UploadData /iot POST
+* [ ] ReadData /iot/{id:[0-9]+} GET
+* [ ] ReadDataInTimeFrame /iot?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05) 
