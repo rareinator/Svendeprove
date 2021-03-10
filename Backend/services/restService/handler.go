@@ -337,7 +337,7 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 			Id: int32(patientID),
 		}
 
-		response, err := s.patientService.ReadPatient(context.Background(), &p)
+		response, err := s.patientService.GetPatient(context.Background(), &p)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -345,6 +345,19 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handlePatientsGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response, err := s.patientService.GetPatients(context.Background(), &patientService.PEmpty{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response.Patients)
 	}
 }
 

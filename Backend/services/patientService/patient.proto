@@ -58,11 +58,16 @@ message Diagnoses {
   repeated Diagnose Diagnoses = 1;
 }
 
+message Patients{
+  repeated Patient Patients = 1;
+}
+
 
 service PatientService {
   rpc GetHealth(PEmpty) returns (PHealth) {}
   rpc CreatePatient(Patient) returns (Patient) {}
-  rpc ReadPatient(PRequest) returns (Patient) {}
+  rpc GetPatients(PEmpty) returns (Patients) {}
+  rpc GetPatient(PRequest) returns (Patient) {}
   rpc UpdatePatient(Patient) returns (Patient) {}
   rpc DeletePatient(PRequest) returns (PStatus) {}
 

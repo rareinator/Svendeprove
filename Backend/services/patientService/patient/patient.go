@@ -38,7 +38,7 @@ func (p *PatientServer) CreatePatient(ctx context.Context, patient *Patient) (*P
 	return patient, nil
 }
 
-func (p *PatientServer) ReadPatient(ctx context.Context, pr *PRequest) (*Patient, error) {
+func (p *PatientServer) GetPatient(ctx context.Context, pr *PRequest) (*Patient, error) {
 	dbPatient, err := p.DB.GetPatient(pr.Id)
 	if err != nil {
 		return nil, err
@@ -138,6 +138,34 @@ func (p *PatientServer) GetSymptom(ctx context.Context, pr *PRequest) (*Symptom,
 	}
 
 	return &symptom, nil
+}
+
+func (p *PatientServer) GetPatients(ctx context.Context, e *PEmpty) (*Patients, error) {
+	patients := Patients{
+		Patients: make([]*Patient, 0),
+	}
+
+	dbPatients, err := p.DB.GetPatients()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbPatient := range dbPatients {
+		patient := Patient{
+			PatientId:  dbPatient.PatientId,
+			Name:       dbPatient.Name,
+			Address:    dbPatient.Address,
+			City:       dbPatient.City,
+			PostalCode: dbPatient.PostalCode,
+			Country:    dbPatient.Country,
+			SocialIdNr: dbPatient.SocialIdNr,
+			Username:   dbPatient.Username,
+		}
+
+		patients.Patients = append(patients.Patients, &patient)
+	}
+
+	return &patients, nil
 }
 
 func (p *PatientServer) GetSymptoms(ctx context.Context, e *PEmpty) (*Symptoms, error) {

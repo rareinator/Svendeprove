@@ -227,6 +227,16 @@ func (m *MSSQL) CreatePatient(patient *DBPatient) error {
 	return nil
 }
 
+func (m *MSSQL) GetPatients() ([]*DBPatient, error) {
+	var patient []*DBPatient
+	result := m.db.Find(&patient)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return patient, nil
+}
+
 func (m *MSSQL) GetPatient(id int32) (*DBPatient, error) {
 	var patient DBPatient
 	result := m.db.First(&patient, id)

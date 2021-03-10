@@ -31,7 +31,8 @@
 #### General
 * [x] Health /patient/health GET
 * [x] CreatePatient /patient POST
-* [x] ReadPatient /patient/{id:[0-9]+} GET
+* [x] GetPatients /patient GET
+* [x] GetPatient /patient/{id:[0-9]+} GET
 * [X] UpdatePatient /patient/{id:[0-9]+} POST
 * [x] DeletePatient /patient/{id:[0-9]+} DELETE
 
