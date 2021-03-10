@@ -206,3 +206,29 @@ func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagno
 	return patientDiagnose, nil
 
 }
+
+func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (*PatientDiagnoses, error) {
+	patientDiagnoses := PatientDiagnoses{
+		PatientDiagnoses: make([]*PatientDiagnose, 0),
+	}
+
+	dbPatientDiagnoses, err := p.DB.GetPatientDiagnoses(pr.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbPatientDiagnose := range dbPatientDiagnoses {
+		patientDiagnose := PatientDiagnose{
+			PatientDiagnoseId: dbPatientDiagnose.PatientDiagnoseId,
+			PatientId:         dbPatientDiagnose.PatientId,
+			DiagnoseId:        dbPatientDiagnose.DiagnoseId,
+			SymptomId:         dbPatientDiagnose.SymptomId,
+			CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
+		}
+
+		patientDiagnoses.PatientDiagnoses = append(patientDiagnoses.PatientDiagnoses, &patientDiagnose)
+	}
+
+	return &patientDiagnoses, nil
+
+}

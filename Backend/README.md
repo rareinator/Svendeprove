@@ -46,7 +46,7 @@
 
 #### PatientDiagnose
 * [x] CreatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose POST
-* [ ] GetPatientDiagnoses /patient/{patientID:[0-9]+}/diagnose GET
+* [x] GetPatientDiagnoses /patient/{patientID:[0-9]+}/diagnose GET
 * [ ] GetPatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} GET
 * [ ] UpdatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} POST
 * [ ] DeletePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} DELETE
@@ -56,9 +56,6 @@
 * [ ] GetPatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}  GET
 * [ ] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
 * [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE
-
-#### Patient diagnose
-* [] GetPatientDiagnose /
 
 ### Booking
  * [ ] CreateBooking /booking POST

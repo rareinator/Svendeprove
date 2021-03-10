@@ -192,4 +192,13 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("POST")
 
+	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose", //GetDiagnoses
+		s.authenticate(
+			s.handlePatientDiagnosesGet(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient:      "patientID",
+				allowRelatedPatient: false,
+			})).Methods("GET")
+
 }

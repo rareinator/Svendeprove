@@ -319,3 +319,13 @@ func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error 
 
 	return nil
 }
+
+func (m *MSSQL) GetPatientDiagnoses(id int32) ([]*DBPatientDiagnose, error) {
+	var patientDiagnoses []*DBPatientDiagnose
+	result := m.db.Find(&patientDiagnoses).Where("PatientId = ?", id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return patientDiagnoses, nil
+}

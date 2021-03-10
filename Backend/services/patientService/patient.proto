@@ -37,7 +37,7 @@ message PatientDiagnose {
 }
 
 message PatientDiagnoses {
-  repeated PatientDiagnoses PatientDiagnoses = 1;
+  repeated PatientDiagnose PatientDiagnoses = 1;
 }
 
 message Symptom {
@@ -76,7 +76,6 @@ service PatientService {
 
   rpc GetSymptoms(PEmpty) returns (Symptoms) {}
   rpc GetSymptom(PRequest) returns (Symptom) {}
-
 
   rpc CreatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
   rpc GetPatientDiagnoses(PRequest) returns (PatientDiagnoses) {}
