@@ -124,11 +124,13 @@ func (j *JournalServer) DeleteJournalDocument(ctx context.Context, jdr *JournalD
 func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalDocument) (*JournalDocument, error) {
 	dbJournalDocument := mssql.DBJournalDocument{
 		DocumentId:      jdr.DocumentId,
-		Message:         jdr.Message,
+		Content:         jdr.Content,
 		DocumentStoreId: jdr.DocumentStoreId,
 		JournalId:       jdr.JournalId,
 		DocumentType:    jdr.DocumentType,
 		CreatedBy:       jdr.CreatedBy,
+		Title:           jdr.Title,
+		Summary:         jdr.Summary,
 	}
 
 	if err := j.DB.UpdateJournalDocument(&dbJournalDocument); err != nil {
@@ -140,12 +142,20 @@ func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalD
 }
 
 func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDocument) (*JournalDocument, error) {
+	parsedTime, err := time.Parse("02/01/2006 15:04:05", jd.CreationTime)
+	if err != nil {
+		return nil, err
+	}
+
 	dbJD := mssql.DBJournalDocument{
-		Message:         jd.Message,
+		Content:         jd.Content,
 		DocumentStoreId: jd.DocumentStoreId,
 		JournalId:       jd.JournalId,
 		DocumentType:    jd.DocumentType,
 		CreatedBy:       jd.CreatedBy,
+		Title:           jd.Title,
+		Summary:         jd.Summary,
+		CreationTime:    parsedTime,
 	}
 
 	if err := j.DB.CreateJournalDocument(&dbJD); err != nil {
@@ -168,11 +178,14 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 	for _, dbJournalDocument := range dbJournalDocuments {
 		journalDocument := &JournalDocument{
 			DocumentId:      dbJournalDocument.DocumentId,
-			Message:         dbJournalDocument.Message,
+			Content:         dbJournalDocument.Content,
 			DocumentStoreId: dbJournalDocument.DocumentStoreId,
 			JournalId:       dbJournalDocument.JournalId,
 			DocumentType:    dbJournalDocument.DocumentType,
 			CreatedBy:       dbJournalDocument.CreatedBy,
+			Title:           dbJournalDocument.Title,
+			Summary:         dbJournalDocument.Summary,
+			CreationTime:    dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
 		}
 
 		journalDocuments.JournalDocuments = append(journalDocuments.JournalDocuments, journalDocument)
@@ -190,11 +203,14 @@ func (j *JournalServer) GetJournalDocument(ctx context.Context, jdr *JournalDocu
 
 	result := JournalDocument{
 		DocumentId:      dbJournalDocument.DocumentId,
-		Message:         dbJournalDocument.Message,
+		Content:         dbJournalDocument.Content,
 		DocumentStoreId: dbJournalDocument.DocumentStoreId,
 		JournalId:       dbJournalDocument.JournalId,
 		DocumentType:    dbJournalDocument.DocumentType,
 		CreatedBy:       dbJournalDocument.CreatedBy,
+		Title:           dbJournalDocument.Title,
+		Summary:         dbJournalDocument.Summary,
+		CreationTime:    dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
 	}
 
 	return &result, nil

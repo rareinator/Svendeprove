@@ -3,12 +3,15 @@ package mssql
 import "time"
 
 type DBJournalDocument struct {
-	DocumentId      int32  `gorm:"column:DocumentId"`
-	Message         string `gorm:"column:Message"`
-	DocumentStoreId int32  `gorm:"column:DocumentStoreId"`
-	JournalId       int32  `gorm:"column:Journalid"`
-	DocumentType    string `gorm:"column:DocumentType"`
-	CreatedBy       int32  `gorm:"column:CreatedBy"`
+	DocumentId      int32     `gorm:"column:DocumentId"`
+	Content         string    `gorm:"column:Content"`
+	DocumentStoreId int32     `gorm:"column:DocumentStoreId"`
+	JournalId       int32     `gorm:"column:Journalid"`
+	DocumentType    string    `gorm:"column:DocumentType"`
+	CreatedBy       int32     `gorm:"column:CreatedBy"`
+	Title           string    `gorm:"column:Title"`
+	Summary         string    `gorm:"column:Summary"`
+	CreationTime    time.Time `gorm:"column:CreationTime"`
 }
 
 func (DBJournalDocument) TableName() string {

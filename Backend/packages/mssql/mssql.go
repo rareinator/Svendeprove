@@ -150,9 +150,9 @@ func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error 
 func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error {
 	var result *gorm.DB
 	if journalDocument.DocumentStoreId == 0 {
-		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId", "DocumentStoreId").Save(&journalDocument)
+		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId", "DocumentStoreId", "CreationTime").Save(&journalDocument)
 	} else {
-		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId").Save(&journalDocument)
+		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId", "CreationTime").Save(&journalDocument)
 	}
 
 	if result.Error != nil {
