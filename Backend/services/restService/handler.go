@@ -255,15 +255,22 @@ func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
 			return
 		}
 
-		allowed, err := s.patientIsAuthenticated(mssql.DBJournalDocument{}, response.JournalDocuments[0].DocumentId, patientID)
-		if err != nil {
-			s.returnError(w, http.StatusForbidden, err.Error())
-			return
+		allowed := false
+		if len(response.JournalDocuments) > 0 {
+			allowed, err = s.patientIsAuthenticated(mssql.DBJournalDocument{}, response.JournalDocuments[0].DocumentId, patientID)
+			if err != nil {
+				s.returnError(w, http.StatusForbidden, err.Error())
+				return
+			}
+		} else {
+			allowed = true
 		}
 
 		if allowed {
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(response.JournalDocuments)
+			if len(response.JournalDocuments) > 0 {
+				json.NewEncoder(w).Encode(response.JournalDocuments)
+			}
 		} else {
 			s.returnError(w, http.StatusForbidden, "")
 		}
