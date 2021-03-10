@@ -375,3 +375,12 @@ func (m *MSSQL) GetPatientDiagnoseSymptoms(patientDiagnoseId int32) ([]*DBPatien
 
 	return patientDiagnoseSymptoms, nil
 }
+
+func (m *MSSQL) UpdatePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom, new *DBPatientDiagnoseSymptom) error {
+	result := m.db.Where("PatientdiagnoseId = ? AND SymptomId = ?", old.PatientDiagnoseId, old.SymptomId).Save(&new)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

@@ -314,3 +314,21 @@ func (p *PatientServer) GetDiagnoseSymptoms(ctx context.Context, pr *PRequest) (
 	return &diagnoseSymptoms, nil
 
 }
+
+func (p *PatientServer) UpdateDiagnoseSymptoms(ctx context.Context, dsur *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error) {
+	dbNewPatientDiagnoseSymptom := mssql.DBPatientDiagnoseSymptom{
+		PatientDiagnoseId: dsur.New.PatientDiagnoseId,
+		SymptomId:         dsur.New.SymptomId,
+	}
+
+	dbOldPatientDiagnoseSymptom := mssql.DBPatientDiagnoseSymptom{
+		PatientDiagnoseId: dsur.Old.PatientDiagnoseId,
+		SymptomId:         dsur.Old.SymptomId,
+	}
+
+	if err := p.DB.UpdatePatientDiagnoseSymptom(&dbOldPatientDiagnoseSymptom, &dbNewPatientDiagnoseSymptom); err != nil {
+		return nil, err
+	}
+
+	return dsur.New, nil
+}

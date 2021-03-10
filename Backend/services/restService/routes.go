@@ -237,7 +237,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("POST")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom",
+	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom", //GetPatientSymptoms
 		s.authenticate(
 			s.handlePatientSymptomsGet(),
 			&authenticationConfig{
@@ -245,5 +245,14 @@ func (s *server) routes() {
 				allowedPatient:      "patientID",
 				allowRelatedPatient: false,
 			})).Methods("GET")
+
+	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //UpdatePatientSymptom
+		s.authenticate(
+			s.handlePatientSymptomUpdate(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("POST")
 
 }

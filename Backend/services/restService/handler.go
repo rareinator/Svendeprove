@@ -652,6 +652,45 @@ func (s *server) handlePatientSymptomsGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientSymptomUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		diagnoseID, err := strconv.Atoi(vars["diagnoseID"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
+			return
+		}
+
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
+			return
+		}
+
+		var newDiagnoseSymptom patientService.DiagnoseSymptom
+		json.NewDecoder(r.Body).Decode(&newDiagnoseSymptom)
+
+		oldDiagnoseSymptom := patientService.DiagnoseSymptom{
+			SymptomId:         int32(ID),
+			PatientDiagnoseId: int32(diagnoseID),
+		}
+
+		dsur := patientService.DiagnoseSymptomUpdateRequest{
+			Old: &oldDiagnoseSymptom,
+			New: &newDiagnoseSymptom,
+		}
+
+		response, err := s.patientService.UpdateDiagnoseSymptoms(context.Background(), &dsur)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

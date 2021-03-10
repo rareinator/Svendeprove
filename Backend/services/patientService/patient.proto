@@ -71,6 +71,11 @@ message DiagnoseSymptoms {
   repeated DiagnoseSymptom DiagnoseSymptoms = 1;
 }
 
+message DiagnoseSymptomUpdateRequest {
+  DiagnoseSymptom Old = 1;
+  DiagnoseSymptom New = 2;
+}
+
 
 service PatientService {
   rpc GetHealth(PEmpty) returns (PHealth) {}
@@ -93,9 +98,8 @@ service PatientService {
   rpc DeletePatientDiagnose(PRequest) returns (PStatus) {}
 
   rpc CreateDiagnoseSymptom(DiagnoseSymptom) returns (DiagnoseSymptom) {}
-  rpc GetDiagnoseSymptom(PRequest) returns (DiagnoseSymptom) {}
   rpc GetDiagnoseSymptoms(PRequest) returns (DiagnoseSymptoms) {}
-  rpc UpdateDiagnoseSymptoms(DiagnoseSymptom) returns (DiagnoseSymptom) {}
+  rpc UpdateDiagnoseSymptoms(DiagnoseSymptomUpdateRequest) returns (DiagnoseSymptom) {}
   rpc DeleteDiagnoseSymptoms(PRequest) returns (PStatus) {}
 
 }
