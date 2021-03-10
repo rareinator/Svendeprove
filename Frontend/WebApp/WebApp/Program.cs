@@ -23,6 +23,7 @@ namespace WebApp
             builder.Services.AddScoped<IUserData, UserData>();
             builder.Services.AddSingleton<IUserUpdateService, UserUpdateService>();
             builder.Services.AddScoped<IPatientData, PatientData>();
+            builder.Services.AddScoped<IJournalData, JournalData>();
 
             builder.Services.AddBlazoredModal();
 
