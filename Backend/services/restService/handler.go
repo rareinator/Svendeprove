@@ -307,6 +307,22 @@ func (s *server) handlePatientHealth() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientSave() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var patient patientService.Patient
+		json.NewDecoder(r.Body).Decode(&patient)
+
+		response, err := s.patientService.CreatePatient(context.Background(), &patient)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

@@ -214,3 +214,12 @@ func (m *MSSQL) GetPatientID(query string, id int32) (int32, error) {
 
 	return int32(resultData.PatientId), nil
 }
+
+func (m *MSSQL) CreatePatient(patient *DBPatient) error {
+	result := m.db.Omit("PatientId").Create(patient)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

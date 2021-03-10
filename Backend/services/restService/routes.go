@@ -102,8 +102,12 @@ func (s *server) routes() {
 	// Patient methods
 	s.router.Handle("/patient/health", s.handlePatientHealth()).Methods("GET")
 
-	//get all patients, doctor and nurse
-	//get one patient, doctor nurse and correct patient
-	//save new patient, doctor, nurse and employee
-	//update patient, doctor, nurse and employee
+	s.router.Handle("/patient",
+		s.authenticate(
+			s.handlePatientSave(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("POST")
 }

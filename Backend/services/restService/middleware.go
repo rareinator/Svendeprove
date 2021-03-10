@@ -38,6 +38,8 @@ func (s *server) handleCors() http.HandlerFunc {
 
 func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("authenticating")
+
 		vars := mux.Vars(r)
 
 		reqToken := r.Header.Get("Authorization")
