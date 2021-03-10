@@ -54,7 +54,7 @@
 * [x] CreatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom POST
 * [x] GetPatientSymptoms /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom GET
 * [x] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
-* [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE
+* [x] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE
 
 ### Booking
  * [ ] CreateBooking /booking POST

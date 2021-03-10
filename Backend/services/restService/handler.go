@@ -680,7 +680,7 @@ func (s *server) handlePatientSymptomUpdate() http.HandlerFunc {
 			New: &newDiagnoseSymptom,
 		}
 
-		response, err := s.patientService.UpdateDiagnoseSymptoms(context.Background(), &dsur)
+		response, err := s.patientService.UpdateDiagnoseSymptom(context.Background(), &dsur)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -688,6 +688,41 @@ func (s *server) handlePatientSymptomUpdate() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handlePatientSymptomDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		diagnoseID, err := strconv.Atoi(vars["diagnoseID"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
+			return
+		}
+
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
+			return
+		}
+
+		ds := patientService.DiagnoseSymptom{
+			SymptomId:         int32(ID),
+			PatientDiagnoseId: int32(diagnoseID),
+		}
+
+		response, err := s.patientService.DeleteDiagnoseSymptom(context.Background(), &ds)
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		if response.Success {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		s.returnError(w, http.StatusInternalServerError, "Something unknown went horribly wrong!!! ☠️☠️☠️")
 	}
 }
 

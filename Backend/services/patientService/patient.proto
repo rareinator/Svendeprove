@@ -99,7 +99,7 @@ service PatientService {
 
   rpc CreateDiagnoseSymptom(DiagnoseSymptom) returns (DiagnoseSymptom) {}
   rpc GetDiagnoseSymptoms(PRequest) returns (DiagnoseSymptoms) {}
-  rpc UpdateDiagnoseSymptoms(DiagnoseSymptomUpdateRequest) returns (DiagnoseSymptom) {}
-  rpc DeleteDiagnoseSymptoms(PRequest) returns (PStatus) {}
+  rpc UpdateDiagnoseSymptom(DiagnoseSymptomUpdateRequest) returns (DiagnoseSymptom) {}
+  rpc DeleteDiagnoseSymptom(DiagnoseSymptom) returns (PStatus) {}
 
 }

@@ -35,8 +35,8 @@ type PatientServiceClient interface {
 	DeletePatientDiagnose(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*PStatus, error)
 	CreateDiagnoseSymptom(ctx context.Context, in *DiagnoseSymptom, opts ...grpc.CallOption) (*DiagnoseSymptom, error)
 	GetDiagnoseSymptoms(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*DiagnoseSymptoms, error)
-	UpdateDiagnoseSymptoms(ctx context.Context, in *DiagnoseSymptomUpdateRequest, opts ...grpc.CallOption) (*DiagnoseSymptom, error)
-	DeleteDiagnoseSymptoms(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*PStatus, error)
+	UpdateDiagnoseSymptom(ctx context.Context, in *DiagnoseSymptomUpdateRequest, opts ...grpc.CallOption) (*DiagnoseSymptom, error)
+	DeleteDiagnoseSymptom(ctx context.Context, in *DiagnoseSymptom, opts ...grpc.CallOption) (*PStatus, error)
 }
 
 type patientServiceClient struct {
@@ -200,18 +200,18 @@ func (c *patientServiceClient) GetDiagnoseSymptoms(ctx context.Context, in *PReq
 	return out, nil
 }
 
-func (c *patientServiceClient) UpdateDiagnoseSymptoms(ctx context.Context, in *DiagnoseSymptomUpdateRequest, opts ...grpc.CallOption) (*DiagnoseSymptom, error) {
+func (c *patientServiceClient) UpdateDiagnoseSymptom(ctx context.Context, in *DiagnoseSymptomUpdateRequest, opts ...grpc.CallOption) (*DiagnoseSymptom, error) {
 	out := new(DiagnoseSymptom)
-	err := c.cc.Invoke(ctx, "/PatientService/UpdateDiagnoseSymptoms", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/PatientService/UpdateDiagnoseSymptom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *patientServiceClient) DeleteDiagnoseSymptoms(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*PStatus, error) {
+func (c *patientServiceClient) DeleteDiagnoseSymptom(ctx context.Context, in *DiagnoseSymptom, opts ...grpc.CallOption) (*PStatus, error) {
 	out := new(PStatus)
-	err := c.cc.Invoke(ctx, "/PatientService/DeleteDiagnoseSymptoms", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/PatientService/DeleteDiagnoseSymptom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -239,8 +239,8 @@ type PatientServiceServer interface {
 	DeletePatientDiagnose(context.Context, *PRequest) (*PStatus, error)
 	CreateDiagnoseSymptom(context.Context, *DiagnoseSymptom) (*DiagnoseSymptom, error)
 	GetDiagnoseSymptoms(context.Context, *PRequest) (*DiagnoseSymptoms, error)
-	UpdateDiagnoseSymptoms(context.Context, *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error)
-	DeleteDiagnoseSymptoms(context.Context, *PRequest) (*PStatus, error)
+	UpdateDiagnoseSymptom(context.Context, *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error)
+	DeleteDiagnoseSymptom(context.Context, *DiagnoseSymptom) (*PStatus, error)
 	mustEmbedUnimplementedPatientServiceServer()
 }
 
@@ -299,11 +299,11 @@ func (UnimplementedPatientServiceServer) CreateDiagnoseSymptom(context.Context, 
 func (UnimplementedPatientServiceServer) GetDiagnoseSymptoms(context.Context, *PRequest) (*DiagnoseSymptoms, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDiagnoseSymptoms not implemented")
 }
-func (UnimplementedPatientServiceServer) UpdateDiagnoseSymptoms(context.Context, *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateDiagnoseSymptoms not implemented")
+func (UnimplementedPatientServiceServer) UpdateDiagnoseSymptom(context.Context, *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDiagnoseSymptom not implemented")
 }
-func (UnimplementedPatientServiceServer) DeleteDiagnoseSymptoms(context.Context, *PRequest) (*PStatus, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteDiagnoseSymptoms not implemented")
+func (UnimplementedPatientServiceServer) DeleteDiagnoseSymptom(context.Context, *DiagnoseSymptom) (*PStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDiagnoseSymptom not implemented")
 }
 func (UnimplementedPatientServiceServer) mustEmbedUnimplementedPatientServiceServer() {}
 
@@ -624,38 +624,38 @@ func _PatientService_GetDiagnoseSymptoms_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PatientService_UpdateDiagnoseSymptoms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PatientService_UpdateDiagnoseSymptom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DiagnoseSymptomUpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PatientServiceServer).UpdateDiagnoseSymptoms(ctx, in)
+		return srv.(PatientServiceServer).UpdateDiagnoseSymptom(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PatientService/UpdateDiagnoseSymptoms",
+		FullMethod: "/PatientService/UpdateDiagnoseSymptom",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).UpdateDiagnoseSymptoms(ctx, req.(*DiagnoseSymptomUpdateRequest))
+		return srv.(PatientServiceServer).UpdateDiagnoseSymptom(ctx, req.(*DiagnoseSymptomUpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PatientService_DeleteDiagnoseSymptoms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PRequest)
+func _PatientService_DeleteDiagnoseSymptom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DiagnoseSymptom)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PatientServiceServer).DeleteDiagnoseSymptoms(ctx, in)
+		return srv.(PatientServiceServer).DeleteDiagnoseSymptom(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PatientService/DeleteDiagnoseSymptoms",
+		FullMethod: "/PatientService/DeleteDiagnoseSymptom",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).DeleteDiagnoseSymptoms(ctx, req.(*PRequest))
+		return srv.(PatientServiceServer).DeleteDiagnoseSymptom(ctx, req.(*DiagnoseSymptom))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -736,12 +736,12 @@ var PatientService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PatientService_GetDiagnoseSymptoms_Handler,
 		},
 		{
-			MethodName: "UpdateDiagnoseSymptoms",
-			Handler:    _PatientService_UpdateDiagnoseSymptoms_Handler,
+			MethodName: "UpdateDiagnoseSymptom",
+			Handler:    _PatientService_UpdateDiagnoseSymptom_Handler,
 		},
 		{
-			MethodName: "DeleteDiagnoseSymptoms",
-			Handler:    _PatientService_DeleteDiagnoseSymptoms_Handler,
+			MethodName: "DeleteDiagnoseSymptom",
+			Handler:    _PatientService_DeleteDiagnoseSymptom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

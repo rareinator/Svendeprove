@@ -384,3 +384,12 @@ func (m *MSSQL) UpdatePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom, new 
 
 	return nil
 }
+
+func (m *MSSQL) DeletePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom) error {
+	result := m.db.Where("PatientdiagnoseId = ? AND SymptomId = ?", old.PatientDiagnoseId, old.SymptomId).Delete(old)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

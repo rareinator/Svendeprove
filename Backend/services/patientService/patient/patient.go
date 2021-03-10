@@ -315,7 +315,7 @@ func (p *PatientServer) GetDiagnoseSymptoms(ctx context.Context, pr *PRequest) (
 
 }
 
-func (p *PatientServer) UpdateDiagnoseSymptoms(ctx context.Context, dsur *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error) {
+func (p *PatientServer) UpdateDiagnoseSymptom(ctx context.Context, dsur *DiagnoseSymptomUpdateRequest) (*DiagnoseSymptom, error) {
 	dbNewPatientDiagnoseSymptom := mssql.DBPatientDiagnoseSymptom{
 		PatientDiagnoseId: dsur.New.PatientDiagnoseId,
 		SymptomId:         dsur.New.SymptomId,
@@ -331,4 +331,17 @@ func (p *PatientServer) UpdateDiagnoseSymptoms(ctx context.Context, dsur *Diagno
 	}
 
 	return dsur.New, nil
+}
+
+func (p *PatientServer) DeleteDiagnoseSymptom(ctx context.Context, diagnoseSymptom *DiagnoseSymptom) (*PStatus, error) {
+	dbDiagnoseSymptom := mssql.DBPatientDiagnoseSymptom{
+		PatientDiagnoseId: diagnoseSymptom.PatientDiagnoseId,
+		SymptomId:         diagnoseSymptom.SymptomId,
+	}
+
+	if err := p.DB.DeletePatientDiagnoseSymptom(&dbDiagnoseSymptom); err != nil {
+		return &PStatus{Success: false}, err
+	}
+
+	return &PStatus{Success: true}, nil
 }
