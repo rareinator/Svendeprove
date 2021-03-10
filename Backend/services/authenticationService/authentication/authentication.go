@@ -99,3 +99,23 @@ func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenReque
 		PatientID: dbToken.PatientID,
 	}, nil
 }
+
+func (a *AuthenticationServer) GetRelatedPatient(ctx context.Context, rpr *RelatedPatientRequest) (*RelatedPatient, error) {
+	var result RelatedPatient
+
+	switch rpr.Type {
+	case "DBJournalDocument":
+		document := mssql.DBJournalDocument{}
+		patientID, err := a.DB.GetPatientID(document.GetPatientIDQuery(), rpr.Id)
+		if err != nil {
+			return nil, err
+		}
+		result.PatientId = patientID
+	default:
+		return nil, fmt.Errorf("Could not find a valid type")
+	}
+
+	return &result, nil
+
+	// patient, err := j.DB.GetPatientID()
+}

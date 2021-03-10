@@ -15,6 +15,10 @@ func (DBJournalDocument) TableName() string {
 	return "Document"
 }
 
+func (DBJournalDocument) GetPatientIDQuery() string {
+	return "SELECT j.PatientId FROM Document AS d INNER JOIN Journal AS j on j.JournalId = d.JournalId WHERE d.DocumentId=?"
+}
+
 type DBJournal struct {
 	JournalId    int32     `gorm:"column:JournalId"`
 	CreationTime time.Time `gorm:"column:CreationTime"`

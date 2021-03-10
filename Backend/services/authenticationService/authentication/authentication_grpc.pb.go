@@ -23,6 +23,7 @@ type AuthenticationServiceClient interface {
 	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*EmployeeTokenResponse, error)
 	GetSalt(ctx context.Context, in *SaltRequest, opts ...grpc.CallOption) (*Salt, error)
 	ValidateToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
+	GetRelatedPatient(ctx context.Context, in *RelatedPatientRequest, opts ...grpc.CallOption) (*RelatedPatient, error)
 }
 
 type authenticationServiceClient struct {
@@ -78,6 +79,15 @@ func (c *authenticationServiceClient) ValidateToken(ctx context.Context, in *Tok
 	return out, nil
 }
 
+func (c *authenticationServiceClient) GetRelatedPatient(ctx context.Context, in *RelatedPatientRequest, opts ...grpc.CallOption) (*RelatedPatient, error) {
+	out := new(RelatedPatient)
+	err := c.cc.Invoke(ctx, "/AuthenticationService/GetRelatedPatient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthenticationServiceServer is the server API for AuthenticationService service.
 // All implementations must embed UnimplementedAuthenticationServiceServer
 // for forward compatibility
@@ -87,6 +97,7 @@ type AuthenticationServiceServer interface {
 	LoginEmployee(context.Context, *User) (*EmployeeTokenResponse, error)
 	GetSalt(context.Context, *SaltRequest) (*Salt, error)
 	ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error)
+	GetRelatedPatient(context.Context, *RelatedPatientRequest) (*RelatedPatient, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
 }
 
@@ -108,6 +119,9 @@ func (UnimplementedAuthenticationServiceServer) GetSalt(context.Context, *SaltRe
 }
 func (UnimplementedAuthenticationServiceServer) ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) GetRelatedPatient(context.Context, *RelatedPatientRequest) (*RelatedPatient, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRelatedPatient not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) mustEmbedUnimplementedAuthenticationServiceServer() {}
 
@@ -212,6 +226,24 @@ func _AuthenticationService_ValidateToken_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthenticationService_GetRelatedPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RelatedPatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).GetRelatedPatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AuthenticationService/GetRelatedPatient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).GetRelatedPatient(ctx, req.(*RelatedPatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthenticationService_ServiceDesc is the grpc.ServiceDesc for AuthenticationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -238,6 +270,10 @@ var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateToken",
 			Handler:    _AuthenticationService_ValidateToken_Handler,
+		},
+		{
+			MethodName: "GetRelatedPatient",
+			Handler:    _AuthenticationService_GetRelatedPatient_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

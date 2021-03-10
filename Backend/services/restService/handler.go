@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 )
@@ -246,8 +247,24 @@ func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response.JournalDocuments)
+		patientID, err := s.getPatientID(r)
+		if err != nil {
+			s.returnError(w, http.StatusForbidden, "")
+			return
+		}
+
+		allowed, err := s.patientIsAuthenticated(mssql.DBJournalDocument{}, response.JournalDocuments[0].DocumentId, patientID)
+		if err != nil {
+			s.returnError(w, http.StatusForbidden, err.Error())
+			return
+		}
+
+		if allowed {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(response.JournalDocuments)
+		} else {
+			s.returnError(w, http.StatusForbidden, "")
+		}
 	}
 }
 

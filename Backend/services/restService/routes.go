@@ -1,6 +1,8 @@
 package main
 
-import "github.com/rareinator/Svendeprove/Backend/packages/models"
+import (
+	"github.com/rareinator/Svendeprove/Backend/packages/models"
+)
 
 func (s *server) routes() {
 	s.router.Methods("OPTIONS").Handler(s.handleCors())
@@ -78,8 +80,9 @@ func (s *server) routes() {
 		s.authenticate(
 			s.handleJournalDocumentByJournal(),
 			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient: "",
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: true,
 			})).Methods("GET")
 
 	s.router.Handle("/journal/document/{id:[0-9]+}", //Get journal document

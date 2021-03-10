@@ -13,8 +13,9 @@ import (
 )
 
 type authenticationConfig struct {
-	allowedRoles   []models.UserRole
-	allowedPatient string
+	allowedRoles        []models.UserRole
+	allowedPatient      string
+	allowRelatedPatient bool
 }
 type corsHandler struct {
 	router *mux.Router
@@ -52,6 +53,9 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 		}
 
 		allowed := false
+		if config.allowRelatedPatient {
+			allowed = true
+		}
 
 		response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
 		if err != nil {

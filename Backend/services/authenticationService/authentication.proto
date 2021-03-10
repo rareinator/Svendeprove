@@ -48,6 +48,15 @@ message AEmpty {
 
 }
 
+message RelatedPatientRequest {
+  string Type = 1;
+  int32 Id = 2;
+}
+
+message RelatedPatient {
+  int32 PatientId = 1;
+}
+
 
 service AuthenticationService {
   rpc GetHealth(AEmpty) returns (AHealth) {}
@@ -55,4 +64,5 @@ service AuthenticationService {
   rpc LoginEmployee(User) returns (EmployeeTokenResponse) {}
   rpc GetSalt(SaltRequest) returns (Salt) {}
   rpc ValidateToken(TokenRequest) returns (ValidatorResponse) {}
+  rpc GetRelatedPatient(RelatedPatientRequest) returns (RelatedPatient) {}
 }

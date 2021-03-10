@@ -193,3 +193,24 @@ func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument,
 
 	return &journalDocument, nil
 }
+
+func (m *MSSQL) GetPatientID(query string, id int32) (int32, error) {
+	var resultData struct {
+		PatientId int32
+	}
+
+	fmt.Printf("\n\rquery: %v\n\r", query)
+
+	result := m.db.Raw(query, id).Scan(&resultData)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	fmt.Printf("PatientID: %v\n\r", resultData.PatientId)
+
+	if resultData.PatientId == 0 {
+		return 0, fmt.Errorf("Could not find a related patient")
+	}
+
+	return int32(resultData.PatientId), nil
+}
