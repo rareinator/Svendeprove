@@ -539,6 +539,30 @@ func (s *server) handlePatientDiagnosesGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientDiagnoseGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "Diagnose for that id not found")
+			return
+		}
+
+		pr := patientService.PRequest{
+			Id: int32(id),
+		}
+
+		response, err := s.patientService.GetPatientDiagnose(context.Background(), &pr)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

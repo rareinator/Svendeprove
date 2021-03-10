@@ -329,3 +329,12 @@ func (m *MSSQL) GetPatientDiagnoses(id int32) ([]*DBPatientDiagnose, error) {
 
 	return patientDiagnoses, nil
 }
+
+func (m *MSSQL) GetPatientDiagnose(id int32) (*DBPatientDiagnose, error) {
+	var patientDiagnose DBPatientDiagnose
+	result := m.db.First(&patientDiagnose, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &patientDiagnose, nil
+}

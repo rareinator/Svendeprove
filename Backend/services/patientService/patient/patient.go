@@ -232,3 +232,20 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (
 	return &patientDiagnoses, nil
 
 }
+
+func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *PRequest) (*PatientDiagnose, error) {
+	dbPatientDiagnose, err := p.DB.GetPatientDiagnose(pr.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	patientDiagnose := PatientDiagnose{
+		PatientDiagnoseId: dbPatientDiagnose.PatientDiagnoseId,
+		PatientId:         dbPatientDiagnose.PatientId,
+		DiagnoseId:        dbPatientDiagnose.DiagnoseId,
+		SymptomId:         dbPatientDiagnose.SymptomId,
+		CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
+	}
+
+	return &patientDiagnose, nil
+}

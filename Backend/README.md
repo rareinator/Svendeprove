@@ -47,7 +47,7 @@
 #### PatientDiagnose
 * [x] CreatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose POST
 * [x] GetPatientDiagnoses /patient/{patientID:[0-9]+}/diagnose GET
-* [ ] GetPatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} GET
+* [x] GetPatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} GET
 * [ ] UpdatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} POST
 * [ ] DeletePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} DELETE
 #### Patient symptoms
