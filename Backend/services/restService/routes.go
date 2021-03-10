@@ -106,7 +106,7 @@ func (s *server) routes() {
 		s.authenticate(
 			s.handlePatientSave(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
@@ -128,4 +128,13 @@ func (s *server) routes() {
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
+
+	s.router.Handle("/patient/{id:[0-9]+}", //DeletePatient
+		s.authenticate(
+			s.handlePatientDelete(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("DELETE")
 }
