@@ -126,6 +126,20 @@ func (p *PatientServer) GetDiagnoses(ctx context.Context, e *PEmpty) (*Diagnoses
 	return &diagnoses, nil
 }
 
+func (p *PatientServer) GetSymptom(ctx context.Context, pr *PRequest) (*Symptom, error) {
+	dbSymptom, err := p.DB.GetSymptom(pr.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	symptom := Symptom{
+		SymptomId:   dbSymptom.SymptomId,
+		Description: dbSymptom.Description,
+	}
+
+	return &symptom, nil
+}
+
 func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: patientDiagnose.PatientDiagnoseId,

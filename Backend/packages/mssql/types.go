@@ -81,3 +81,12 @@ type DBDiagnose struct {
 func (DBDiagnose) TableName() string {
 	return "Diagnose"
 }
+
+type DBSymptom struct {
+	SymptomId   int32  `gorm:"column:SymptomId"`
+	Description string `gorm:"column:Description"`
+}
+
+func (DBSymptom) TableName() string {
+	return "Symptom"
+}

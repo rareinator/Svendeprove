@@ -275,6 +275,16 @@ func (m *MSSQL) GetDiagnoses() ([]*DBDiagnose, error) {
 	return diagnoses, nil
 }
 
+func (m *MSSQL) GetSymptom(id int32) (*DBSymptom, error) {
+	var symptom DBSymptom
+	result := m.db.First(&symptom, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &symptom, nil
+}
+
 func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error {
 	var result *gorm.DB
 	if patientDiagnose.DiagnoseId == 0 {

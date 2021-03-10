@@ -434,6 +434,30 @@ func (s *server) handleDiagnosesGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleSymptomGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No symptom found with that id")
+			return
+		}
+
+		p := patientService.PRequest{
+			Id: int32(id),
+		}
+
+		response, err := s.patientService.GetSymptom(context.Background(), &p)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response)
+	}
+}
+
 func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
