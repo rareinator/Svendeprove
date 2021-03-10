@@ -32,8 +32,10 @@
 * [X] UpdatePatient /patient/{id:[0-9]+} POST
 * [x] DeletePatient /patient/{id:[0-9]+} DELETE
 #### Patient symptoms
-* [ ] GetPatientSymptoms /patient/symptoms/byPatient/{id:[0-9]+} GET
-* [ ] CreatePatientSymptoms /patient/symptoms POST
+* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/symptom GET
+* [ ] GetPatientSymptom /patient/{patientID:[0-9]+}/symptom/{id:[0-9]+} GET
+* [ ] CreatePatientSymptoms /patient/{patientID:[0-9]+}/symptom POST
+* [ ] UpdatePatientSymptoms /patient/{patientID:[0-9]+}/symptom/{id:[0-9]+} POST
 
 ### Booking
  * [ ] CreateBooking /booking POST
