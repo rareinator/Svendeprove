@@ -23,7 +23,6 @@ type PatientServiceClient interface {
 	ReadPatient(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*Patient, error)
 	UpdatePatient(ctx context.Context, in *Patient, opts ...grpc.CallOption) (*Patient, error)
 	DeletePatient(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*PStatus, error)
-	GetPatientsByHospital(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*Patients, error)
 }
 
 type patientServiceClient struct {
@@ -79,15 +78,6 @@ func (c *patientServiceClient) DeletePatient(ctx context.Context, in *PRequest, 
 	return out, nil
 }
 
-func (c *patientServiceClient) GetPatientsByHospital(ctx context.Context, in *PRequest, opts ...grpc.CallOption) (*Patients, error) {
-	out := new(Patients)
-	err := c.cc.Invoke(ctx, "/PatientService/GetPatientsByHospital", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // PatientServiceServer is the server API for PatientService service.
 // All implementations must embed UnimplementedPatientServiceServer
 // for forward compatibility
@@ -97,7 +87,6 @@ type PatientServiceServer interface {
 	ReadPatient(context.Context, *PRequest) (*Patient, error)
 	UpdatePatient(context.Context, *Patient) (*Patient, error)
 	DeletePatient(context.Context, *PRequest) (*PStatus, error)
-	GetPatientsByHospital(context.Context, *PRequest) (*Patients, error)
 	mustEmbedUnimplementedPatientServiceServer()
 }
 
@@ -119,9 +108,6 @@ func (UnimplementedPatientServiceServer) UpdatePatient(context.Context, *Patient
 }
 func (UnimplementedPatientServiceServer) DeletePatient(context.Context, *PRequest) (*PStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePatient not implemented")
-}
-func (UnimplementedPatientServiceServer) GetPatientsByHospital(context.Context, *PRequest) (*Patients, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPatientsByHospital not implemented")
 }
 func (UnimplementedPatientServiceServer) mustEmbedUnimplementedPatientServiceServer() {}
 
@@ -226,24 +212,6 @@ func _PatientService_DeletePatient_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PatientService_GetPatientsByHospital_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServiceServer).GetPatientsByHospital(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PatientService/GetPatientsByHospital",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).GetPatientsByHospital(ctx, req.(*PRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // PatientService_ServiceDesc is the grpc.ServiceDesc for PatientService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -270,10 +238,6 @@ var PatientService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePatient",
 			Handler:    _PatientService_DeletePatient_Handler,
-		},
-		{
-			MethodName: "GetPatientsByHospital",
-			Handler:    _PatientService_GetPatientsByHospital_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

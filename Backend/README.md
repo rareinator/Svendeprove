@@ -31,8 +31,6 @@
 * [x] ReadPatient /patient/{id:[0-9]+} GET
 * [X] UpdatePatient /patient/{id:[0-9]+} POST
 * [x] DeletePatient /patient/{id:[0-9]+} DELETE
-* [ ] PatientByHospital /patient/byHospital/{id:[0-9]+} GET
-
 #### Patient symptoms
 * [ ] GetPatientSymptoms /patient/symptoms/byPatient/{id:[0-9]+} GET
 * [ ] CreatePatientSymptoms /patient/symptoms POST

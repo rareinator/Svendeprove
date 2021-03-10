@@ -42,6 +42,5 @@ service PatientService {
   rpc ReadPatient(PRequest) returns (Patient) {}
   rpc UpdatePatient(Patient) returns (Patient) {}
   rpc DeletePatient(PRequest) returns (PStatus) {}
-  rpc GetPatientsByHospital(PRequest) returns (Patients) {}
 
 }

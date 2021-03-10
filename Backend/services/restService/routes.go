@@ -137,4 +137,5 @@ func (s *server) routes() {
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("DELETE")
+
 }
