@@ -36,3 +36,22 @@ func (p *PatientServer) CreatePatient(ctx context.Context, patient *Patient) (*P
 
 	return patient, nil
 }
+
+func (p *PatientServer) ReadPatient(ctx context.Context, pr *PRequest) (*Patient, error) {
+	dbPatient, err := p.DB.GetPatient(pr.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	result := Patient{
+		Name:       dbPatient.Name,
+		Address:    dbPatient.Address,
+		City:       dbPatient.City,
+		PostalCode: dbPatient.PostalCode,
+		Country:    dbPatient.Country,
+		SocialIdNr: dbPatient.SocialIdNr,
+		Username:   dbPatient.Username,
+	}
+
+	return &result, nil
+}

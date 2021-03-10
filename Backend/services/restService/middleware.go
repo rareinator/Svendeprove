@@ -65,7 +65,7 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 			return
 		}
 		if !response.Valid {
-			s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
+			s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you, response not valid")
 			return
 		}
 
@@ -75,15 +75,13 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 				s.returnError(w, http.StatusForbidden, "Could not convert the id to an int")
 				return
 			}
-			if response.PatientID != int32(patientID) {
-				s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
-				return
+			if response.PatientID == int32(patientID) {
+				allowed = true
 			}
-			allowed = true
 		}
-
 		if len(config.allowedRoles) > 0 {
 			for _, allowedRole := range config.allowedRoles {
+				fmt.Printf("role: %v\n\rallowedRole: %v\n\r", response.Role, int32(allowedRole))
 				if response.Role == int32(allowedRole) {
 					allowed = true
 					break

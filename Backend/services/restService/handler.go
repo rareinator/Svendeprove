@@ -323,6 +323,30 @@ func (s *server) handlePatientSave() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientRead() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		patientID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No patient found with that id")
+			return
+		}
+
+		p := patientService.PRequest{
+			Id: int32(patientID),
+		}
+
+		response, err := s.patientService.ReadPatient(context.Background(), &p)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

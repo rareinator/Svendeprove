@@ -102,7 +102,7 @@ func (s *server) routes() {
 	// Patient methods
 	s.router.Handle("/patient/health", s.handlePatientHealth()).Methods("GET")
 
-	s.router.Handle("/patient",
+	s.router.Handle("/patient", //CreatePatient
 		s.authenticate(
 			s.handlePatientSave(),
 			&authenticationConfig{
@@ -110,4 +110,13 @@ func (s *server) routes() {
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
+
+	s.router.Handle("/patient/{id:[0-9]+}", //ReadPatient
+		s.authenticate(
+			s.handlePatientRead(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedPatient:      "id",
+				allowRelatedPatient: false,
+			})).Methods("GET")
 }

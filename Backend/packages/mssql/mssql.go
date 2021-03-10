@@ -72,11 +72,14 @@ func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 	return &token, nil
 }
 
-func (m *MSSQL) GetJournal(id int32) (DBJournal, error) {
+func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {
 	var journal DBJournal
-	m.db.First(&journal, 1)
+	result := m.db.First(&journal, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
-	return journal, nil
+	return &journal, nil
 }
 
 func (m *MSSQL) GetJournalsByPatient(id int32) ([]*DBJournal, error) {
@@ -222,4 +225,14 @@ func (m *MSSQL) CreatePatient(patient *DBPatient) error {
 	}
 
 	return nil
+}
+
+func (m *MSSQL) GetPatient(id int32) (*DBPatient, error) {
+	var patient DBPatient
+	result := m.db.First(&patient, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &patient, nil
 }

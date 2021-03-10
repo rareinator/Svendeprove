@@ -17,6 +17,7 @@
 * [x] DeleteJournal /journal/{id:[0-9]+} DELETE
 * [x] JournalByPatient /journal/byPatient/{id:[0-9]+} GET
 * [ ] UploadJournalDocumentsToML /journal/ml POST
+* [ ] UploadSymptomstoML /journal/symptoms POST
 
 #### Journal Documents
 * [x] CreateJournalDocument /journal/document POST
@@ -26,8 +27,8 @@
 * [x] JournalDocumentsByJournal /journal/document/byJournal/{id:[0-9]+} GET
 
 ### Patient
-* [ ] CreatePatient /patient POST
-* [ ] ReadPatient /patient/{id:[0-9]+} GET
+* [x] CreatePatient /patient POST
+* [x] ReadPatient /patient/{id:[0-9]+} GET
 * [ ] UpdatePatient /patient/{id:[0-9]+} POST
 * [ ] DeletePatient /patient/{id:[0-9]+} DELETE
 * [ ] PatientByHospital /patient/byHospital/{id:[0-9]+} GET
