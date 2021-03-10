@@ -458,6 +458,20 @@ func (s *server) handleSymptomGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleSymptomsGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response, err := s.patientService.GetSymptoms(context.Background(), &patientService.PEmpty{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response.Symptoms)
+
+	}
+}
+
 func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

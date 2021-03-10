@@ -41,7 +41,7 @@
 
 #### Symptom
 * [X] GetSymptom /symptom/{id:[0-9]+} GET
-* [ ] GetSymptoms /symptom GET
+* [X] GetSymptoms /symptom GET
 
 #### PatientDiagnose
 * [x] CreatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose POST
