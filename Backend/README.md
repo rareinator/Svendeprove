@@ -27,15 +27,35 @@
 * [x] JournalDocumentsByJournal /journal/document/byJournal/{id:[0-9]+} GET
 
 ### Patient
+
+#### General
+* [x] Health /patient/health GET
 * [x] CreatePatient /patient POST
 * [x] ReadPatient /patient/{id:[0-9]+} GET
 * [X] UpdatePatient /patient/{id:[0-9]+} POST
 * [x] DeletePatient /patient/{id:[0-9]+} DELETE
+
+#### Diagnose
+* [ ] CreateDiagnose /diagnose POST
+* [ ] GetDiagnose /diagnose/{id:[0-9]+} GET
+* [ ] GetDiagnoses /diagnose GET
+* [ ] UpdateDiagnose /diagnose/{id:[0-9]+} POST
+* [ ] DeleteDiagnose /diagnose/{id:[0-9]+} DELETE
+#### PatientDiagnose
+* [x] CreatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose POST
+* [ ] GetPatientDiagnoses /patient/{patientID:[0-9]+}/diagnose GET
+* [ ] GetPatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} GET
+* [ ] UpdatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} POST
+* [ ] DeletePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} DELETE
 #### Patient symptoms
-* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/symptom GET
-* [ ] GetPatientSymptom /patient/{patientID:[0-9]+}/symptom/{id:[0-9]+} GET
-* [ ] CreatePatientSymptoms /patient/{patientID:[0-9]+}/symptom POST
-* [ ] UpdatePatientSymptoms /patient/{patientID:[0-9]+}/symptom/{id:[0-9]+} POST
+* [ ] CreatePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom POST
+* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom GET
+* [ ] GetPatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}  GET
+* [ ] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
+* [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE
+
+#### Patient diagnose
+* [] GetPatientDiagnose /
 
 ### Booking
  * [ ] CreateBooking /booking POST
