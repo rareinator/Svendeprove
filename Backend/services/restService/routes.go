@@ -119,4 +119,13 @@ func (s *server) routes() {
 				allowedPatient:      "id",
 				allowRelatedPatient: false,
 			})).Methods("GET")
+
+	s.router.Handle("/patient/{id:[0-9]+}", //UpdatePatient
+		s.authenticate(
+			s.handlePatientUpdate(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("POST")
 }

@@ -236,3 +236,12 @@ func (m *MSSQL) GetPatient(id int32) (*DBPatient, error) {
 
 	return &patient, nil
 }
+
+func (m *MSSQL) UpdatePatient(patient *DBPatient) error {
+	result := m.db.Where("PatientId = ?", patient.PatientId).Omit("PatientId", "Password", "Salt").Save(&patient)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

@@ -14,13 +14,14 @@ message PStatus {
 }
 
 message Patient {
-  string Name = 1;
-  string Address = 2;
-  string City = 3;
-  string PostalCode = 4;
-  string Country = 5;
-  string SocialIdNr = 6;
-  string Username = 7;
+  int32 PatientId = 1;
+  string Name = 2;
+  string Address = 3;
+  string City = 4;
+  string PostalCode = 5;
+  string Country = 6;
+  string SocialIdNr = 7;
+  string Username = 8;
 }
 
 message Patients {

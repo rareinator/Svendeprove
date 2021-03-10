@@ -95,6 +95,7 @@ func (s *server) handleJournalUpdate() http.HandlerFunc {
 		ID, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			s.returnError(w, http.StatusNotFound, "No journal found for that id")
+			return
 		}
 
 		var journal journalService.Journal
@@ -343,6 +344,31 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handlePatientUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		patientID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No patient found for that id")
+			return
+		}
+
+		var patient patientService.Patient
+		json.NewDecoder(r.Body).Decode(&patient)
+
+		patient.PatientId = int32(patientID)
+
+		response, err := s.patientService.UpdatePatient(context.Background(), &patient)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
 	}
 }

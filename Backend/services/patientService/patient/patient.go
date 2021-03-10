@@ -55,3 +55,22 @@ func (p *PatientServer) ReadPatient(ctx context.Context, pr *PRequest) (*Patient
 
 	return &result, nil
 }
+
+func (p *PatientServer) UpdatePatient(ctx context.Context, patient *Patient) (*Patient, error) {
+	dbPatient := mssql.DBPatient{
+		PatientId:  patient.PatientId,
+		Name:       patient.Name,
+		Address:    patient.Address,
+		City:       patient.City,
+		PostalCode: patient.PostalCode,
+		Country:    patient.Country,
+		SocialIdNr: patient.SocialIdNr,
+		Username:   patient.Username,
+	}
+
+	if err := p.DB.UpdatePatient(&dbPatient); err != nil {
+		return nil, err
+	}
+
+	return patient, nil
+}
