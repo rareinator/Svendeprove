@@ -51,11 +51,11 @@
 * [x] UpdatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} POST
 * [x] DeletePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} DELETE
 #### Patient symptoms
-* [ ] CreatePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom POST
-* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom GET
-* [ ] GetPatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}  GET
-* [ ] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
-* [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE
+* [X] CreatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom POST
+* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom GET
+* [ ] GetPatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}  GET
+* [ ] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
+* [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE
 
 ### Booking
  * [ ] CreateBooking /booking POST

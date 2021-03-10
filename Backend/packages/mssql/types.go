@@ -67,7 +67,6 @@ func (DBPatient) TableName() string {
 type DBPatientDiagnose struct {
 	PatientDiagnoseId int32     `gorm:"column:PatientDiagnoseId"`
 	PatientId         int32     `gorm:"column:PatientId"`
-	SymptomId         int32     `gorm:"column:SymptomId"`
 	DiagnoseId        int32     `gorm:"column:DiagnoseId"`
 	CreationTime      time.Time `gorm:"column:CreationTime"`
 }
@@ -92,4 +91,13 @@ type DBSymptom struct {
 
 func (DBSymptom) TableName() string {
 	return "Symptom"
+}
+
+type DBPatientDiagnoseSymptom struct {
+	PatientDiagnoseId int32 `gorm:"column:PatientDiagnoseId"`
+	SymptomId         int32 `gorm:"column:SymptomId"`
+}
+
+func (DBPatientDiagnoseSymptom) TableName() string {
+	return "PatientDiagnoseSymptom"
 }

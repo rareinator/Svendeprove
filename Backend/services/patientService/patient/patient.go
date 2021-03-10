@@ -194,7 +194,6 @@ func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagno
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: patientDiagnose.PatientDiagnoseId,
 		PatientId:         patientDiagnose.PatientId,
-		SymptomId:         patientDiagnose.SymptomId,
 		DiagnoseId:        patientDiagnose.DiagnoseId,
 		CreationTime:      time.Now(),
 	}
@@ -222,7 +221,6 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (
 			PatientDiagnoseId: dbPatientDiagnose.PatientDiagnoseId,
 			PatientId:         dbPatientDiagnose.PatientId,
 			DiagnoseId:        dbPatientDiagnose.DiagnoseId,
-			SymptomId:         dbPatientDiagnose.SymptomId,
 			CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
 		}
 
@@ -243,7 +241,6 @@ func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *PRequest) (*
 		PatientDiagnoseId: dbPatientDiagnose.PatientDiagnoseId,
 		PatientId:         dbPatientDiagnose.PatientId,
 		DiagnoseId:        dbPatientDiagnose.DiagnoseId,
-		SymptomId:         dbPatientDiagnose.SymptomId,
 		CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
 	}
 
@@ -254,7 +251,6 @@ func (p *PatientServer) UpdatePatientDiagnose(ctx context.Context, pd *PatientDi
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: pd.PatientDiagnoseId,
 		PatientId:         pd.PatientId,
-		SymptomId:         pd.SymptomId,
 		DiagnoseId:        pd.DiagnoseId,
 	}
 
@@ -275,4 +271,17 @@ func (p *PatientServer) DeletePatientDiagnose(ctx context.Context, pr *PRequest)
 	}
 
 	return &PStatus{Success: true}, nil
+}
+
+func (p *PatientServer) CreateDiagnoseSymptom(ctx context.Context, diagnoseSymptom *DiagnoseSymptom) (*DiagnoseSymptom, error) {
+	dbDiagnoseSymptom := mssql.DBPatientDiagnoseSymptom{
+		PatientDiagnoseId: diagnoseSymptom.PatientDiagnoseId,
+		SymptomId:         diagnoseSymptom.SymptomId,
+	}
+
+	if err := p.DB.CreatePatientDiagnoseSymptom(&dbDiagnoseSymptom); err != nil {
+		return nil, err
+	}
+
+	return diagnoseSymptom, nil
 }

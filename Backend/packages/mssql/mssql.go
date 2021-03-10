@@ -356,3 +356,12 @@ func (m *MSSQL) DeletePatientDiagnose(patientDiagnose *DBPatientDiagnose) error 
 
 	return nil
 }
+
+func (m *MSSQL) CreatePatientDiagnoseSymptom(patientDiagnoseSymptom *DBPatientDiagnoseSymptom) error {
+	result := m.db.Create(patientDiagnoseSymptom)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

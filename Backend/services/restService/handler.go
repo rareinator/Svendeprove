@@ -612,6 +612,22 @@ func (s *server) handlePatientDiagnoseDelete() http.HandlerFunc {
 	}
 }
 
+func (s *server) handlePatientSymptomCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var diagnoseSymptom patientService.DiagnoseSymptom
+		json.NewDecoder(r.Body).Decode(&diagnoseSymptom)
+
+		response, err := s.patientService.CreateDiagnoseSymptom(context.Background(), &diagnoseSymptom)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

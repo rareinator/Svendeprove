@@ -187,7 +187,7 @@ func (s *server) routes() {
 		s.authenticate(
 			s.handlePatientDiagnoseSave(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
@@ -214,7 +214,7 @@ func (s *server) routes() {
 		s.authenticate(
 			s.handlePatientDiagnoseUpdate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
@@ -227,5 +227,14 @@ func (s *server) routes() {
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("DELETE")
+
+	s.router.Handle("/patient/{patientID:[0-9]}/diagnose/{diagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
+		s.authenticate(
+			s.handlePatientSymptomCreate(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("POST")
 
 }
