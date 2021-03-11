@@ -2,6 +2,10 @@
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+<Blazored.Modal.CascadingBlazoredModal>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         </Found>
         <NotFound>
             <LayoutView Layout="@typeof(MainLayout)">
@@ -10,3 +14,4 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+</Blazored.Modal.CascadingBlazoredModal>

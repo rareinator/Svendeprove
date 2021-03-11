@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using WebApp.Auth;
+using Blazored.Modal;
 
 namespace WebApp
 {
@@ -28,6 +29,7 @@ namespace WebApp
             builder.Services.AddScoped<IPatientData, PatientData>();
             builder.Services.AddAuthorizationCore();
 
+            builder.Services.AddBlazoredModal();
             await builder.Build().RunAsync();
         }
     }
