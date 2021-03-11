@@ -393,3 +393,12 @@ func (m *MSSQL) DeletePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom) erro
 
 	return nil
 }
+
+func (m *MSSQL) CreateBooking(booking *DBBooking) error {
+	result := m.db.Omit("BookingId").Create(booking)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

@@ -742,6 +742,22 @@ func (s *server) handleBookingHealth() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleBookingCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var booking bookingService.Booking
+		json.NewDecoder(r.Body).Decode(&booking)
+
+		response, err := s.bookingService.CreateBooking(context.Background(), &booking)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

@@ -101,3 +101,15 @@ type DBPatientDiagnoseSymptom struct {
 func (DBPatientDiagnoseSymptom) TableName() string {
 	return "PatientDiagnoseSymptom"
 }
+
+type DBBooking struct {
+	BookingId          int32     `gorm:"column:BookingId"`
+	Bookedtime         time.Time `gorm:"column:Bookedtime"`
+	BookedEnd          time.Time `gorm:"column:BookedEnd"`
+	PatientId          int32     `gorm:"column:PatientId"`
+	ApprovedByEmployee int32     `gorm:"column:ApprovedByEmployee"`
+}
+
+func (DBBooking) TableName() string {
+	return "Booking"
+}
