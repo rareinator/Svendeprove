@@ -8,11 +8,26 @@ import (
 type LDAP struct {
 	AdminUsername string
 	AdminPassword string
-	Conn          *ldap.Conn
+	Uri           string
+}
+
+func (l *LDAP) NewConnection() (*ldap.Conn, error) {
+	lConn, err := ldap.DialURL(l.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	return lConn, nil
 }
 
 func (l *LDAP) AuthenticateUser(username, password string) (models.UserRole, error) {
-	if err := l.Conn.Bind(username, password); err != nil {
+	lConn, err := l.NewConnection()
+	if err != nil {
+		return 0, err
+	}
+	defer lConn.Close()
+
+	if err := lConn.Bind(username, password); err != nil {
 		return 0, err
 	}
 

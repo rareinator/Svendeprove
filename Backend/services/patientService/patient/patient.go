@@ -200,6 +200,8 @@ func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagno
 		CreationTime:      time.Now(),
 	}
 
+	patientDiagnose.CreationTime = dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05")
+
 	if err := p.DB.CreatePatientDiagnose(&dbPatientDiagnose); err != nil {
 		return nil, err
 	}

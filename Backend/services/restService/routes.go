@@ -312,4 +312,16 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("GET")
 
+	// Useradmin methods
+	s.router.Handle("/useradmin/health", s.handleUseradminHealth()).Methods("GET") //GetHealth)
+
+	s.router.Handle("/useradmin/{id:[0-9]+}", //GetEmployee
+		s.authenticate(
+			s.handleUseradminGetEmployee(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("GET")
+
 }

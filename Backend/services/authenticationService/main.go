@@ -5,7 +5,6 @@ import (
 	"net"
 	"os"
 
-	"github.com/go-ldap/ldap/v3"
 	"github.com/joho/godotenv"
 	goldap "github.com/rareinator/Svendeprove/Backend/packages/ldap"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
@@ -28,14 +27,8 @@ func execute() error {
 		return err
 	}
 
-	lConn, err := ldap.DialURL(os.Getenv("LDAP_URI"))
-	if err != nil {
-		return err
-	}
-	defer lConn.Close()
-
 	ldap := goldap.LDAP{
-		Conn:          lConn,
+		Uri:           os.Getenv("LDAP_URI"),
 		AdminUsername: os.Getenv("LDAP_READONLY_USER"),
 		AdminPassword: os.Getenv("LDAP_READONLY_USER_PASSWORD"),
 	}

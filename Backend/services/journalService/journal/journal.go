@@ -68,6 +68,8 @@ func (j *JournalServer) CreateJournal(ctx context.Context, journal *Journal) (*J
 		CreatedBy:    journal.CreatedBy,
 	}
 
+	journal.CreationTime = dbJournal.CreationTime.Format("02/01/2006 15:04:05")
+
 	if err := j.DB.CreateJournal(&dbJournal); err != nil {
 		return nil, err
 	}
@@ -154,6 +156,8 @@ func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDo
 		Summary:         jd.Summary,
 		CreationTime:    time.Now(),
 	}
+
+	jd.CreationTime = dbJD.CreationTime.Format("02/01/2006 15:04:05")
 
 	if err := j.DB.CreateJournalDocument(&dbJD); err != nil {
 		return nil, err

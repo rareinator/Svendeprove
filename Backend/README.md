@@ -68,7 +68,7 @@
 
 
 ### User administration
-* [ ] GetEmployee /useradmin/{id:[0-9]+} GET
+* [x] GetEmployee /useradmin/{id:[0-9]+} GET
 
 ### IOT
 * [ ] UploadData /iot POST

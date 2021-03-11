@@ -13,6 +13,7 @@ import (
 	bookingService "github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
+	useradminService "github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
 )
 
 func (s *server) returnError(w http.ResponseWriter, statusCode int, Message string) {
@@ -24,6 +25,8 @@ func (s *server) returnError(w http.ResponseWriter, statusCode int, Message stri
 	w.WriteHeader(statusCode)
 	errorMessage.Code = statusCode
 	errorMessage.Message = Message
+
+	fmt.Printf("ERROR!!!! Code: %v Message: %v\n\r", errorMessage.Code, errorMessage.Message)
 
 	json.NewEncoder(w).Encode(&errorMessage)
 }
@@ -324,6 +327,7 @@ func (s *server) handleJournalDocumentRead() http.HandlerFunc {
 		response, err := s.journalService.GetJournalDocument(context.Background(), &j)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -912,6 +916,45 @@ func (s *server) handleBookingsByPatient() http.HandlerFunc {
 			response.Bookings = make([]*bookingService.Booking, 0)
 		}
 		json.NewEncoder(w).Encode(response.Bookings)
+	}
+}
+
+func (s *server) handleUseradminHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := useradminService.UAEmpty{}
+
+		response, err := s.useradminService.GetHealth(context.Background(), &u)
+		if err != nil {
+			s.returnError(w, http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(response.Message))
+	}
+}
+
+func (s *server) handleUseradminGetEmployee() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No employee found with that id")
+			return
+		}
+
+		er := useradminService.EmployeeRequest{
+			EmployeeId: int32(ID),
+		}
+
+		response, err := s.useradminService.GetEmployee(context.Background(), &er)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
+	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
 	"google.golang.org/grpc"
 )
 
@@ -52,10 +53,18 @@ func execute() error {
 	}
 	defer bookingConn.Close()
 
+	var useradminConn *grpc.ClientConn
+	useradminConn, err = grpc.Dial(os.Getenv("USERADMIN_SERVICE_ADDR"), grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	defer useradminConn.Close()
+
 	srv.journalService = journal.NewJournalServiceClient(journalConn)
 	srv.authenticationService = authentication.NewAuthenticationServiceClient(authenticationConn)
 	srv.patientService = patient.NewPatientServiceClient(patientConn)
 	srv.bookingService = booking.NewBookingServiceClient(bookingConn)
+	srv.useradminService = useradmin.NewUseradminServiceClient(useradminConn)
 
 	srv.ServeHTTP()
 

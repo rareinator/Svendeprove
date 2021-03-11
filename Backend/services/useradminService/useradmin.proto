@@ -1,0 +1,28 @@
+syntax = "proto3";
+option go_package = ".;useradmin";
+
+message UAEmpty {}
+
+message UAHealth {
+  string Message = 1;
+}
+
+
+message EmployeeRequest {
+  int32 EmployeeId = 1;
+}
+
+message Employee {
+  int32 EmployeeId = 1;
+  string Name = 2;
+  int32 WorktitleId = 3;
+  int32 DepartmentId = 4;
+  string Username = 5;
+}
+
+
+service UseradminService {
+  rpc GetHealth(UAEmpty) returns (UAHealth) {}
+
+  rpc GetEmployee(EmployeeRequest) returns (Employee) {}
+}

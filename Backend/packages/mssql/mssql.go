@@ -64,6 +64,16 @@ func (m *MSSQL) InsertToken(token *DBToken) error {
 	}
 }
 
+func (m *MSSQL) GetEmployee(id int32) (*DBEmployee, error) {
+	var employee DBEmployee
+	result := m.db.First(&employee, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &employee, nil
+}
+
 func (m *MSSQL) GetEmployeeID(username string) (int32, error) {
 	var employee DBEmployee
 	result := m.db.Where("Username = ?", username).First(&employee)
@@ -104,7 +114,7 @@ func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {
 
 func (m *MSSQL) GetJournalsByPatient(id int32) ([]*DBJournal, error) {
 	var journals []*DBJournal
-	result := m.db.Find(&journals).Where("PatientId = ?", id)
+	result := m.db.Where("PatientId = ?", id).Find(&journals)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -340,7 +350,7 @@ func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error 
 
 func (m *MSSQL) GetPatientDiagnoses(id int32) ([]*DBPatientDiagnose, error) {
 	var patientDiagnoses []*DBPatientDiagnose
-	result := m.db.Find(&patientDiagnoses).Where("PatientId = ?", id)
+	result := m.db.Where("PatientId = ?", id).Find(&patientDiagnoses)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -386,7 +396,7 @@ func (m *MSSQL) CreatePatientDiagnoseSymptom(patientDiagnoseSymptom *DBPatientDi
 
 func (m *MSSQL) GetPatientDiagnoseSymptoms(patientDiagnoseId int32) ([]*DBPatientDiagnoseSymptom, error) {
 	var patientDiagnoseSymptoms []*DBPatientDiagnoseSymptom
-	result := m.db.Find(&patientDiagnoseSymptoms).Where("PatientDiagnoseId = ?", patientDiagnoseId)
+	result := m.db.Where("PatientDiagnoseId = ?", patientDiagnoseId).Find(&patientDiagnoseSymptoms)
 	if result.Error != nil {
 		return nil, result.Error
 	}

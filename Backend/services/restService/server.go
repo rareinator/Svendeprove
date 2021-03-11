@@ -10,6 +10,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
+	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
 )
 
 type server struct {
@@ -18,6 +19,7 @@ type server struct {
 	authenticationService authentication.AuthenticationServiceClient
 	patientService        patient.PatientServiceClient
 	bookingService        booking.BookingServiceClient
+	useradminService      useradmin.UseradminServiceClient
 }
 
 func newServer() *server {

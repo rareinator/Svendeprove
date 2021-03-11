@@ -15,7 +15,7 @@ type BookingServer struct {
 }
 
 func (b *BookingServer) GetHealth(ctx context.Context, e *BEmpty) (*BHealth, error) {
-	return &BHealth{Message: fmt.Sprintf("Booing service is up and running on: %v 🚀", b.ListenAddress)}, nil
+	return &BHealth{Message: fmt.Sprintf("Booking service is up and running on: %v 🚀", b.ListenAddress)}, nil
 }
 
 func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*Booking, error) {
