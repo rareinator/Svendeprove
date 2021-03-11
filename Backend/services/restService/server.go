@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
+	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 )
@@ -16,6 +17,7 @@ type server struct {
 	journalService        journal.JournalServiceClient
 	authenticationService authentication.AuthenticationServiceClient
 	patientService        patient.PatientServiceClient
+	bookingService        booking.BookingServiceClient
 }
 
 func newServer() *server {

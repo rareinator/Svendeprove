@@ -264,4 +264,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("DELETE")
 
+	//Booking methods
+	s.router.Handle("/booking/health", s.handleBookingHealth()).Methods("GET")
+
 }

@@ -1,0 +1,49 @@
+syntax = "proto3";
+option go_package = ".;booking";
+
+message BEmpty {
+
+}
+
+message BHealth {
+  string Message = 1;
+}
+
+message BStatus {
+  bool Success = 1;
+}
+
+message BRequest {
+  int32 Id = 1;
+}
+
+message Booking {
+  int32 BookingId = 1;
+  string BookedTime = 2;
+  string BookedEnd = 3;
+  int32 PatientId = 4;
+  int32 ApprovedByEmployee = 5;
+}
+
+message Bookings {
+  repeated Booking Bookings = 1;
+}
+
+message BTimeFrameRequest {
+  string Start = 1;
+  string End = 2;
+}
+
+
+service BookingService {
+  rpc GetHealth(BEmpty) returns (BHealth) {}
+  
+  rpc CreateBooking(Booking) returns (Booking) {}
+  rpc ReadBooking(BRequest) returns (Booking) {}
+  rpc UpdateBooking(Booking) returns (Booking) {}
+  rpc DeleteBooking(BRequest) returns (BStatus) {}
+  rpc GetBookingsByPatient(BRequest) returns (Bookings) {}
+  rpc GetBookingsByCreatingEmployee(BRequest) returns (Bookings) {}
+  rpc GetBookingsByInTimeFrame(BTimeFrameRequest) returns (Bookings) {}
+
+}

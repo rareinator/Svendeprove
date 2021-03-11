@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
+	bookingService "github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 )
@@ -723,6 +724,21 @@ func (s *server) handlePatientSymptomDelete() http.HandlerFunc {
 		}
 
 		s.returnError(w, http.StatusInternalServerError, "Something unknown went horribly wrong!!! ☠️☠️☠️")
+	}
+}
+
+func (s *server) handleBookingHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		b := bookingService.BEmpty{}
+
+		response, err := s.bookingService.GetHealth(context.Background(), &b)
+		if err != nil {
+			s.returnError(w, http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(response.Message))
 	}
 }
 
