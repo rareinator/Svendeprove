@@ -44,6 +44,10 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) != 2 {
+			fmt.Println("trying to acces with no token")
+			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")
+		}
 		reqToken = splitToken[1]
 		if reqToken == "" {
 			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")

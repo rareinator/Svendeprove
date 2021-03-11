@@ -167,6 +167,9 @@ func (s *server) handleJournalByPatient() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.Journals) == 0 {
+			response.Journals = make([]*journalService.Journal, 0)
+		}
 		json.NewEncoder(w).Encode(response.Journals)
 	}
 }
@@ -285,9 +288,10 @@ func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
 
 		if allowed {
 			w.WriteHeader(http.StatusOK)
-			if len(response.JournalDocuments) > 0 {
-				json.NewEncoder(w).Encode(response.JournalDocuments)
+			if len(response.JournalDocuments) == 0 {
+				response.JournalDocuments = make([]*journalService.JournalDocument, 0)
 			}
+			json.NewEncoder(w).Encode(response.JournalDocuments)
 		} else {
 			s.returnError(w, http.StatusForbidden, "")
 		}
@@ -381,6 +385,9 @@ func (s *server) handlePatientsGet() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.Patients) == 0 {
+			response.Patients = make([]*patientService.Patient, 0)
+		}
 		json.NewEncoder(w).Encode(response.Patients)
 	}
 }
@@ -467,6 +474,9 @@ func (s *server) handleDiagnosesGet() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.Diagnoses) == 0 {
+			response.Diagnoses = make([]*patientService.Diagnose, 0)
+		}
 		json.NewEncoder(w).Encode(response.Diagnoses)
 	}
 }
@@ -504,6 +514,9 @@ func (s *server) handleSymptomsGet() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.Symptoms) == 0 {
+			response.Symptoms = make([]*patientService.Symptom, 0)
+		}
 		json.NewEncoder(w).Encode(response.Symptoms)
 
 	}
@@ -552,6 +565,9 @@ func (s *server) handlePatientDiagnosesGet() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.PatientDiagnoses) == 0 {
+			response.PatientDiagnoses = make([]*patientService.PatientDiagnose, 0)
+		}
 		json.NewEncoder(w).Encode(response.PatientDiagnoses)
 	}
 }
@@ -665,6 +681,9 @@ func (s *server) handlePatientSymptomsGet() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.DiagnoseSymptoms) == 0 {
+			response.DiagnoseSymptoms = make([]*patientService.DiagnoseSymptom, 0)
+		}
 		json.NewEncoder(w).Encode(response.DiagnoseSymptoms)
 	}
 }
