@@ -1,0 +1,214 @@
+﻿
+<div class="form-group">
+    <input class="form-control" type="date" @bind="SelectedDocument.CreationTime" />
+</div>
+
+<h5>Title</h5>
+<div class="form-group">
+    <input class="form-control" type="text" @bind="SelectedDocument.Title" />
+</div>
+
+<h5>Summary</h5>
+<div class="form-group">
+    @if (!RichTextEditorModeSummary)
+    {
+        <textarea class="form-control" @bind="@SelectedDocument.Summary" rows="2" /> 
+    }
+    else
+    {
+        <BlazoredTextEditor @ref="@QuillHtmlSummary">
+            <ToolbarContent>
+                <select class="ql-header">
+                    <option selected=""></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                </select>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-strike"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-link"></button>
+                    <button class="btn btn-link" id="custom-button"
+                            @onclick="InsertImageSummaryClick">
+                        <img src="imageIcon.png" style="border:hidden" />
+                    </button>
+                </span>
+            </ToolbarContent>
+            <EditorContent>
+                @((MarkupString)SelectedDocument.Summary)
+            </EditorContent>
+        </BlazoredTextEditor>
+    }
+    @if (!RichTextEditorModeSummary)
+    {
+        <button type="button" class="btn btn-link" @onclick="RichTextEditorSummary"><h6>[Rich Text Editor]</h6></button> 
+    }
+    else
+    {
+        <button type="button" class="btn btn-link" @onclick="RawHTMLEditorSummary"><h6>[Raw HTML Editor]</h6></button>
+    }
+</div>
+
+<h5>Content</h5>
+<div class="form-group">
+    @if (!RichTextEditorMode)
+    {
+        <textarea class="form-control" @bind="@SelectedDocument.Content" rows="5" /> 
+    }
+    else
+    {
+        <BlazoredTextEditor @ref="@QuillHtml">
+            <ToolbarContent>
+                <select class="ql-header">
+                    <option selected=""></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                </select>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-strike"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-link"></button>
+                    <button class="btn btn-link" id="custom-button"
+                            @onclick="InsertImageClick">
+                        <img src="imageIcon.png" style="border:hidden" />
+                    </button>
+                </span>
+            </ToolbarContent>
+            <EditorContent>
+                @((MarkupString)SelectedDocument.Content)
+            </EditorContent>
+        </BlazoredTextEditor>
+    }
+
+    @if (!RichTextEditorMode)
+    {
+        <button type="button" class="btn btn-link" @onclick="RichTextEditor"><h6>[Rich Text Editor]</h6></button> 
+    }
+    else
+    {
+        <button type="button" class="btn btn-link" @onclick="RawHTMLEditor"><h6>[Raw HTML Editor]</h6></button>
+    }
+</div>
+<br />
+
+<!-- Button to save the user -->
+<button class="btn btn-primary" @onclick="Save">
+    Save
+</button>&nbsp;
+
+<!-- Only show delete button if not a new record -->
+@if (SelectedDocument.DocumentId.ToString() != "0")
+{
+    <!-- Button to delete the Blog -->
+    <button class="btn btn-danger" @onclick="Delete">
+        Delete
+    </button>
+}
+<br />
+
+@code { 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public JournalDocumentModel SelectedDocument { get; set; }
+
+    BlazoredTextEditor QuillHtmlSummary;
+    BlazoredTextEditor QuillHtml;
+    bool RichTextEditorMode = true;
+    bool RichTextEditorModeSummary = true;
+
+    private async Task Save()
+    {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(SelectedDocument));
+    }
+
+    private async Task Delete()
+    {
+
+    }
+
+
+    //Summary
+
+    private void RichTextEditorSummary()
+    {
+        RichTextEditorModeSummary = true;
+        StateHasChanged();
+    }
+
+    private async Task RawHTMLEditorSummary()
+    {
+        RichTextEditorModeSummary = false;
+        SelectedDocument.Summary =
+        await this.QuillHtmlSummary.GetHTML();
+    }
+
+    private void RichTextEditor()
+    {
+        RichTextEditorMode = true;
+        StateHasChanged();
+    }
+
+    private async Task RawHTMLEditor()
+    {
+        RichTextEditorMode = false;
+        SelectedDocument.Content =
+        await this.QuillHtml.GetHTML();
+    }
+
+    // Inserting Images
+
+    private void InsertImageSummaryClick()
+    {
+        //FileManagerControlSummary.SetShowFileManager(true);
+    }
+
+    private void InsertImageClick()
+    {
+        //FileManagerControl.SetShowFileManager(true);
+    }
+
+    async Task InsertImageSummary(string paramImageURL)
+    {
+        await this.QuillHtmlSummary.InsertImage(paramImageURL);
+
+        //FileManagerControl.SetShowFileManager(false);
+    }
+
+    async Task InsertImage(string paramImageURL)
+    {
+        await this.QuillHtml.InsertImage(paramImageURL);
+
+        //FileManagerControl.SetShowFileManager(false);
+    }
+}

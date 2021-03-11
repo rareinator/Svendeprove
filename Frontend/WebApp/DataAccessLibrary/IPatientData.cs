@@ -6,9 +6,7 @@ namespace DataAccessLibrary
 {
     public interface IPatientData
     {
-        List<PatientModel> GetPatients();
-        List<JournalModel> GetPatientJournals(int patientId);
-        PatientModel GetPatient(int patientId);
-        void InsertPatientJournal(JournalModel journal);
+        Task<List<PatientModel>> GetPatients();
+        Task<PatientModel> GetPatient(int patientId);
     }
 }

@@ -1,0 +1,56 @@
+﻿@page "/journal/{JournalId:int}"
+@* IF AROUND THIS CHECK IF NURSE OR DOCTOR ROLE *@
+<button type="button" class="btn btn-primary" @onclick="NewJournalDocument">Opret</button>
+<br />
+<br />
+@* /////////////////////////////// *@
+@if (journalDocuments.Count == 0)
+{
+    <h2>No items returned</h2> 
+}
+else
+{
+    @foreach (var document in journalDocuments)
+    {
+        <a href="ViewJournalDocument/@document.DocumentId"><h2>@document.CreationTime.ToShortDateString() - @document.Title</h2></a>
+        <div class="form-group">
+            @((MarkupString)document.Summary)
+        </div>
+        <hr />
+    }
+}
+
+@code {
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [Parameter]
+    public int JournalId { get; set; }
+
+    List<JournalDocumentModel> journalDocuments = new List<JournalDocumentModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        journalDocuments = await JournalData.GetJournalDocuments(JournalId);
+    }
+
+    private async Task NewJournalDocument()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateDocument.SelectedDocument), new JournalDocumentModel { CreationTime = DateTime.Now, JournalId = JournalId});
+
+        var createDocument = Modal.Show<CreateDocument>("Opret Dokument", parameters);
+        var result = await createDocument.Result;
+
+        if (!result.Cancelled)
+        {
+            JournalDocumentModel document = (JournalDocumentModel)result.Data;
+
+            if (document.DocumentId == 0)
+            {
+                JournalData.InsertJournalDocument(document);
+                journalDocuments.Add(document);
+            }
+        }
+    }
+}

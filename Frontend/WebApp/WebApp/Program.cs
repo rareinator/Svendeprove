@@ -28,6 +28,7 @@ namespace WebApp
             builder.Services.AddSingleton<IUserUpdateService, UserUpdateService>();
             builder.Services.AddScoped<IPatientData, PatientData>();
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<IJournalData, JournalData>();
 
             builder.Services.AddBlazoredModal();
             await builder.Build().RunAsync();
