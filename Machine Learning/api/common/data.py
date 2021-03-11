@@ -24,7 +24,7 @@ class DataCache(object):
 
     def load_diagnosis(self):
         diagnosis = []
-        with open(__location__ + "/data/dis.csv", "r") as csvfile:
+        with open(__location__ + "/data/csv/dis.csv", "r") as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             next(reader, None) # skip headers
             for row in reader:
@@ -33,7 +33,7 @@ class DataCache(object):
 
     def load_symptoms(self):
         symptoms = []
-        with open(__location__ + "/data/sym.csv", "r") as csvfile:
+        with open(__location__ + "/data/csv/sym.csv", "r") as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             next(reader, None)
             for row in reader:
@@ -41,7 +41,7 @@ class DataCache(object):
         return symptoms
 
     def set_relations(self):
-        with open(__location__ + "/data/sym_dis.csv", "r") as csvfile:
+        with open(__location__ + "/data/csv/sym_dis.csv", "r") as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             next(reader, None)
             sym_dis = {}
