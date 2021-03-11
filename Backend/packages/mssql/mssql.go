@@ -449,3 +449,13 @@ func (m *MSSQL) DeleteBooking(booking *DBBooking) error {
 
 	return nil
 }
+
+func (m *MSSQL) GetBookingsByPatient(id int32) ([]*DBBooking, error) {
+	var bookings []*DBBooking
+	result := m.db.Where("PatientId = ?", id).Find(&bookings)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return bookings, nil
+}

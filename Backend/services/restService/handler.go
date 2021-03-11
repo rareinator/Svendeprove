@@ -888,6 +888,33 @@ func (s *server) handleBookingDelete() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleBookingsByPatient() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		patientID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No bookings found for that patientID")
+			return
+		}
+
+		br := bookingService.BRequest{
+			Id: int32(patientID),
+		}
+
+		response, err := s.bookingService.GetBookingsByPatient(context.Background(), &br)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		if len(response.Bookings) == 0 {
+			response.Bookings = make([]*bookingService.Booking, 0)
+		}
+		json.NewEncoder(w).Encode(response.Bookings)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

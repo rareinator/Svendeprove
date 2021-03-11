@@ -62,7 +62,7 @@
 * [x] ReadBooking /booking/{id:[0-9]+} GET
 * [x] UpdateBooking /booking/{id:[0-9]+} POST
 * [x] DeleteBooking /booking/{id:[0-9]+} DELETE
-* [ ] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET
+* [x] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET
 * [ ] GetBookingsByCreatingEmployee /booking/byEmployee/{id:[0-9]+]} GET
 * [ ] GetBookingsInTimeFrame /booking?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05)
 

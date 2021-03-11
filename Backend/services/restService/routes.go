@@ -303,4 +303,13 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("DELETE")
 
+	s.router.Handle("/booking/byPatient/{id:[0-9]+}", //GetBookingsByPatient
+		s.authenticate(
+			s.handleBookingsByPatient(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedPatient:      "id",
+				allowRelatedPatient: false,
+			})).Methods("GET")
+
 }

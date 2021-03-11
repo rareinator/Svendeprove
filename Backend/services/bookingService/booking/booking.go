@@ -100,3 +100,28 @@ func (b *BookingServer) DeleteBooking(ctx context.Context, br *BRequest) (*BStat
 
 	return &BStatus{Success: true}, nil
 }
+
+func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) (*Bookings, error) {
+	bookings := Bookings{
+		Bookings: make([]*Booking, 0),
+	}
+
+	dbBookings, err := b.DB.GetBookingsByPatient(br.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbBooking := range dbBookings {
+		booking := Booking{
+			BookingId:          dbBooking.BookingId,
+			BookedTime:         dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
+			BookedEnd:          dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
+			PatientId:          dbBooking.PatientId,
+			ApprovedByEmployee: dbBooking.ApprovedByEmployee,
+		}
+
+		bookings.Bookings = append(bookings.Bookings, &booking)
+	}
+
+	return &bookings, nil
+}
