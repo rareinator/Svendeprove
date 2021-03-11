@@ -26,6 +26,10 @@ func (s *server) patientIsAuthenticated(dbType interface{}, lookupID int32, pati
 func (s *server) getPatientID(r *http.Request) (int32, error) {
 	reqToken := r.Header.Get("Authorization")
 	splitToken := strings.Split(reqToken, "Bearer ")
+	if len(splitToken) != 2 {
+		fmt.Println("trying to acces with no token")
+		return 0, fmt.Errorf("No valid token specified")
+	}
 	reqToken = splitToken[1]
 	if reqToken == "" {
 		return 0, fmt.Errorf("Could not find a token")
@@ -49,6 +53,10 @@ func (s *server) getPatientID(r *http.Request) (int32, error) {
 func (s *server) getEmployeeID(r *http.Request) (int32, error) {
 	reqToken := r.Header.Get("Authorization")
 	splitToken := strings.Split(reqToken, "Bearer ")
+	if len(splitToken) != 2 {
+		fmt.Println("trying to acces with no token")
+		return 0, fmt.Errorf("No valid token specified")
+	}
 	reqToken = splitToken[1]
 	if reqToken == "" {
 		return 0, fmt.Errorf("Could not find a token")

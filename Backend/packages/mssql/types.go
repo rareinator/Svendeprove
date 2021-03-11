@@ -3,7 +3,7 @@ package mssql
 import "time"
 
 type DBJournalDocument struct {
-	DocumentId      int32     `gorm:"column:DocumentId"`
+	DocumentId      int32     `gorm:"column:DocumentId;primaryKey"`
 	Content         string    `gorm:"column:Content"`
 	DocumentStoreId int32     `gorm:"column:DocumentStoreId"`
 	JournalId       int32     `gorm:"column:Journalid"`
@@ -23,7 +23,7 @@ func (DBJournalDocument) GetPatientIDQuery() string {
 }
 
 type DBJournal struct {
-	JournalId    int32     `gorm:"column:JournalId"`
+	JournalId    int32     `gorm:"column:JournalId;primaryKey"`
 	CreationTime time.Time `gorm:"column:CreationTime"`
 	Intro        string    `gorm:"column:Intro"`
 	PatientId    int32     `gorm:"column:PatientId"`
@@ -35,7 +35,7 @@ func (DBJournal) TableName() string {
 }
 
 type DBToken struct {
-	Token      string    `gorm:"column:Token"`
+	Token      string    `gorm:"column:Token;primaryKey"`
 	Role       int32     `gorm:"column:Role"`
 	PatientID  int32     `gorm:"column:PatientId"`
 	EmployeeID int32     `gorm:"column:EmployeeId"`
@@ -49,7 +49,7 @@ func (DBToken) TableName() string {
 }
 
 type DBPatient struct {
-	PatientId  int32  `gorm:"column:PatientId"`
+	PatientId  int32  `gorm:"column:PatientId;primaryKey"`
 	Name       string `gorm:"column:Name"`
 	Address    string `gorm:"column:Address"`
 	City       string `gorm:"column:City"`
@@ -66,7 +66,7 @@ func (DBPatient) TableName() string {
 }
 
 type DBPatientDiagnose struct {
-	PatientDiagnoseId int32     `gorm:"column:PatientDiagnoseId"`
+	PatientDiagnoseId int32     `gorm:"column:PatientDiagnoseId;primaryKey"`
 	PatientId         int32     `gorm:"column:PatientId"`
 	DiagnoseId        int32     `gorm:"column:DiagnoseId"`
 	CreationTime      time.Time `gorm:"column:CreationTime"`
@@ -77,7 +77,7 @@ func (DBPatientDiagnose) TableName() string {
 }
 
 type DBDiagnose struct {
-	DiagnoseId  int32  `gorm:"column:DiagnoseId"`
+	DiagnoseId  int32  `gorm:"column:DiagnoseId;primaryKey"`
 	Description string `gorm:"column:Description"`
 }
 
@@ -86,7 +86,7 @@ func (DBDiagnose) TableName() string {
 }
 
 type DBSymptom struct {
-	SymptomId   int32  `gorm:"column:SymptomId"`
+	SymptomId   int32  `gorm:"column:SymptomId;primaryKey"`
 	Description string `gorm:"column:Description"`
 }
 
@@ -104,7 +104,7 @@ func (DBPatientDiagnoseSymptom) TableName() string {
 }
 
 type DBBooking struct {
-	BookingId          int32     `gorm:"column:BookingId"`
+	BookingId          int32     `gorm:"column:BookingId;primaryKey"`
 	Bookedtime         time.Time `gorm:"column:Bookedtime"`
 	BookedEnd          time.Time `gorm:"column:BookedEnd"`
 	PatientId          int32     `gorm:"column:PatientId"`
@@ -116,7 +116,7 @@ func (DBBooking) TableName() string {
 }
 
 type DBEmployee struct {
-	EmployeeId   int32  `gorm:"column:EmployeeId"`
+	EmployeeId   int32  `gorm:"column:EmployeeId;primaryKey"`
 	Name         string `gorm:"column:Name"`
 	WorktitleId  int32  `gorm:"column:WorktitleId"`
 	DepartmentId int32  `gorm:"column:DepartmentId"`

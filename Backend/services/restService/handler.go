@@ -232,18 +232,23 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 		var journalDocument journalService.JournalDocument
 		json.NewDecoder(r.Body).Decode(&journalDocument)
 
+		fmt.Println("Inserting Journal Document")
+
 		employeeID, err := s.getEmployeeID(r)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		journalDocument.CreatedBy = employeeID
+		fmt.Printf("EmployeeID Got: %v\n\r", employeeID)
 
 		response, err := s.journalService.CreateJournalDocument(context.Background(), &journalDocument)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		fmt.Println("Called journalService")
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
@@ -275,15 +280,20 @@ func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
 			return
 		}
 
-		allowed := false
-		if len(response.JournalDocuments) > 0 {
-			allowed, err = s.patientIsAuthenticated(mssql.DBJournalDocument{}, response.JournalDocuments[0].DocumentId, patientID)
-			if err != nil {
-				s.returnError(w, http.StatusForbidden, err.Error())
-				return
-			}
-		} else {
+		var allowed bool
+		if patientID == 0 {
 			allowed = true
+		} else {
+			allowed = false
+			if len(response.JournalDocuments) > 0 {
+				allowed, err = s.patientIsAuthenticated(mssql.DBJournalDocument{}, response.JournalDocuments[0].DocumentId, patientID)
+				if err != nil {
+					s.returnError(w, http.StatusForbidden, err.Error())
+					return
+				}
+			} else {
+				allowed = true
+			}
 		}
 
 		if allowed {
@@ -293,7 +303,7 @@ func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
 			}
 			json.NewEncoder(w).Encode(response.JournalDocuments)
 		} else {
-			s.returnError(w, http.StatusForbidden, "")
+			s.returnError(w, http.StatusForbidden, "Not Allowed")
 		}
 	}
 }

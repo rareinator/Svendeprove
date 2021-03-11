@@ -60,7 +60,7 @@ func (a *AuthenticationServer) LoginPatient(ctx context.Context, u *User) (*Toke
 }
 
 func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*EmployeeTokenResponse, error) {
-
+	fmt.Println("Authenticating employee")
 	role, err := a.Ldap.AuthenticateUser(u.Username, u.Password)
 	if err != nil {
 		fmt.Printf("Failed to authenticate user: %v", err)

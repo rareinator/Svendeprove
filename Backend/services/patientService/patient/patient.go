@@ -35,6 +35,8 @@ func (p *PatientServer) CreatePatient(ctx context.Context, patient *Patient) (*P
 		return nil, err
 	}
 
+	patient.PatientId = dbPatient.PatientId
+
 	return patient, nil
 }
 
@@ -201,6 +203,8 @@ func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagno
 	if err := p.DB.CreatePatientDiagnose(&dbPatientDiagnose); err != nil {
 		return nil, err
 	}
+
+	patientDiagnose.PatientDiagnoseId = dbPatientDiagnose.PatientDiagnoseId
 
 	return patientDiagnose, nil
 

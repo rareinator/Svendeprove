@@ -7,7 +7,7 @@
 ### Authentication
 * [x] Health /authentication/health GET
 * [x] PatientLogin /authentication/patient/login POST
-* [x] EmployeeLogin /authentication/patient/login POSt
+* [x] EmployeeLogin /authentication/employee/login POSt
 
 ### Journal
 * [x] Health /journal/health GET

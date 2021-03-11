@@ -41,6 +41,8 @@ func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*B
 		return nil, err
 	}
 
+	booking.BookingId = dbBooking.BookingId
+
 	return booking, nil
 }
 

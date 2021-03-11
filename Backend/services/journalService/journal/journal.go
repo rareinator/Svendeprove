@@ -72,6 +72,8 @@ func (j *JournalServer) CreateJournal(ctx context.Context, journal *Journal) (*J
 		return nil, err
 	}
 
+	journal.JournalId = dbJournal.JournalId
+
 	return journal, nil
 
 }
@@ -142,11 +144,6 @@ func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalD
 }
 
 func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDocument) (*JournalDocument, error) {
-	parsedTime, err := time.Parse("02/01/2006 15:04:05", jd.CreationTime)
-	if err != nil {
-		return nil, err
-	}
-
 	dbJD := mssql.DBJournalDocument{
 		Content:         jd.Content,
 		DocumentStoreId: jd.DocumentStoreId,
@@ -155,12 +152,14 @@ func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDo
 		CreatedBy:       jd.CreatedBy,
 		Title:           jd.Title,
 		Summary:         jd.Summary,
-		CreationTime:    parsedTime,
+		CreationTime:    time.Now(),
 	}
 
 	if err := j.DB.CreateJournalDocument(&dbJD); err != nil {
 		return nil, err
 	}
+
+	jd.DocumentId = dbJD.DocumentId
 
 	return jd, nil
 }

@@ -132,7 +132,7 @@ func (m *MSSQL) GetPatientSalt(username string) (string, error) {
 }
 
 func (m *MSSQL) CreateJournal(journal *DBJournal) error {
-	result := m.db.Omit("JournalId").Create(journal)
+	result := m.db.Create(journal)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -141,7 +141,7 @@ func (m *MSSQL) CreateJournal(journal *DBJournal) error {
 }
 
 func (m *MSSQL) UpdateJournal(journal *DBJournal) error {
-	result := m.db.Where("JournalId = ?", journal.JournalId).Omit("JournalId").Save(&journal)
+	result := m.db.Where("JournalId = ?", journal.JournalId).Save(&journal)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -170,9 +170,9 @@ func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error 
 func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error {
 	var result *gorm.DB
 	if journalDocument.DocumentStoreId == 0 {
-		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId", "DocumentStoreId", "CreationTime").Save(&journalDocument)
+		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentStoreId", "CreationTime").Save(&journalDocument)
 	} else {
-		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentId", "CreationTime").Save(&journalDocument)
+		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("CreationTime").Save(&journalDocument)
 	}
 
 	if result.Error != nil {
@@ -185,14 +185,16 @@ func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error 
 func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error {
 	var result *gorm.DB
 	if journalDocument.DocumentStoreId == 0 {
-		result = m.db.Omit("DocumentId", "DocumentStoreId").Create(&journalDocument)
+		result = m.db.Omit("DocumentStoreId").Create(&journalDocument)
 	} else {
-		result = m.db.Omit("DocumentId", "DocumentStoreId").Create(&journalDocument)
+		result = m.db.Create(&journalDocument)
 	}
 
 	if result.Error != nil {
 		return result.Error
 	}
+
+	fmt.Printf("MSSQL DocID: %v\n\r", journalDocument.DocumentId)
 
 	return nil
 }
@@ -222,14 +224,10 @@ func (m *MSSQL) GetPatientID(query string, id int32) (int32, error) {
 		PatientId int32
 	}
 
-	fmt.Printf("\n\rquery: %v\n\r", query)
-
 	result := m.db.Raw(query, id).Scan(&resultData)
 	if result.Error != nil {
 		return 0, result.Error
 	}
-
-	fmt.Printf("PatientID: %v\n\r", resultData.PatientId)
 
 	if resultData.PatientId == 0 {
 		return 0, fmt.Errorf("Could not find a related patient")
@@ -239,7 +237,7 @@ func (m *MSSQL) GetPatientID(query string, id int32) (int32, error) {
 }
 
 func (m *MSSQL) CreatePatient(patient *DBPatient) error {
-	result := m.db.Omit("PatientId").Create(patient)
+	result := m.db.Create(patient)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -268,7 +266,7 @@ func (m *MSSQL) GetPatient(id int32) (*DBPatient, error) {
 }
 
 func (m *MSSQL) UpdatePatient(patient *DBPatient) error {
-	result := m.db.Where("PatientId = ?", patient.PatientId).Omit("PatientId", "Password", "Salt").Save(&patient)
+	result := m.db.Where("PatientId = ?", patient.PatientId).Omit("Password", "Salt").Save(&patient)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -328,9 +326,9 @@ func (m *MSSQL) GetSymptoms() ([]*DBSymptom, error) {
 func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error {
 	var result *gorm.DB
 	if patientDiagnose.DiagnoseId == 0 {
-		result = m.db.Omit("PatientDiagnoseId", "DiagnoseId").Create(patientDiagnose)
+		result = m.db.Omit("DiagnoseId").Create(patientDiagnose)
 	} else {
-		result = m.db.Omit("PatientDiagnoseId").Create(patientDiagnose)
+		result = m.db.Create(patientDiagnose)
 	}
 
 	if result.Error != nil {
@@ -360,7 +358,7 @@ func (m *MSSQL) GetPatientDiagnose(id int32) (*DBPatientDiagnose, error) {
 }
 
 func (m *MSSQL) UpdatePatientDiagnose(pd *DBPatientDiagnose) error {
-	result := m.db.Where("PatientDiagnoseId = ?", pd.PatientDiagnoseId).Omit("PatientDiagnoseid", "CreationTime").Save(&pd)
+	result := m.db.Where("PatientDiagnoseId = ?", pd.PatientDiagnoseId).Omit("CreationTime").Save(&pd)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -415,7 +413,7 @@ func (m *MSSQL) DeletePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom) erro
 }
 
 func (m *MSSQL) CreateBooking(booking *DBBooking) error {
-	result := m.db.Omit("BookingId").Create(booking)
+	result := m.db.Create(booking)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -435,7 +433,7 @@ func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
 }
 
 func (m *MSSQL) UpdateBooking(booking *DBBooking) error {
-	result := m.db.Where("BookingId = ?", booking.PatientId).Omit("BookingId").Save(&booking)
+	result := m.db.Where("BookingId = ?", booking.PatientId).Save(&booking)
 	if result.Error != nil {
 		return result.Error
 	}
