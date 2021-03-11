@@ -807,6 +807,34 @@ func (s *server) handleBookingUpdate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleBookingDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		bookingID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No booking with that id found")
+			return
+		}
+
+		br := bookingService.BRequest{
+			Id: int32(bookingID),
+		}
+
+		response, err := s.bookingService.DeleteBooking(context.Background(), &br)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if response.Success {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		s.returnError(w, http.StatusInternalServerError, "Somethin unknown went gorribly wrong!!! ☠️☠️☠️")
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

@@ -86,3 +86,15 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 
 	return booking, nil
 }
+
+func (b *BookingServer) DeleteBooking(ctx context.Context, br *BRequest) (*BStatus, error) {
+	dbBooking := mssql.DBBooking{
+		BookingId: br.Id,
+	}
+
+	if err := b.DB.DeleteBooking(&dbBooking); err != nil {
+		return &BStatus{Success: false}, err
+	}
+
+	return &BStatus{Success: true}, nil
+}
