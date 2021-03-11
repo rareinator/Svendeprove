@@ -16,7 +16,6 @@ namespace DataAccessLibrary
         public JournalData(HttpClient client)
         {
             _client = client;
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "65d7c3c3-6e93-49eb-b901-44750398b67c");
         }
 
         public async Task<List<JournalModel>> GetJournalsByPatient(int patientId)
