@@ -60,3 +60,29 @@ func (b *BookingServer) GetBooking(ctx context.Context, br *BRequest) (*Booking,
 
 	return &result, nil
 }
+
+func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*Booking, error) {
+	bookedTime, err := time.Parse("02/01/2006 15:04:05", booking.BookedTime)
+	if err != nil {
+		return nil, err
+	}
+
+	bookedEnd, err := time.Parse("02/01/2006 15:04:05", booking.BookedEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	dbBooking := mssql.DBBooking{
+		BookingId:          booking.BookingId,
+		Bookedtime:         bookedTime,
+		BookedEnd:          bookedEnd,
+		PatientId:          booking.PatientId,
+		ApprovedByEmployee: booking.ApprovedByEmployee,
+	}
+
+	if err := b.DB.UpdateBooking(&dbBooking); err != nil {
+		return nil, err
+	}
+
+	return booking, nil
+}

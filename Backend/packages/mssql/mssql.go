@@ -413,3 +413,12 @@ func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
 	return &booking, nil
 
 }
+
+func (m *MSSQL) UpdateBooking(booking *DBBooking) error {
+	result := m.db.Where("BookingId = ?", booking.PatientId).Omit("BookingId").Save(&booking)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

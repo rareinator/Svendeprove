@@ -271,18 +271,27 @@ func (s *server) routes() {
 		s.authenticate(
 			s.handleBookingCreate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("POST")
 
-	s.router.Handle("/booking/{id:[0-9]+}", //GedBooking
+	s.router.Handle("/booking/{id:[0-9]+}", //GetBooking
 		s.authenticate(
 			s.handleBookingGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			})).Methods("GET")
+
+	s.router.Handle("/booking/{id:[0-9]+}", //UpdateBooking
+		s.authenticate(
+			s.handleBookingUpdate(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("POST")
 
 }
