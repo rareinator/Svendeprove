@@ -43,3 +43,20 @@ func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*B
 
 	return booking, nil
 }
+
+func (b *BookingServer) GetBooking(ctx context.Context, br *BRequest) (*Booking, error) {
+	dbBooking, err := b.DB.GetBooking(br.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	result := Booking{
+		BookingId:          dbBooking.BookingId,
+		BookedTime:         dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
+		BookedEnd:          dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
+		PatientId:          dbBooking.PatientId,
+		ApprovedByEmployee: dbBooking.ApprovedByEmployee,
+	}
+
+	return &result, nil
+}

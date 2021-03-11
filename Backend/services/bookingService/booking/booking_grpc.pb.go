@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BookingServiceClient interface {
 	GetHealth(ctx context.Context, in *BEmpty, opts ...grpc.CallOption) (*BHealth, error)
 	CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
-	ReadBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Booking, error)
+	GetBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Booking, error)
 	UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
 	DeleteBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*BStatus, error)
 	GetBookingsByPatient(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error)
@@ -54,9 +54,9 @@ func (c *bookingServiceClient) CreateBooking(ctx context.Context, in *Booking, o
 	return out, nil
 }
 
-func (c *bookingServiceClient) ReadBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Booking, error) {
+func (c *bookingServiceClient) GetBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Booking, error) {
 	out := new(Booking)
-	err := c.cc.Invoke(ctx, "/BookingService/ReadBooking", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/BookingService/GetBooking", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (c *bookingServiceClient) GetBookingsByInTimeFrame(ctx context.Context, in 
 type BookingServiceServer interface {
 	GetHealth(context.Context, *BEmpty) (*BHealth, error)
 	CreateBooking(context.Context, *Booking) (*Booking, error)
-	ReadBooking(context.Context, *BRequest) (*Booking, error)
+	GetBooking(context.Context, *BRequest) (*Booking, error)
 	UpdateBooking(context.Context, *Booking) (*Booking, error)
 	DeleteBooking(context.Context, *BRequest) (*BStatus, error)
 	GetBookingsByPatient(context.Context, *BRequest) (*Bookings, error)
@@ -133,8 +133,8 @@ func (UnimplementedBookingServiceServer) GetHealth(context.Context, *BEmpty) (*B
 func (UnimplementedBookingServiceServer) CreateBooking(context.Context, *Booking) (*Booking, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBooking not implemented")
 }
-func (UnimplementedBookingServiceServer) ReadBooking(context.Context, *BRequest) (*Booking, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadBooking not implemented")
+func (UnimplementedBookingServiceServer) GetBooking(context.Context, *BRequest) (*Booking, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBooking not implemented")
 }
 func (UnimplementedBookingServiceServer) UpdateBooking(context.Context, *Booking) (*Booking, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBooking not implemented")
@@ -200,20 +200,20 @@ func _BookingService_CreateBooking_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookingService_ReadBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _BookingService_GetBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BookingServiceServer).ReadBooking(ctx, in)
+		return srv.(BookingServiceServer).GetBooking(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/BookingService/ReadBooking",
+		FullMethod: "/BookingService/GetBooking",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).ReadBooking(ctx, req.(*BRequest))
+		return srv.(BookingServiceServer).GetBooking(ctx, req.(*BRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -324,8 +324,8 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookingService_CreateBooking_Handler,
 		},
 		{
-			MethodName: "ReadBooking",
-			Handler:    _BookingService_ReadBooking_Handler,
+			MethodName: "GetBooking",
+			Handler:    _BookingService_GetBooking_Handler,
 		},
 		{
 			MethodName: "UpdateBooking",

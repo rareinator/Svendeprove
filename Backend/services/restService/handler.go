@@ -758,6 +758,30 @@ func (s *server) handleBookingCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleBookingGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.returnError(w, http.StatusNotFound, "No booking found with that id")
+			return
+		}
+
+		b := bookingService.BRequest{
+			Id: int32(ID),
+		}
+
+		response, err := s.bookingService.GetBooking(context.Background(), &b)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

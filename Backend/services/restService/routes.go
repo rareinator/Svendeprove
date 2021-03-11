@@ -276,4 +276,13 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			})).Methods("POST")
 
+	s.router.Handle("/booking/{id:[0-9]+}", //GedBooking
+		s.authenticate(
+			s.handleBookingGet(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			})).Methods("GET")
+
 }

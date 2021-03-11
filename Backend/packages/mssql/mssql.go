@@ -402,3 +402,14 @@ func (m *MSSQL) CreateBooking(booking *DBBooking) error {
 
 	return nil
 }
+
+func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
+	var booking DBBooking
+	result := m.db.First(&booking, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &booking, nil
+
+}

@@ -59,7 +59,7 @@
 ### Booking
 * [x] GetHealth /booking/health GET
 * [x] CreateBooking /booking POST
-* [ ] ReadBooking /booking/{id:[0-9]+} GET
+* [x] ReadBooking /booking/{id:[0-9]+} GET
 * [ ] UpdateBooking /booking/{id:[0-9]+} POST
 * [ ] DeleteBooking /booking/{id:[0-9]+} DELETE
 * [ ] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET
