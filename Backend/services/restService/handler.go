@@ -54,6 +54,15 @@ func (s *server) handleJournalSave() http.HandlerFunc {
 		var journal journalService.Journal
 		json.NewDecoder(r.Body).Decode(&journal)
 
+		employeeID, err := s.getEmployeeID(r)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		journal.CreatedBy = employeeID
+
+		fmt.Printf("TEST!!!! %v\n\r", employeeID)
+
 		response, err := s.journalService.CreateJournal(context.Background(), &journal)
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
@@ -219,6 +228,13 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var journalDocument journalService.JournalDocument
 		json.NewDecoder(r.Body).Decode(&journalDocument)
+
+		employeeID, err := s.getEmployeeID(r)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		journalDocument.CreatedBy = employeeID
 
 		response, err := s.journalService.CreateJournalDocument(context.Background(), &journalDocument)
 		if err != nil {
@@ -746,6 +762,14 @@ func (s *server) handleBookingCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var booking bookingService.Booking
 		json.NewDecoder(r.Body).Decode(&booking)
+
+		employeeID, err := s.getEmployeeID(r)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		booking.ApprovedByEmployee = employeeID
 
 		response, err := s.bookingService.CreateBooking(context.Background(), &booking)
 		if err != nil {

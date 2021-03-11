@@ -87,16 +87,18 @@ func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenReque
 	dbToken, err := a.DB.GetToken(tr.Token)
 	if err != nil {
 		return &ValidatorResponse{
-			Valid:     false,
-			Role:      0,
-			PatientID: 0,
+			Valid:      false,
+			Role:       0,
+			PatientID:  0,
+			EmployeeID: 0,
 		}, err
 	}
 
 	return &ValidatorResponse{
-		Valid:     true,
-		Role:      dbToken.Role,
-		PatientID: dbToken.PatientID,
+		Valid:      true,
+		Role:       dbToken.Role,
+		PatientID:  dbToken.PatientID,
+		EmployeeID: dbToken.EmployeeID,
 	}, nil
 }
 

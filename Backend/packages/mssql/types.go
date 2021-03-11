@@ -38,6 +38,7 @@ type DBToken struct {
 	Token      string    `gorm:"column:Token"`
 	Role       int32     `gorm:"column:Role"`
 	PatientID  int32     `gorm:"column:PatientId"`
+	EmployeeID int32     `gorm:"column:EmployeeId"`
 	Username   string    `gorm:"column:Username"`
 	IssuedAt   time.Time `gorm:"column:IssuedAt"`
 	ValidUntil time.Time `gorm:"column:ValidUntil"`
@@ -112,4 +113,16 @@ type DBBooking struct {
 
 func (DBBooking) TableName() string {
 	return "Booking"
+}
+
+type DBEmployee struct {
+	EmployeeId   int32  `gorm:"column:EmployeeId"`
+	Name         string `gorm:"column:Name"`
+	WorktitleId  int32  `gorm:"column:WorktitleId"`
+	DepartmentId int32  `gorm:"column:DepartmentId"`
+	Username     string `gorm:"column:Username"`
+}
+
+func (DBEmployee) TableName() string {
+	return "Employee"
 }

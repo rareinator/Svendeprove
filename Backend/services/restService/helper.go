@@ -45,3 +45,28 @@ func (s *server) getPatientID(r *http.Request) (int32, error) {
 
 	return response.PatientID, nil
 }
+
+func (s *server) getEmployeeID(r *http.Request) (int32, error) {
+	reqToken := r.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer ")
+	reqToken = splitToken[1]
+	if reqToken == "" {
+		return 0, fmt.Errorf("Could not find a token")
+	}
+
+	fmt.Printf("getting employeeID Token: %v\n\r", reqToken)
+
+	tokenRequest := &authentication.TokenRequest{
+		Token: reqToken,
+	}
+
+	response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
+	if err != nil {
+		return 0, err
+	}
+	if !response.Valid {
+		return 0, fmt.Errorf("Could not find the token")
+	}
+
+	return response.EmployeeID, nil
+}

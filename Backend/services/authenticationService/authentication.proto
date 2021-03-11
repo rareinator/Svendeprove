@@ -38,6 +38,7 @@ message ValidatorResponse {
   bool valid = 1;
   int32 Role = 2;
   int32 PatientID = 3;
+  int32 EmployeeID = 4;
 }
 
 message AHealth {

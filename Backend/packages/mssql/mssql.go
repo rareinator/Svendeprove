@@ -39,35 +39,55 @@ func NewConnection(dsn string) (MSSQL, error) {
 
 func (m *MSSQL) InsertToken(token *DBToken) error {
 	if token.Role == 0 {
-		m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
+		result := m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
 			token.Token,
 			token.PatientID,
 			token.Username,
 			token.IssuedAt,
 			token.ValidUntil)
+
+		return result.Error
 	} else {
-		m.db.Exec("INSERT INTO Tokens (Token,Role,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
+		employeeID, err := m.GetEmployeeID(token.Username)
+		if err != nil {
+			return err
+		}
+
+		result := m.db.Exec("INSERT INTO Tokens (Token,Role,Username,IssuedAt,ValidUntil,EmployeeId) VALUES (?,?,?,?,?,?)",
 			token.Token,
 			token.Role,
 			token.Username,
 			token.IssuedAt,
-			token.ValidUntil)
+			token.ValidUntil,
+			employeeID)
+		return result.Error
+	}
+}
+
+func (m *MSSQL) GetEmployeeID(username string) (int32, error) {
+	var employee DBEmployee
+	result := m.db.Where("Username = ?", username).First(&employee)
+	if result.Error != nil {
+		return 0, result.Error
 	}
 
-	return nil
+	if employee.EmployeeId == 0 {
+		return 0, fmt.Errorf("Could not find an employee with that username")
+	}
+
+	return employee.EmployeeId, nil
 }
 
 func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 	var token DBToken
-	fmt.Printf("Getting token for: %v\n\r", tokenID)
-	m.db.First(&token, "Token = ?", tokenID)
-
-	if token.Username == "" {
-		fmt.Println("huh")
-		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
+	result := m.db.First(&token, "Token = ?", tokenID)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	fmt.Printf("role: %d patientID: %d username: %v", token.Role, token.PatientID, token.Username)
+	if token.Username == "" {
+		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
+	}
 
 	return &token, nil
 }
