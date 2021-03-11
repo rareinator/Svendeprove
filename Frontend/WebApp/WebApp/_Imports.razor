@@ -7,15 +7,19 @@
 @using Microsoft.JSInterop
 @using WebApp
 @using WebApp.Shared
-@using DataAccessLibrary.Models;
-@using DataAccessLibrary
 @using System.Text.Json
 @using System.Security.Cryptography;
 @using WebApp.Components
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
 @using Blazored.Typeahead
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Components
+@using System.Security.Claims;
 
+@inject IAccountService _accountService;
 @inject NavigationManager MyNavigationManager
 @inject HttpClient Http
 @inject IUserData IUserData

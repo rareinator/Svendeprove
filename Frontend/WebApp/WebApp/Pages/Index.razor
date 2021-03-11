@@ -1,6 +1,5 @@
 ﻿@page "/"
 
-
 @if (error)
 {
     <div class="alert alert-danger" role="alert">
@@ -50,6 +49,7 @@
 
     [CascadingParameter(Name = "User")]
     public UserModel User { get; set; }
+    public PatientModel patient { get; set; }
     bool error = false;
     string errorMessage;
 
@@ -66,13 +66,21 @@
             User.Token = await IUserData.Login(User);
             if (User.Token != "" && User.Token != null)
             {
-                User.Password = "";
+                //User.Password = "";
                 User.Role = "Patient";
-                //Create JSon with User Data
-                string cookieJson = JsonSerializer.Serialize<UserModel>(User);
-                //Insert crypt in cookie
-                await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 15);
-                IUserUpdateService.UpdateUser(User);
+
+
+                if (Http.DefaultRequestHeaders.Contains("Authorization"))
+                {
+                    Http.DefaultRequestHeaders.Remove("Authorization");
+                }
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", User.Token);
+                _accountService.Login(User);
+
+                //string cookieJson = JsonSerializer.Serialize<UserModel>(User);
+                //await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 15);
+                //IUserUpdateService.UpdateUser(User);
+
                 MyNavigationManager.NavigateTo("/Journals");
             }
             else

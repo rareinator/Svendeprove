@@ -1,4 +1,5 @@
 @page "/Journals"
+@attribute [Authorize(Roles = "Patient")]
 
 <div class="container">
     <div class="row">
@@ -33,7 +34,6 @@
         </div>
     </div>
 </div>
-
 @code{
     string titel = "Dine Journaler";
     string infotext = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +

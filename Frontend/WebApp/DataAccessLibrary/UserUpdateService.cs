@@ -11,7 +11,7 @@ namespace DataAccessLibrary
 
         public void UpdateUser(UserModel user)
         {
-            OnUserUpdate?.Invoke(user);
+            //OnUserUpdate?.Invoke(user);
         }
     }
 }

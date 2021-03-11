@@ -1,40 +1,43 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <p class="navbar-brand" style="cursor:default">HOSPI Inc.</p>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+﻿<AuthorizeView>
+    <Authorized>
+        <div class="top-row pl-4 navbar navbar-dark">
+            <p class="navbar-brand" style="cursor:default">HOSPI Inc.</p>
+            <button class="navbar-toggler" @onclick="ToggleNavMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="Journals">
-                <span class="oi oi-document" aria-hidden="true"></span> Journaler
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="Examinations">
-                <span class="oi oi-medical-cross" aria-hidden="true"></span> Undersoegelser
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" style="cursor:pointer" @onclick="Logout" Match="NavLinkMatch.All">
-                <span class="oi oi-account-logout" aria-hidden="true"></span> Log af
-            </NavLink>
-        </li>
-    </ul>
-</div>
-
+        <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+            <ul class="nav flex-column">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="Journals">
+                        <span class="oi oi-document" aria-hidden="true"></span> Journaler
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="Examinations">
+                        <span class="oi oi-medical-cross" aria-hidden="true"></span> Undersoegelser
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="counter">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="fetchdata">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" style="cursor:pointer" @onclick="Logout" Match="NavLinkMatch.All">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log af
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
+    </Authorized>
+</AuthorizeView>
 @code {
     private bool collapseNavMenu = true;
 
@@ -47,8 +50,11 @@
 
     private async Task Logout()
     {
-        string cookieJson = "";
-        await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 0);
+        _accountService.Logout();
+        
+        //string cookieJson = "";
+        //await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 0);
+        
         MyNavigationManager.NavigateTo("/", true);
     }
 }

@@ -1,78 +1,96 @@
 ﻿@inherits LayoutComponentBase
+<CascadingValue Value="@user" Name="User">
 
-<CascadingValue Value="@User" Name="User">
     @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
     {
-        if (User.Role == "Patient")
-        {
-            <div class="sidebar">
-                <NavMenu />
-            </div>
-        }
-        else
-        {
-            <div class="sidebar">
-                <AdminNavMenu />
-            </div>
-        }
+        <AuthorizeView Roles="Patient">
+            <Authorized>
+
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
+
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+
+                <div class="sidebar">
+                    <AdminNavMenu />
+                </div>
+
+            </Authorized>
+        </AuthorizeView>
+
     }
 
     <div class="main">
-
         @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
         {
-            <div class="top-row px-4">
-                <h4>Velkommen</h4>
-                <h4 class="ml-md-auto">@User.Username</h4>
-            </div>
+            <AuthorizeView>
+                <Authorized>
+
+                    <div class="top-row px-4">
+                        <h4>Velkommen</h4>
+                        <h4 class="ml-md-auto">@user.Username</h4>
+                    </div>
+
+                </Authorized>
+            </AuthorizeView>
         }
         <div class="content px-4">
             @Body
         </div>
     </div>
 </CascadingValue>
+
+
 @code{
 
-    public UserModel User = new UserModel();
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public UserModel user = new UserModel();
 
 }
 
 @functions{
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        IUserUpdateService.OnUserUpdate += Handle;
+        //IUserUpdateService.OnUserUpdate += Handle;
+        
 
         base.OnInitialized();
     }
 
     protected void Handle(UserModel args)
     {
-        User = args;
+        //user = args;
         StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         //Get cookie
-        string cookieJson = await JSRuntime.InvokeAsync<string>("getCookie", "Data");
+        //string cookieJson = await JSRuntime.InvokeAsync<string>("getCookie", "Data");
         //Deserialize json
         //Fill data to user object
-        try
-        {
-            if(cookieJson != "")
-            {
-                User = JsonSerializer.Deserialize<UserModel>(cookieJson);
-            }
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
-        if (firstRender)
-        {
-            StateHasChanged();
-        }
+        //try
+        //{
+        //    if (cookieJson != "")
+        //    {
+        //        user = JsonSerializer.Deserialize<UserModel>(cookieJson);
+        //    }
+        //}
+        //catch (Exception)
+        //{
+        //
+        //    throw;
+        //}
+        //if (firstRender)
+        //{
+        //    StateHasChanged();
+        //}
     }
 }

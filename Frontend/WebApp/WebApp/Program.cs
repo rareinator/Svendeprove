@@ -1,4 +1,5 @@
 using DataAccessLibrary;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using WebApp.Auth;
 
 namespace WebApp
 {
@@ -19,9 +21,12 @@ namespace WebApp
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://cloud.m9ssen.me:56060") });
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationProvider>();
             builder.Services.AddScoped<IUserData, UserData>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddSingleton<IUserUpdateService, UserUpdateService>();
             builder.Services.AddScoped<IPatientData, PatientData>();
+            builder.Services.AddAuthorizationCore();
 
             await builder.Build().RunAsync();
         }
