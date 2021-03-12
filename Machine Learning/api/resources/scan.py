@@ -1,9 +1,10 @@
 import os
 import cv2
+import base64
 import numpy as np
 import tensorflow as tf
 from flask import request
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from common.ml import PredictionService
 
 IMG_SIZE = 96
@@ -12,15 +13,22 @@ Prediction = PredictionService("scan")
 class Scan(Resource):
 
     def post(self):
-        scan_file = request.files["scan"]
-        if not scan_file or scan_file.filename == '':
+        parser = reqparse.RequestParser()
+        parser.add_argument('scan')
+        parser = parser.parse_args()
+        scan_file = parser["scan"]
+
+        if not scan_file:
             return {'code': 400,
                     'message': "No image received or image could not be read"}, 400
-        scan_file.save(scan_file.filename)
+        # Save on disk - Unable to convert to numpy array while in memory
+        with open("img.jpg", "wb") as fh:
+            fh.write(base64.b64decode(scan_file))
+
         try:
-            image = self._format_image(scan_file.filename)
+            image = self._format_image("img.jpg")
         except:
-            os.remove(scan_file.filename)
+            os.remove("img.jpg")
             return {'code': 415,
                     'message': 'The image could not be processed'}, 415
         prediction = Prediction.predict(image)

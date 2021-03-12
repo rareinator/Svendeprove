@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 
-from api.common.data import DataCache
+from common.data import DataCache
 
 @pytest.fixture
 def data():
