@@ -16,6 +16,7 @@ import (
 
 type server struct {
 	router                *mux.Router
+	staticFileDir         string
 	journalService        journal.JournalServiceClient
 	authenticationService authentication.AuthenticationServiceClient
 	patientService        patient.PatientServiceClient
@@ -38,6 +39,8 @@ func (s *server) ServeHTTP() {
 	corsHandler := &corsHandler{
 		router: s.router,
 	}
+
+	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(s.staticFileDir))))
 
 	http.ListenAndServe(address, corsHandler)
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
@@ -244,7 +245,8 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 			return
 		}
 		journalDocument.CreatedBy = employeeID
-		fmt.Printf("EmployeeID Got: %v\n\r", employeeID)
+
+		fmt.Println("Calling journalService")
 
 		response, err := s.journalService.CreateJournalDocument(context.Background(), &journalDocument)
 		if err != nil {
@@ -252,7 +254,18 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 			return
 		}
 
-		fmt.Println("Called journalService")
+		if len(response.Attachments) > 0 {
+			fmt.Println("there were some journal attachments")
+			for _, attachment := range response.Attachments {
+				filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
+				err := s.saveFile(*attachment.Content, filePath)
+				if err != nil {
+					s.returnError(w, http.StatusInternalServerError, err.Error())
+					return
+				}
+				*attachment.Content = ""
+			}
+		}
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
