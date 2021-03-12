@@ -36,6 +36,17 @@ func (s *server) handleCors() http.HandlerFunc {
 	}
 }
 
+func (s *server) log(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("request received:")
+		fmt.Printf("%v called %v\n\rresource %v\n\r", r.Host, r.Method, r.RequestURI)
+
+		if r.Method == "POST" {
+			fmt.Printf("Body: \b\r%v\n\r", r.Body)
+		}
+	}
+}
+
 func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("authenticating")
@@ -46,12 +57,12 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) != 2 {
 			fmt.Println("trying to access with no token")
-			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")
+			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
 			return
 		}
 		reqToken = splitToken[1]
 		if reqToken == "" {
-			s.returnError(w, http.StatusNotAcceptable, "No valid token specified")
+			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
 			return
 		}
 
