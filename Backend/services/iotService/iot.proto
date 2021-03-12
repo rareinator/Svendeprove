@@ -1,0 +1,37 @@
+syntax = "proto3";
+option go_package = ".;iot";
+
+message IOTEmpty {}
+
+message IOTHealth {
+  string Message = 1;
+}
+
+message IOTData {
+  string ID = 1;
+  string Name = 2;
+  int32 SensorID = 3;
+  string Data = 4;
+  string Timestamp = 5;
+}
+
+message IOTDatas {
+  repeated IOTData IOTDatas = 1;
+}
+
+message IOTTimeframeRequest {
+  string TimeStart = 1;
+  string TimeEnd = 2;
+}
+
+message IOTRequest {
+  int32 ID = 1;
+}
+
+service IotService {
+  rpc GetHealth(IOTEmpty) returns (IOTHealth) {}
+
+  rpc UploadDate(IOTData) returns (IOTData) {}
+  rpc ReadData(IOTRequest) returns (IOTData) {}
+  rpc ReadDataInTimeFrame (IOTTimeframeRequest) returns (IOTDatas) {}
+}

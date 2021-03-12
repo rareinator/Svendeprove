@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
+	"github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
@@ -20,6 +21,7 @@ type server struct {
 	patientService        patient.PatientServiceClient
 	bookingService        booking.BookingServiceClient
 	useradminService      useradmin.UseradminServiceClient
+	iotService            iot.IotServiceClient
 }
 
 func newServer() *server {

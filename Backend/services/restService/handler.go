@@ -11,6 +11,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	bookingService "github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
+	iotService "github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
 	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 	useradminService "github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
@@ -1021,5 +1022,20 @@ func (s *server) handleAuthenticationPatientLogin() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handleIOTHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		i := iotService.IOTEmpty{}
+
+		response, err := s.iotService.GetHealth(context.Background(), &i)
+		if err != nil {
+			s.returnError(w, http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(response.Message))
 	}
 }

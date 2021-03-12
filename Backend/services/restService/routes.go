@@ -324,4 +324,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("GET")
 
+	// IOT Methods
+	s.router.Handle("/iot/health", s.handleIOTHealth()).Methods("GET") //GetHealth
+
 }

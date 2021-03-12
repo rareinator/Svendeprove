@@ -39,11 +39,13 @@ func (s *server) handleCors() http.HandlerFunc {
 func (s *server) log(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("request received:")
-		fmt.Printf("%v called %v\n\rresource %v\n\r", r.Host, r.Method, r.RequestURI)
+		fmt.Printf("%v called %v\n\rresource %v\n\r", r.RemoteAddr, r.Method, r.RequestURI)
 
 		if r.Method == "POST" {
 			fmt.Printf("Body: \b\r%v\n\r", r.Body)
 		}
+
+		next(w, r)
 	}
 }
 
