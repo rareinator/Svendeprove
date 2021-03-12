@@ -93,6 +93,23 @@ func (s *server) routes() {
 				allowedPatient: "",
 			}))).Methods("GET")
 
+	s.router.Handle("/journal/ml", //Upload images to ML
+		s.log(s.authenticate(
+			s.handleJournalMLUpload(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Employee, models.Doctor, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			}))).Methods("POST")
+
+	s.router.Handle("/journal/symptoms", //Upload symptoms to ML
+		s.log(s.authenticate(s.handleJournalUploadSymptoms(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+			}))).Methods("POST")
+
 	// Authentication methods
 	s.router.Handle("/authentication/health", s.handleAuthenticationHealth()).Methods("GET")
 

@@ -16,7 +16,7 @@
 * [x] UpdateJournal /journal/{id:[0-9]+} POST
 * [x] DeleteJournal /journal/{id:[0-9]+} DELETE
 * [x] JournalByPatient /journal/byPatient/{id:[0-9]+} GET
-* [ ] UploadJournalDocumentsToML /journal/ml POST
+* [x] UploadJournalDocumentsToML /journal/ml POST
 * [ ] UploadSymptomstoML /journal/symptoms POST
 
 #### Journal Documents

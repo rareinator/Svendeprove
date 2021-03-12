@@ -2,16 +2,48 @@ package mssql
 
 import "time"
 
+type DBAttachment struct {
+	AttachmentId    int32             `gorm:"column:AttachmentId;primaryKey"`
+	FileName        string            `gorm:"column:FileName"`
+	FileStoreId     int32             `gorm:"column:FileStoreId"`
+	DocumentId      int32             `gorm:"column:DocumentId"`
+	FileTypeId      int32             `gorm:"column:FileTypeId"`
+	JournalDocument DBJournalDocument `gorm:"foreignKey:DocumentId;references:DocumentId"`
+	FileType        DBFileType        `gorm:"foreignKey:FileTypeId;references:FileTypeId"`
+	FileStore       DBFileStore       `gorm:"foreignKey:FileStoreId;references:FileStoreId"`
+}
+
+func (DBAttachment) TableName() string {
+	return "Attachment"
+}
+
+type DBFileStore struct {
+	FileStoreId int32  `gorm:"column:FileStoreId;primaryKey"`
+	Path        string `gorm:"column:Path"`
+}
+
+type DBFileType struct {
+	FileTypeId int32  `gorm:"column:FileTypeId;primaryKey"`
+	Name       string `gorm:"column:Name"`
+}
+
+func (DBFileType) TableName() string {
+	return "FileType"
+}
+
+func (DBFileStore) TableName() string {
+	return "FileStore"
+}
+
 type DBJournalDocument struct {
-	DocumentId      int32     `gorm:"column:DocumentId;primaryKey"`
-	Content         string    `gorm:"column:Content"`
-	DocumentStoreId int32     `gorm:"column:DocumentStoreId"`
-	JournalId       int32     `gorm:"column:Journalid"`
-	DocumentType    string    `gorm:"column:DocumentType"`
-	CreatedBy       int32     `gorm:"column:CreatedBy"`
-	Title           string    `gorm:"column:Title"`
-	Summary         string    `gorm:"column:Summary"`
-	CreationTime    time.Time `gorm:"column:CreationTime"`
+	DocumentId   int32          `gorm:"column:DocumentId;primaryKey"`
+	Content      string         `gorm:"column:Content"`
+	JournalId    int32          `gorm:"column:Journalid"`
+	CreatedBy    int32          `gorm:"column:CreatedBy"`
+	Title        string         `gorm:"column:Title"`
+	Summary      string         `gorm:"column:Summary"`
+	CreationTime time.Time      `gorm:"column:CreationTime"`
+	Attachments  []DBAttachment `gorm:"foreignKey:DocumentId"`
 }
 
 func (DBJournalDocument) TableName() string {

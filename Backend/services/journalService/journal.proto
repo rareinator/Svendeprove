@@ -36,13 +36,12 @@ message Journals {
 message JournalDocument {
   int32 DocumentId = 1;
   string Content = 2;
-  int32 DocumentStoreId = 3;
-  int32 JournalId = 4;
-  string DocumentType = 5;
-  int32 CreatedBy = 6;
-  string Title = 7;
-  string Summary = 8;
-  string CreationTime = 9;
+  int32 JournalId = 3;
+  int32 CreatedBy = 4;
+  string Title = 5;
+  string Summary = 6;
+  string CreationTime = 7;
+  repeated Attachment Attachments = 8;
 }
 
 message JournalDocuments {
@@ -51,6 +50,17 @@ message JournalDocuments {
 
 message JournalDocumentRequest {
   int32 JournalDocumentId = 1;
+}
+
+message Attachment {
+  int32 AttachmentId = 1;
+  string FileName = 2;
+  int32 FileStoreId = 3;
+  int32 DocumentId = 4;
+  int32 FileTypeId = 5;
+  optional string FileType = 6;
+  optional string Path = 7;
+  optional string Content = 8;
 }
 
 service JournalService {

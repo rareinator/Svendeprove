@@ -75,6 +75,8 @@ func execute() error {
 	srv.useradminService = useradmin.NewUseradminServiceClient(useradminConn)
 	srv.iotService = iot.NewIotServiceClient(iotConn)
 
+	srv.staticFileDir = "./static"
+
 	srv.ServeHTTP()
 
 	return nil

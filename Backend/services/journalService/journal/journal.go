@@ -127,14 +127,12 @@ func (j *JournalServer) DeleteJournalDocument(ctx context.Context, jdr *JournalD
 
 func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalDocument) (*JournalDocument, error) {
 	dbJournalDocument := mssql.DBJournalDocument{
-		DocumentId:      jdr.DocumentId,
-		Content:         jdr.Content,
-		DocumentStoreId: jdr.DocumentStoreId,
-		JournalId:       jdr.JournalId,
-		DocumentType:    jdr.DocumentType,
-		CreatedBy:       jdr.CreatedBy,
-		Title:           jdr.Title,
-		Summary:         jdr.Summary,
+		DocumentId: jdr.DocumentId,
+		Content:    jdr.Content,
+		JournalId:  jdr.JournalId,
+		CreatedBy:  jdr.CreatedBy,
+		Title:      jdr.Title,
+		Summary:    jdr.Summary,
 	}
 
 	if err := j.DB.UpdateJournalDocument(&dbJournalDocument); err != nil {
@@ -146,21 +144,54 @@ func (j *JournalServer) UpdateJournalDocument(ctx context.Context, jdr *JournalD
 }
 
 func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDocument) (*JournalDocument, error) {
+	fmt.Println("JournalService got called")
 	dbJD := mssql.DBJournalDocument{
-		Content:         jd.Content,
-		DocumentStoreId: jd.DocumentStoreId,
-		JournalId:       jd.JournalId,
-		DocumentType:    jd.DocumentType,
-		CreatedBy:       jd.CreatedBy,
-		Title:           jd.Title,
-		Summary:         jd.Summary,
-		CreationTime:    time.Now(),
+		Content:      jd.Content,
+		JournalId:    jd.JournalId,
+		CreatedBy:    jd.CreatedBy,
+		Title:        jd.Title,
+		Summary:      jd.Summary,
+		CreationTime: time.Now(),
 	}
 
 	jd.CreationTime = dbJD.CreationTime.Format("02/01/2006 15:04:05")
 
 	if err := j.DB.CreateJournalDocument(&dbJD); err != nil {
 		return nil, err
+	}
+
+	fmt.Println("did databaseStuff")
+
+	if len(jd.Attachments) > 0 {
+		fmt.Println("Saving journal document Attachments")
+		for _, attachment := range jd.Attachments {
+			fileType, err := j.DB.GetOrCreateFileTypeByName(*attachment.FileType)
+			if err != nil {
+				return nil, err
+			}
+			fmt.Println("did filetype stuff")
+			//build up store name
+			storeName := fmt.Sprintf("/journal/document/%v", dbJD.DocumentId)
+			fmt.Println("buildUpStoreName")
+			store, err := j.DB.GetOrCreateFileStoreByPath(storeName)
+			if err != nil {
+				return nil, err
+			}
+
+			dbAttachment := mssql.DBAttachment{
+				FileName:    attachment.FileName,
+				FileStoreId: store.FileStoreId,
+				DocumentId:  dbJD.DocumentId,
+				FileTypeId:  fileType.FileTypeId,
+			}
+
+			if err := j.DB.CreateAttachment(&dbAttachment); err != nil {
+				return nil, err
+			}
+			path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", store.Path, attachment.FileName, *attachment.FileType)
+			fmt.Printf("path: %v\n\r", path)
+			attachment.Path = &path
+		}
 	}
 
 	jd.DocumentId = dbJD.DocumentId
@@ -180,15 +211,13 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 
 	for _, dbJournalDocument := range dbJournalDocuments {
 		journalDocument := &JournalDocument{
-			DocumentId:      dbJournalDocument.DocumentId,
-			Content:         dbJournalDocument.Content,
-			DocumentStoreId: dbJournalDocument.DocumentStoreId,
-			JournalId:       dbJournalDocument.JournalId,
-			DocumentType:    dbJournalDocument.DocumentType,
-			CreatedBy:       dbJournalDocument.CreatedBy,
-			Title:           dbJournalDocument.Title,
-			Summary:         dbJournalDocument.Summary,
-			CreationTime:    dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
+			DocumentId:   dbJournalDocument.DocumentId,
+			Content:      dbJournalDocument.Content,
+			JournalId:    dbJournalDocument.JournalId,
+			CreatedBy:    dbJournalDocument.CreatedBy,
+			Title:        dbJournalDocument.Title,
+			Summary:      dbJournalDocument.Summary,
+			CreationTime: dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
 		}
 
 		journalDocuments.JournalDocuments = append(journalDocuments.JournalDocuments, journalDocument)
@@ -204,16 +233,35 @@ func (j *JournalServer) GetJournalDocument(ctx context.Context, jdr *JournalDocu
 		return nil, err
 	}
 
+	var attachments []*Attachment
+	fmt.Println("Getting journal")
+
+	if len(dbJournalDocument.Attachments) > 0 {
+		fmt.Println("Found attachments")
+		for _, attachment := range dbJournalDocument.Attachments {
+			resultAttachment := Attachment{
+				AttachmentId: attachment.AttachmentId,
+				FileName:     attachment.FileName,
+				FileType:     new(string),
+				Path:         new(string),
+			}
+			path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", attachment.FileStore.Path, attachment.FileName, attachment.FileType.Name)
+			fmt.Printf("path: %v\n\r", path)
+			resultAttachment.Path = &path
+			resultAttachment.FileType = &attachment.FileType.Name
+			attachments = append(attachments, &resultAttachment)
+		}
+	}
+
 	result := JournalDocument{
-		DocumentId:      dbJournalDocument.DocumentId,
-		Content:         dbJournalDocument.Content,
-		DocumentStoreId: dbJournalDocument.DocumentStoreId,
-		JournalId:       dbJournalDocument.JournalId,
-		DocumentType:    dbJournalDocument.DocumentType,
-		CreatedBy:       dbJournalDocument.CreatedBy,
-		Title:           dbJournalDocument.Title,
-		Summary:         dbJournalDocument.Summary,
-		CreationTime:    dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
+		DocumentId:   dbJournalDocument.DocumentId,
+		Content:      dbJournalDocument.Content,
+		JournalId:    dbJournalDocument.JournalId,
+		CreatedBy:    dbJournalDocument.CreatedBy,
+		Title:        dbJournalDocument.Title,
+		Summary:      dbJournalDocument.Summary,
+		CreationTime: dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
+		Attachments:  attachments,
 	}
 
 	return &result, nil

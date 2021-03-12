@@ -1,6 +1,7 @@
 package mssql
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -179,11 +180,7 @@ func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error 
 
 func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error {
 	var result *gorm.DB
-	if journalDocument.DocumentStoreId == 0 {
-		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("DocumentStoreId", "CreationTime").Save(&journalDocument)
-	} else {
-		result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("CreationTime").Save(&journalDocument)
-	}
+	result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("CreationTime").Save(&journalDocument)
 
 	if result.Error != nil {
 		return result.Error
@@ -194,11 +191,8 @@ func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error 
 
 func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error {
 	var result *gorm.DB
-	if journalDocument.DocumentStoreId == 0 {
-		result = m.db.Omit("DocumentStoreId").Create(&journalDocument)
-	} else {
-		result = m.db.Create(&journalDocument)
-	}
+	result = m.db.Create(&journalDocument)
+	fmt.Println("huh")
 
 	if result.Error != nil {
 		return result.Error
@@ -221,7 +215,7 @@ func (m *MSSQL) GetJournalDocumentsByJournal(journalID int32) ([]*DBJournalDocum
 
 func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument, error) {
 	var journalDocument DBJournalDocument
-	result := m.db.Where("DocumentId = ?", journalDocumentID).First(&journalDocument)
+	result := m.db.Where("DocumentId = ?", journalDocumentID).Preload("Attachments").Preload("Attachments.FileType").Preload("Attachments.FileStore").First(&journalDocument)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -420,6 +414,56 @@ func (m *MSSQL) DeletePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom) erro
 	}
 
 	return nil
+}
+
+func (m *MSSQL) CreateAttachment(attachment *DBAttachment) error {
+	result := m.db.Create(attachment)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (m *MSSQL) GetOrCreateFileTypeByName(name string) (*DBFileType, error) {
+	var fileType DBFileType
+	result := m.db.Where("Name = ?", name).First(&fileType)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			fileType.Name = name
+			result = m.db.Create(&fileType)
+			if result.Error != nil {
+				return nil, result.Error
+			}
+			return &fileType, nil
+		}
+
+		return nil, result.Error
+	}
+
+	return &fileType, nil
+}
+
+func (m *MSSQL) GetOrCreateFileStoreByPath(path string) (*DBFileStore, error) {
+	var fileStore DBFileStore
+	fmt.Println("Finding store")
+	result := m.db.Where("Path = ?", path).First(&fileStore)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			fileStore.Path = path
+			fmt.Printf("Creating store%v\n\r", fileStore.Path)
+			result = m.db.Create(&fileStore)
+			if result.Error != nil {
+				return nil, result.Error
+			}
+			fmt.Println("returning stuff 1")
+			return &fileStore, nil
+		}
+		return nil, result.Error
+	}
+
+	fmt.Println("returning stuff 2")
+	return &fileStore, nil
 }
 
 func (m *MSSQL) CreateBooking(booking *DBBooking) error {

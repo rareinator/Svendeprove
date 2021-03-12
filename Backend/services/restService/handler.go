@@ -1,11 +1,17 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
@@ -244,7 +250,8 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 			return
 		}
 		journalDocument.CreatedBy = employeeID
-		fmt.Printf("EmployeeID Got: %v\n\r", employeeID)
+
+		fmt.Println("Calling journalService")
 
 		response, err := s.journalService.CreateJournalDocument(context.Background(), &journalDocument)
 		if err != nil {
@@ -252,7 +259,18 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 			return
 		}
 
-		fmt.Println("Called journalService")
+		if len(response.Attachments) > 0 {
+			fmt.Println("there were some journal attachments")
+			for _, attachment := range response.Attachments {
+				filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
+				err := s.saveFile(*attachment.Content, filePath)
+				if err != nil {
+					s.returnError(w, http.StatusInternalServerError, err.Error())
+					return
+				}
+				*attachment.Content = ""
+			}
+		}
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
@@ -333,6 +351,93 @@ func (s *server) handleJournalDocumentRead() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+type Prediction struct {
+	Positive string `json:"positive"`
+	Negative string `json:"negative"`
+}
+
+type MLOutput struct {
+	Code       int        `json:"code"`
+	Prediction Prediction `json:"prediction"`
+}
+
+type MLResponse struct {
+	Url  string `json:"Url"`
+	Data MLOutput
+}
+
+func (s *server) handleJournalUploadSymptoms() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func (s *server) handleJournalMLUpload() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var Attachments []string
+		response := make([]*MLResponse, 0)
+
+		json.NewDecoder(r.Body).Decode(&Attachments)
+
+		for _, attachment := range Attachments {
+			fmt.Println(attachment)
+			filePath := strings.ReplaceAll(attachment, "http://cloud.m9ssen.me:56060/", "./")
+			img, err := os.Open(filePath)
+			if err != nil {
+				s.returnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			defer img.Close()
+
+			fInfo, _ := img.Stat()
+			var size int64 = fInfo.Size()
+			buf := make([]byte, size)
+
+			fReader := bufio.NewReader(img)
+			fReader.Read(buf)
+			base64Str := base64.StdEncoding.EncodeToString(buf)
+			requestBody, err := json.Marshal(map[string]string{
+				"scan": base64Str,
+			})
+			if err != nil {
+				s.returnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			resp, err := http.Post(os.Getenv("ML_IMAGE_ENDPOINT"), "application/json", bytes.NewBuffer(requestBody))
+			if err != nil {
+				s.returnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			defer resp.Body.Close()
+
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				s.returnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			fmt.Println(string(body))
+			data := new(MLResponse)
+			jsonResponse := new(MLOutput)
+			err = json.Unmarshal(body, &jsonResponse)
+			if err != nil {
+				s.returnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			// fmt.Printf("got code %v\n\r", data.Data.Code)
+			data.Data = *jsonResponse
+			data.Url = attachment
+			response = append(response, data)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response)
+
 	}
 }
 
