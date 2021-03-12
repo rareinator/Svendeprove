@@ -58,15 +58,35 @@
         Console.WriteLine("Login");
         if (clicked)
         {
-            MyNavigationManager.NavigateTo("/Administration/");
+            User.Token = await IUserData.LoginEmployee(User);
+            if (User.Token != "" && User.Token != null)
+            {
+                User.Role = "Admin";
+
+
+                if (Http.DefaultRequestHeaders.Contains("Authorization"))
+                {
+                    Http.DefaultRequestHeaders.Remove("Authorization");
+                }
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", User.Token);
+                _accountService.Login(User);
+
+
+                MyNavigationManager.NavigateTo("/Administration");
+            }
+            else
+            {
+                error = true;
+                errorMessage = "Could not login";
+                StateHasChanged();
+            }
         }
         else
         {
 
-            User.Token = await IUserData.Login(User);
+            User.Token = await IUserData.LoginPatient(User);
             if (User.Token != "" && User.Token != null)
             {
-                //User.Password = "";
                 User.Role = "Patient";
 
 
@@ -77,9 +97,6 @@
                 Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", User.Token);
                 _accountService.Login(User);
 
-                //string cookieJson = JsonSerializer.Serialize<UserModel>(User);
-                //await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 15);
-                //IUserUpdateService.UpdateUser(User);
 
                 MyNavigationManager.NavigateTo("/Journals");
             }

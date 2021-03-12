@@ -5,6 +5,7 @@ namespace DataAccessLibrary
 {
     public interface IUserData
     {
-        Task<string> Login(UserModel user);
+        Task<string> LoginPatient(UserModel user);
+        Task<string> LoginEmployee(UserModel user);
     }
 }

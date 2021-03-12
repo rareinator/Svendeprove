@@ -1,0 +1,64 @@
+﻿@page "/ViewDocument/{DocumentId:int}"
+
+<h4>
+    <button type="button" class="btn btn-primary" @onclick="Back">Back</button>&nbsp;
+    @* AUTHORIZATION HERE *@
+    <button type="button" class="btn btn-secondary" @onclick="EditDocument">Ret</button>
+    @* ///////////////// *@
+</h4>
+<br />
+<i>@SelectedDocument.CreationTime</i>
+<div>
+    <h1>@SelectedDocument.Title</h1>
+</div>
+<hr />
+<div>
+    <div>
+        @((MarkupString)SelectedDocument.Content)
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [Parameter]
+    public int DocumentId { get; set; }
+
+    private JournalDocumentModel SelectedDocument = new JournalDocumentModel();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectedDocument = await JournalData.GetJournalDocument(DocumentId);
+    }
+
+    private async Task EditDocument()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateDocument.SelectedDocument), SelectedDocument);
+
+        var createDocument = Modal.Show<CreateDocument>("Ret Dokument", parameters);
+        var result = await createDocument.Result;
+
+        if (!result.Cancelled)
+        {
+            JournalDocumentModel document = (JournalDocumentModel)result.Data;
+            if (document != null)
+            {
+                await JournalData.UpdateJournalDocument(document);
+            }
+            else
+            {
+                StateHasChanged();
+                Back();
+            }
+        }
+    }
+
+    void Back()
+    {
+        string url = MyNavigationManager.ToAbsoluteUri($"/journal/{SelectedDocument.JournalId}").AbsoluteUri;
+        MyNavigationManager.NavigateTo(url);
+    }
+}

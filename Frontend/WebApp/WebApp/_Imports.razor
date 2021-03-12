@@ -2,27 +2,28 @@
 @using System.Net.Http.Json
 @using System.Text.Json
 @using System.Security.Cryptography
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Authorization;
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 @using Microsoft.JSInterop
 @using WebApp
 @using WebApp.Shared
 @using WebApp.Components
+@using WebApp.Modals
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
 @using Blazored.Typeahead
-@using Microsoft.AspNetCore.Authorization;
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-@using Microsoft.AspNetCore.Components.Authorization;
-@using Microsoft.AspNetCore.Components
-@using System.Security.Claims;
 @using Blazored.Modal
 @using Blazored.Modal.Services
 @using Blazored.TextEditor;
 
-@inject IAccountService _accountService;
+@inject IAccountService _accountService
 @inject NavigationManager MyNavigationManager
 @inject HttpClient Http
 @inject IUserData IUserData

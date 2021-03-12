@@ -30,7 +30,6 @@
     private async Task SubmitForm()
     {
         newJournal.PatientId = Patient.PatientId;
-        newJournal.CreationTime = DateTime.Now;
         await BlazoredModal.CloseAsync(ModalResult.Ok(newJournal));
     }
 

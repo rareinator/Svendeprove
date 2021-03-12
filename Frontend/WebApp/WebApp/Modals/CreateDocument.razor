@@ -42,10 +42,6 @@
                 </span>
                 <span class="ql-formats">
                     <button class="ql-link"></button>
-                    <button class="btn btn-link" id="custom-button"
-                            @onclick="InsertImageSummaryClick">
-                        <img src="imageIcon.png" style="border:hidden" />
-                    </button>
                 </span>
             </ToolbarContent>
             <EditorContent>
@@ -97,10 +93,6 @@
                 </span>
                 <span class="ql-formats">
                     <button class="ql-link"></button>
-                    <button class="btn btn-link" id="custom-button"
-                            @onclick="InsertImageClick">
-                        <img src="imageIcon.png" style="border:hidden" />
-                    </button>
                 </span>
             </ToolbarContent>
             <EditorContent>
@@ -122,7 +114,7 @@
 
 <!-- Button to save the user -->
 <button class="btn btn-primary" @onclick="Save">
-    Save
+    Gem
 </button>&nbsp;
 
 <!-- Only show delete button if not a new record -->
@@ -130,7 +122,7 @@
 {
     <!-- Button to delete the Blog -->
     <button class="btn btn-danger" @onclick="Delete">
-        Delete
+        Slet
     </button>
 }
 <br />
@@ -138,6 +130,9 @@
 @code { 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
 
     [Parameter]
     public JournalDocumentModel SelectedDocument { get; set; }
@@ -149,12 +144,23 @@
 
     private async Task Save()
     {
+        if (RichTextEditorModeSummary)
+        {
+            SelectedDocument.Summary = await this.QuillHtmlSummary.GetHTML();
+        }
+
+        if (RichTextEditorMode)
+        {
+            SelectedDocument.Content = await this.QuillHtml.GetHTML();
+        }
+
         await BlazoredModal.CloseAsync(ModalResult.Ok(SelectedDocument));
     }
 
     private async Task Delete()
     {
-
+        JournalData.DeleteJournalDocument(SelectedDocument.DocumentId);
+        await BlazoredModal.CloseAsync();
     }
 
 
@@ -184,31 +190,5 @@
         RichTextEditorMode = false;
         SelectedDocument.Content =
         await this.QuillHtml.GetHTML();
-    }
-
-    // Inserting Images
-
-    private void InsertImageSummaryClick()
-    {
-        //FileManagerControlSummary.SetShowFileManager(true);
-    }
-
-    private void InsertImageClick()
-    {
-        //FileManagerControl.SetShowFileManager(true);
-    }
-
-    async Task InsertImageSummary(string paramImageURL)
-    {
-        await this.QuillHtmlSummary.InsertImage(paramImageURL);
-
-        //FileManagerControl.SetShowFileManager(false);
-    }
-
-    async Task InsertImage(string paramImageURL)
-    {
-        await this.QuillHtml.InsertImage(paramImageURL);
-
-        //FileManagerControl.SetShowFileManager(false);
     }
 }

@@ -1,4 +1,6 @@
 ﻿@page "/journal/{JournalId:int}"
+
+<button type="button" class="btn btn-primary" @onclick="Back">Back</button>&nbsp;
 @* IF AROUND THIS CHECK IF NURSE OR DOCTOR ROLE *@
 <button type="button" class="btn btn-primary" @onclick="NewJournalDocument">Opret</button>
 <br />
@@ -6,13 +8,13 @@
 @* /////////////////////////////// *@
 @if (journalDocuments.Count == 0)
 {
-    <h2>No items returned</h2> 
+    <h2>No items returned</h2>
 }
 else
 {
     @foreach (var document in journalDocuments)
     {
-        <a href="ViewJournalDocument/@document.DocumentId"><h2>@document.CreationTime.ToShortDateString() - @document.Title</h2></a>
+        <a href="ViewDocument/@document.DocumentId"><h2>@document.CreationTime - @document.Title</h2></a>
         <div class="form-group">
             @((MarkupString)document.Summary)
         </div>
@@ -37,20 +39,22 @@ else
     private async Task NewJournalDocument()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(CreateDocument.SelectedDocument), new JournalDocumentModel { CreationTime = DateTime.Now, JournalId = JournalId});
+        parameters.Add(nameof(CreateDocument.SelectedDocument), new JournalDocumentModel { CreationTime = DateTime.Now, JournalId = JournalId });
 
         var createDocument = Modal.Show<CreateDocument>("Opret Dokument", parameters);
         var result = await createDocument.Result;
 
         if (!result.Cancelled)
         {
-            JournalDocumentModel document = (JournalDocumentModel)result.Data;
 
-            if (document.DocumentId == 0)
-            {
-                JournalData.InsertJournalDocument(document);
-                journalDocuments.Add(document);
-            }
+            JournalDocumentModel newDocument = await JournalData.InsertJournalDocument((JournalDocumentModel)result.Data);
+            journalDocuments.Add(newDocument);
         }
+    }
+
+    void Back()
+    {
+        string url = MyNavigationManager.ToAbsoluteUri($"Administration/").AbsoluteUri;
+        MyNavigationManager.NavigateTo(url);
     }
 }

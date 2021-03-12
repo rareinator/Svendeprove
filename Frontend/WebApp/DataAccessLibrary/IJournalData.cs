@@ -6,9 +6,15 @@ namespace DataAccessLibrary
 {
     public interface IJournalData
     {
+        // JOURNAL
         Task<List<JournalModel>> GetJournalsByPatient(int patientId);
-        void InsertJournal(JournalModel journal);
+        Task<JournalModel> InsertJournal(JournalModel journal);
+
+        // JOURNAL DOCUMENTS
         Task<List<JournalDocumentModel>> GetJournalDocuments(int journalId);
-        void InsertJournalDocument(JournalDocumentModel journalDocument);
+        Task<JournalDocumentModel> GetJournalDocument(int documentId);
+        Task<JournalDocumentModel> InsertJournalDocument(JournalDocumentModel document);
+        Task<JournalDocumentModel> UpdateJournalDocument(JournalDocumentModel document);
+        void DeleteJournalDocument(int documentId);
     }
 }

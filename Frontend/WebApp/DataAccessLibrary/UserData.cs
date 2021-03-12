@@ -25,9 +25,21 @@ namespace DataAccessLibrary
             _client = client;
         }
 
-        public async Task<string> Login(UserModel user)
+        public async Task<string> LoginPatient(UserModel user)
         {
             var response = await _client.PostAsJsonAsync<UserModel>("/authentication/patient/login", user);
+            string responseMessage = await response.Content.ReadAsStringAsync();
+
+            var token = JsonSerializer.Deserialize<TokenClass>(responseMessage);
+
+
+
+            return token.Token;
+        }
+
+        public async Task<string> LoginEmployee(UserModel user)
+        {
+            var response = await _client.PostAsJsonAsync<UserModel>("/authentication/employee/login", user);
             string responseMessage = await response.Content.ReadAsStringAsync();
 
             var token = JsonSerializer.Deserialize<TokenClass>(responseMessage);
