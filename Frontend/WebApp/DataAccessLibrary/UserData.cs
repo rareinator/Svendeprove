@@ -18,21 +18,16 @@ namespace DataAccessLibrary
 
     public class UserData : IUserData
     {
-        private readonly HttpClient _client;
+        private readonly HTTPService _client;
 
-        public UserData(HttpClient client)
+        public UserData(HTTPService client)
         {
             _client = client;
         }
 
         public async Task<string> Login(UserModel user)
         {
-            var response = await _client.PostAsJsonAsync<UserModel>("/authentication/patient/login", user);
-            string responseMessage = await response.Content.ReadAsStringAsync();
-
-            var token = JsonSerializer.Deserialize<TokenClass>(responseMessage);
-
-
+            var token = await _client.PostData<UserModel,TokenClass>("/authentication/patient/login", user);
 
             return token.Token;
         }

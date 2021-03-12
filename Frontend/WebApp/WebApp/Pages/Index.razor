@@ -70,11 +70,7 @@
                 User.Role = "Patient";
 
 
-                if (Http.DefaultRequestHeaders.Contains("Authorization"))
-                {
-                    Http.DefaultRequestHeaders.Remove("Authorization");
-                }
-                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", User.Token);
+                Http.SetAuthHeader(new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", User.Token));
                 _accountService.Login(User);
 
                 //string cookieJson = JsonSerializer.Serialize<UserModel>(User);

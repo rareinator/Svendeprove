@@ -20,8 +20,7 @@ namespace WebApp
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
-
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://cloud.m9ssen.me:56060") });
+            builder.Services.AddScoped(sp => new HTTPService(new Uri("http://cloud.m9ssen.me:56060")));
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationProvider>();
             builder.Services.AddScoped<IUserData, UserData>();
             builder.Services.AddScoped<IAccountService, AccountService>();

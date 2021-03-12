@@ -11,32 +11,32 @@ namespace DataAccessLibrary
 {
     public class JournalData : IJournalData
     {
-        private readonly HttpClient _client;
+        private readonly HTTPService _client;
 
-        public JournalData(HttpClient client)
+        public JournalData(HTTPService client)
         {
             _client = client;
         }
 
         public async Task<List<JournalModel>> GetJournalsByPatient(int patientId)
         {
-            return await _client.GetFromJsonAsync<List<JournalModel>>($"/journal/byPatient/{patientId}");
+            return await _client.GetData<List<JournalModel>>($"/journal/byPatient/{patientId}");
         }
 
         public async Task<List<JournalDocumentModel>> GetJournalDocuments(int journalId)
         {
-            return await _client.GetFromJsonAsync<List<JournalDocumentModel>>($"/journal/document/byJournal/{journalId}");
+            return await _client.GetData<List<JournalDocumentModel>>($"/journal/document/byJournal/{journalId}");
         }
 
 
         public void InsertJournal(JournalModel journal)
         {
-            _client.PostAsJsonAsync($"/journal", journal);
+            _client.PostData<JournalModel,JournalModel>($"/journal", journal);
         }
 
         public void InsertJournalDocument(JournalDocumentModel document)
         {
-            _client.PostAsJsonAsync($"/journal/document", document);
+            _client.PostData<JournalDocumentModel, JournalDocumentModel>($"/journal/document", document);
         }
     }
 }

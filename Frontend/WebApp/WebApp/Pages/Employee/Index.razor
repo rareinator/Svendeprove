@@ -56,9 +56,12 @@
 
     private List<JournalModel> journals;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        patients = await PatientData.GetPatients();
+        if (patients == null)
+        {
+            patients = await PatientData.GetPatients();
+        }
     }
 
     private async Task<IEnumerable<PatientModel>> GetPatientsLocal(string searchText)

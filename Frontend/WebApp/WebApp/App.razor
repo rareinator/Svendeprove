@@ -12,3 +12,20 @@
         </Router>
     </Blazored.Modal.CascadingBlazoredModal>
 </CascadingAuthenticationState>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var testString = await JSRuntime.InvokeAsync<string>("getTestString");
+        Console.WriteLine("Cookie string: "+testString);
+        var user = new UserModel();
+        user.Password = "P@ssword";
+        user.Token = "65d7c3c3-6e93-49eb-b901-44750398b67c";
+        user.Username = "mni@hospi.local";
+        user.Role = "Patient";
+
+        Http.SetAuthHeader(new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", user.Token));
+        _accountService.Login(user);
+        StateHasChanged();
+    }
+}
