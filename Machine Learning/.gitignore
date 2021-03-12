@@ -1,5 +1,5 @@
 .vscode
 .deployment
 __pychache__
-.ipynb_checkpoints
+.ipynb_checkpoints/
 *.pyc
