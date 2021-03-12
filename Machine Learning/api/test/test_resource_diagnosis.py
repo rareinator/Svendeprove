@@ -4,7 +4,7 @@ import tempfile
 import pytest
 
 from unittest import TestCase
-from api.app import app
+from app import app
 
 @pytest.fixture
 def client():

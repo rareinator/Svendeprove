@@ -1,8 +1,8 @@
 from flask import request
 from flask_restful import Resource, reqparse
 
-from api.common.data import data
-from api.common.ml import PredictionService
+from common.data import data
+from common.ml import PredictionService
 
 # Prediction = PredictionService('diagnosis')
 

@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from flask import request
 from flask_restful import Resource
-from api.common.ml import PredictionService
+from common.ml import PredictionService
 
 IMG_SIZE = 96
 Prediction = PredictionService("scan")
