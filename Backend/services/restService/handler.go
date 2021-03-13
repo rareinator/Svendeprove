@@ -260,18 +260,19 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 			return
 		}
 
-		// if len(response.Attachments) > 0 {
-		// 	fmt.Println("there were some journal attachments")
-		// 	for _, attachment := range response.Attachments {
-		// 		filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
-		// 		err := s.saveFile(*attachment.Content, filePath)
-		// 		if err != nil {
-		// 			s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 			return
-		// 		}
-		// 		*attachment.Content = ""
-		// 	}
-		// }
+		if len(response.Attachments) > 0 {
+			fmt.Println("there were some journal attachments")
+			for _, attachment := range response.Attachments {
+				filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
+				err := s.saveFile(*attachment.Content, filePath)
+				fmt.Printf("saving file %v\n\r", filePath)
+				if err != nil {
+					s.returnError(w, http.StatusInternalServerError, err.Error())
+					return
+				}
+				*attachment.Content = ""
+			}
+		}
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
@@ -280,70 +281,70 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 
 func (s *server) handleDocumentUpload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		documentID, err := strconv.Atoi(vars["documentID"])
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// 	vars := mux.Vars(r)
+		// 	documentID, err := strconv.Atoi(vars["documentID"])
+		// 	if err != nil {
+		// 		s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 		return
+		// 	}
 
-		file, header, err := r.FormFile("file")
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// 	file, header, err := r.FormFile("file")
+		// 	if err != nil {
+		// 		s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 		return
+		// 	}
 
-		defer file.Close()
-		fullFileQualifier := strings.Split(header.Filename, ".")
-		fileName := fullFileQualifier[0]
-		fileType := fullFileQualifier[1]
-		fmt.Printf("got file: %v.%v", fileName, fileType)
+		// 	defer file.Close()
+		// 	fullFileQualifier := strings.Split(header.Filename, ".")
+		// 	fileName := fullFileQualifier[0]
+		// 	fileType := fullFileQualifier[1]
+		// 	fmt.Printf("got file: %v.%v", fileName, fileType)
 
-		// fileType, err := j.DB.GetOrCreateFileTypeByName(fileTypeName)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// build up store name
-		// fmt.Println("buildUpStoreName")
-		// store, err := j.DB.GetOrCreateFileStoreByPath(storeName)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		// 	// fileType, err := j.DB.GetOrCreateFileTypeByName(fileTypeName)
+		// 	// if err != nil {
+		// 	// 	return nil, err
+		// 	// }
+		// 	// build up store name
+		// 	// fmt.Println("buildUpStoreName")
+		// 	// store, err := j.DB.GetOrCreateFileStoreByPath(storeName)
+		// 	// if err != nil {
+		// 	// 	return nil, err
+		// 	// }
 
-		// dbAttachment := journalService.Attachment{
-		// 	FileName:    fileName,
-		// 	FileStoreId: store.FileStoreId,
-		// 	DocumentId:  dbJD.DocumentId,
-		// 	FileTypeId:  fileType.FileTypeId,
-		// }
+		// 	// dbAttachment := journalService.Attachment{
+		// 	// 	FileName:    fileName,
+		// 	// 	FileStoreId: store.FileStoreId,
+		// 	// 	DocumentId:  dbJD.DocumentId,
+		// 	// 	FileTypeId:  fileType.FileTypeId,
+		// 	// }
 
-		storeName := fmt.Sprintf("/journal/document/%v", documentID)
-		attachment := journalService.Attachment{
-			FileName:   fileName,
-			DocumentId: int32(documentID),
-			FileType:   new(string),
-			Path:       new(string),
-		}
-		attachment.FileType = &fileType
-		attachment.Path = &storeName
+		// 	storeName := fmt.Sprintf("/journal/document/%v", documentID)
+		// 	attachment := journalService.Attachment{
+		// 		FileName:   fileName,
+		// 		DocumentId: int32(documentID),
+		// 		FileType:   new(string),
+		// 		Path:       new(string),
+		// 	}
+		// 	attachment.FileType = &fileType
+		// 	attachment.Path = &storeName
 
-		attachmentOutput, err := s.journalService.CreateAttachment(context.Background(), &attachment)
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// 	attachmentOutput, err := s.journalService.CreateAttachment(context.Background(), &attachment)
+		// 	if err != nil {
+		// 		s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 		return
+		// 	}
 
-		filePath := fmt.Sprintf("%v/%v.%v", storeName, fileName, fileType)
-		err = s.saveFile(file, filePath)
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// 	filePath := fmt.Sprintf("%v/%v.%v", storeName, fileName, fileType)
+		// 	err = s.saveFile(file, filePath)
+		// 	if err != nil {
+		// 		s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 		return
+		// 	}
 
-		path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", storeName, fileName, fileType)
-		fmt.Printf("path: %v\n\r", path)
-		attachmentOutput.Path = &path
-		json.NewEncoder(w).Encode(&attachmentOutput)
+		// 	path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", storeName, fileName, fileType)
+		// 	fmt.Printf("path: %v\n\r", path)
+		// 	attachmentOutput.Path = &path
+		// 	json.NewEncoder(w).Encode(&attachmentOutput)
 	}
 }
 
@@ -1254,5 +1255,30 @@ func (s *server) handleIOTUpload() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handleIOTReadData() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		deviceID, err := strconv.Atoi(vars["deviceID"])
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		request := iotService.IOTRequest{
+			ID: int32(deviceID),
+		}
+
+		response, err := s.iotService.ReadData(context.Background(), &request)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response.IOTDatas)
+
 	}
 }

@@ -32,6 +32,6 @@ service IotService {
   rpc GetHealth(IOTEmpty) returns (IOTHealth) {}
 
   rpc UploadData(IOTData) returns (IOTData) {}
-  rpc ReadData(IOTRequest) returns (IOTData) {}
+  rpc ReadData(IOTRequest) returns (IOTDatas) {}
   rpc ReadDataInTimeFrame (IOTTimeframeRequest) returns (IOTDatas) {}
 }

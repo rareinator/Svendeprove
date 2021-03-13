@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type IotServiceClient interface {
 	GetHealth(ctx context.Context, in *IOTEmpty, opts ...grpc.CallOption) (*IOTHealth, error)
 	UploadData(ctx context.Context, in *IOTData, opts ...grpc.CallOption) (*IOTData, error)
-	ReadData(ctx context.Context, in *IOTRequest, opts ...grpc.CallOption) (*IOTData, error)
+	ReadData(ctx context.Context, in *IOTRequest, opts ...grpc.CallOption) (*IOTDatas, error)
 	ReadDataInTimeFrame(ctx context.Context, in *IOTTimeframeRequest, opts ...grpc.CallOption) (*IOTDatas, error)
 }
 
@@ -50,8 +50,8 @@ func (c *iotServiceClient) UploadData(ctx context.Context, in *IOTData, opts ...
 	return out, nil
 }
 
-func (c *iotServiceClient) ReadData(ctx context.Context, in *IOTRequest, opts ...grpc.CallOption) (*IOTData, error) {
-	out := new(IOTData)
+func (c *iotServiceClient) ReadData(ctx context.Context, in *IOTRequest, opts ...grpc.CallOption) (*IOTDatas, error) {
+	out := new(IOTDatas)
 	err := c.cc.Invoke(ctx, "/IotService/ReadData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (c *iotServiceClient) ReadDataInTimeFrame(ctx context.Context, in *IOTTimef
 type IotServiceServer interface {
 	GetHealth(context.Context, *IOTEmpty) (*IOTHealth, error)
 	UploadData(context.Context, *IOTData) (*IOTData, error)
-	ReadData(context.Context, *IOTRequest) (*IOTData, error)
+	ReadData(context.Context, *IOTRequest) (*IOTDatas, error)
 	ReadDataInTimeFrame(context.Context, *IOTTimeframeRequest) (*IOTDatas, error)
 	mustEmbedUnimplementedIotServiceServer()
 }
@@ -89,7 +89,7 @@ func (UnimplementedIotServiceServer) GetHealth(context.Context, *IOTEmpty) (*IOT
 func (UnimplementedIotServiceServer) UploadData(context.Context, *IOTData) (*IOTData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadData not implemented")
 }
-func (UnimplementedIotServiceServer) ReadData(context.Context, *IOTRequest) (*IOTData, error) {
+func (UnimplementedIotServiceServer) ReadData(context.Context, *IOTRequest) (*IOTDatas, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadData not implemented")
 }
 func (UnimplementedIotServiceServer) ReadDataInTimeFrame(context.Context, *IOTTimeframeRequest) (*IOTDatas, error) {
