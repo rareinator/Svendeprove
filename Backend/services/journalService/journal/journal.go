@@ -199,6 +199,30 @@ func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDo
 	return jd, nil
 }
 
+func (j *JournalServer) CreateAttachment(ctx context.Context, attachment *Attachment) (*Attachment, error) {
+	fileType, err := j.DB.GetOrCreateFileTypeByName(*attachment.FileType)
+	if err != nil {
+		return nil, err
+	}
+	fileStore, err := j.DB.GetOrCreateFileStoreByPath(*attachment.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	dbAttachment := mssql.DBAttachment{
+		FileName:    attachment.FileName,
+		FileStoreId: fileStore.FileStoreId,
+		DocumentId:  attachment.DocumentId,
+		FileTypeId:  fileType.FileTypeId,
+	}
+
+	if err := j.DB.CreateAttachment(&dbAttachment); err != nil {
+		return nil, err
+	}
+
+	return attachment, nil
+}
+
 func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *JournalRequest) (*JournalDocuments, error) {
 	journalDocuments := JournalDocuments{
 		JournalDocuments: make([]*JournalDocument, 0),

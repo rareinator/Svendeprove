@@ -29,6 +29,7 @@ type JournalServiceClient interface {
 	GetJournalDocumentsByJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error)
 	GetJournalDocument(ctx context.Context, in *JournalDocumentRequest, opts ...grpc.CallOption) (*JournalDocument, error)
 	CreateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error)
+	CreateAttachment(ctx context.Context, in *Attachment, opts ...grpc.CallOption) (*Attachment, error)
 }
 
 type journalServiceClient struct {
@@ -138,6 +139,15 @@ func (c *journalServiceClient) CreateJournalDocument(ctx context.Context, in *Jo
 	return out, nil
 }
 
+func (c *journalServiceClient) CreateAttachment(ctx context.Context, in *Attachment, opts ...grpc.CallOption) (*Attachment, error) {
+	out := new(Attachment)
+	err := c.cc.Invoke(ctx, "/JournalService/CreateAttachment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JournalServiceServer is the server API for JournalService service.
 // All implementations must embed UnimplementedJournalServiceServer
 // for forward compatibility
@@ -153,6 +163,7 @@ type JournalServiceServer interface {
 	GetJournalDocumentsByJournal(context.Context, *JournalRequest) (*JournalDocuments, error)
 	GetJournalDocument(context.Context, *JournalDocumentRequest) (*JournalDocument, error)
 	CreateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error)
+	CreateAttachment(context.Context, *Attachment) (*Attachment, error)
 	mustEmbedUnimplementedJournalServiceServer()
 }
 
@@ -192,6 +203,9 @@ func (UnimplementedJournalServiceServer) GetJournalDocument(context.Context, *Jo
 }
 func (UnimplementedJournalServiceServer) CreateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateJournalDocument not implemented")
+}
+func (UnimplementedJournalServiceServer) CreateAttachment(context.Context, *Attachment) (*Attachment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAttachment not implemented")
 }
 func (UnimplementedJournalServiceServer) mustEmbedUnimplementedJournalServiceServer() {}
 
@@ -404,6 +418,24 @@ func _JournalService_CreateJournalDocument_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JournalService_CreateAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Attachment)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalServiceServer).CreateAttachment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/JournalService/CreateAttachment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalServiceServer).CreateAttachment(ctx, req.(*Attachment))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JournalService_ServiceDesc is the grpc.ServiceDesc for JournalService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -454,6 +486,10 @@ var JournalService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateJournalDocument",
 			Handler:    _JournalService_CreateJournalDocument_Handler,
+		},
+		{
+			MethodName: "CreateAttachment",
+			Handler:    _JournalService_CreateAttachment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

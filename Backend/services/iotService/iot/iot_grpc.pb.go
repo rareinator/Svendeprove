@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IotServiceClient interface {
 	GetHealth(ctx context.Context, in *IOTEmpty, opts ...grpc.CallOption) (*IOTHealth, error)
-	UploadDate(ctx context.Context, in *IOTData, opts ...grpc.CallOption) (*IOTData, error)
+	UploadData(ctx context.Context, in *IOTData, opts ...grpc.CallOption) (*IOTData, error)
 	ReadData(ctx context.Context, in *IOTRequest, opts ...grpc.CallOption) (*IOTData, error)
 	ReadDataInTimeFrame(ctx context.Context, in *IOTTimeframeRequest, opts ...grpc.CallOption) (*IOTDatas, error)
 }
@@ -41,9 +41,9 @@ func (c *iotServiceClient) GetHealth(ctx context.Context, in *IOTEmpty, opts ...
 	return out, nil
 }
 
-func (c *iotServiceClient) UploadDate(ctx context.Context, in *IOTData, opts ...grpc.CallOption) (*IOTData, error) {
+func (c *iotServiceClient) UploadData(ctx context.Context, in *IOTData, opts ...grpc.CallOption) (*IOTData, error) {
 	out := new(IOTData)
-	err := c.cc.Invoke(ctx, "/IotService/UploadDate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/IotService/UploadData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (c *iotServiceClient) ReadDataInTimeFrame(ctx context.Context, in *IOTTimef
 // for forward compatibility
 type IotServiceServer interface {
 	GetHealth(context.Context, *IOTEmpty) (*IOTHealth, error)
-	UploadDate(context.Context, *IOTData) (*IOTData, error)
+	UploadData(context.Context, *IOTData) (*IOTData, error)
 	ReadData(context.Context, *IOTRequest) (*IOTData, error)
 	ReadDataInTimeFrame(context.Context, *IOTTimeframeRequest) (*IOTDatas, error)
 	mustEmbedUnimplementedIotServiceServer()
@@ -86,8 +86,8 @@ type UnimplementedIotServiceServer struct {
 func (UnimplementedIotServiceServer) GetHealth(context.Context, *IOTEmpty) (*IOTHealth, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
-func (UnimplementedIotServiceServer) UploadDate(context.Context, *IOTData) (*IOTData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UploadDate not implemented")
+func (UnimplementedIotServiceServer) UploadData(context.Context, *IOTData) (*IOTData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadData not implemented")
 }
 func (UnimplementedIotServiceServer) ReadData(context.Context, *IOTRequest) (*IOTData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadData not implemented")
@@ -126,20 +126,20 @@ func _IotService_GetHealth_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IotService_UploadDate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _IotService_UploadData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IOTData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IotServiceServer).UploadDate(ctx, in)
+		return srv.(IotServiceServer).UploadData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/IotService/UploadDate",
+		FullMethod: "/IotService/UploadData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IotServiceServer).UploadDate(ctx, req.(*IOTData))
+		return srv.(IotServiceServer).UploadData(ctx, req.(*IOTData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -192,8 +192,8 @@ var IotService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _IotService_GetHealth_Handler,
 		},
 		{
-			MethodName: "UploadDate",
-			Handler:    _IotService_UploadDate_Handler,
+			MethodName: "UploadData",
+			Handler:    _IotService_UploadData_Handler,
 		},
 		{
 			MethodName: "ReadData",

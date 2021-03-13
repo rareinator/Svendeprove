@@ -31,7 +31,7 @@ message IOTRequest {
 service IotService {
   rpc GetHealth(IOTEmpty) returns (IOTHealth) {}
 
-  rpc UploadDate(IOTData) returns (IOTData) {}
+  rpc UploadData(IOTData) returns (IOTData) {}
   rpc ReadData(IOTRequest) returns (IOTData) {}
   rpc ReadDataInTimeFrame (IOTTimeframeRequest) returns (IOTDatas) {}
 }

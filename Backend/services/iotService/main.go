@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/rareinator/Svendeprove/Backend/packages/mongo"
 	"github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
 	"google.golang.org/grpc"
 )
@@ -30,12 +31,12 @@ func execute() error {
 
 	fmt.Println(os.Getenv("MONGO_URI"))
 
-	// mongo, err := mongo.NewConnection(os.Getenv("MONGO_URI"))
-	// if err != nil {
-	// 	return err
-	// }
+	mongo := mongo.MongoDB{
+		Addr: os.Getenv("MONGO_URI"),
+	}
+
 	is := iot.IotServer{
-		// DB:            &mongo,
+		DB:            &mongo,
 		ListenAddress: os.Getenv("IOT_SERVICE_ADDR"),
 	}
 

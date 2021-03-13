@@ -76,4 +76,6 @@ service JournalService {
   rpc GetJournalDocumentsByJournal(JournalRequest) returns (JournalDocuments) {}
   rpc GetJournalDocument(JournalDocumentRequest) returns (JournalDocument) {}
   rpc CreateJournalDocument(JournalDocument) returns (JournalDocument) {}
+
+  rpc CreateAttachment(Attachment) returns (Attachment) {}
 }

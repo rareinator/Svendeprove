@@ -17,7 +17,7 @@
 * [x] DeleteJournal /journal/{id:[0-9]+} DELETE
 * [x] JournalByPatient /journal/byPatient/{id:[0-9]+} GET
 * [x] UploadJournalDocumentsToML /journal/ml POST
-* [ ] UploadSymptomstoML /journal/symptoms POST
+* [x] UploadSymptomstoML /journal/symptoms POST
 
 #### Journal Documents
 * [x] CreateJournalDocument /journal/document POST
@@ -71,6 +71,6 @@
 * [x] GetEmployee /useradmin/{id:[0-9]+} GET
 
 ### IOT
-* [ ] UploadData /iot POST
+* [x] UploadData /iot POST
 * [ ] ReadData /iot/{id:[0-9]+} GET
 * [ ] ReadDataInTimeFrame /iot?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05) 

@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
@@ -259,21 +260,90 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 			return
 		}
 
-		if len(response.Attachments) > 0 {
-			fmt.Println("there were some journal attachments")
-			for _, attachment := range response.Attachments {
-				filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
-				err := s.saveFile(*attachment.Content, filePath)
-				if err != nil {
-					s.returnError(w, http.StatusInternalServerError, err.Error())
-					return
-				}
-				*attachment.Content = ""
-			}
-		}
+		// if len(response.Attachments) > 0 {
+		// 	fmt.Println("there were some journal attachments")
+		// 	for _, attachment := range response.Attachments {
+		// 		filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
+		// 		err := s.saveFile(*attachment.Content, filePath)
+		// 		if err != nil {
+		// 			s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 			return
+		// 		}
+		// 		*attachment.Content = ""
+		// 	}
+		// }
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handleDocumentUpload() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		documentID, err := strconv.Atoi(vars["documentID"])
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		file, header, err := r.FormFile("file")
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		defer file.Close()
+		fullFileQualifier := strings.Split(header.Filename, ".")
+		fileName := fullFileQualifier[0]
+		fileType := fullFileQualifier[1]
+		fmt.Printf("got file: %v.%v", fileName, fileType)
+
+		// fileType, err := j.DB.GetOrCreateFileTypeByName(fileTypeName)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// build up store name
+		// fmt.Println("buildUpStoreName")
+		// store, err := j.DB.GetOrCreateFileStoreByPath(storeName)
+		// if err != nil {
+		// 	return nil, err
+		// }
+
+		// dbAttachment := journalService.Attachment{
+		// 	FileName:    fileName,
+		// 	FileStoreId: store.FileStoreId,
+		// 	DocumentId:  dbJD.DocumentId,
+		// 	FileTypeId:  fileType.FileTypeId,
+		// }
+
+		storeName := fmt.Sprintf("/journal/document/%v", documentID)
+		attachment := journalService.Attachment{
+			FileName:   fileName,
+			DocumentId: int32(documentID),
+			FileType:   new(string),
+			Path:       new(string),
+		}
+		attachment.FileType = &fileType
+		attachment.Path = &storeName
+
+		attachmentOutput, err := s.journalService.CreateAttachment(context.Background(), &attachment)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		filePath := fmt.Sprintf("%v/%v.%v", storeName, fileName, fileType)
+		err = s.saveFile(file, filePath)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", storeName, fileName, fileType)
+		fmt.Printf("path: %v\n\r", path)
+		attachmentOutput.Path = &path
+		json.NewEncoder(w).Encode(&attachmentOutput)
 	}
 }
 
@@ -371,7 +441,17 @@ type MLResponse struct {
 
 func (s *server) handleJournalUploadSymptoms() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		resp, err := http.Post(os.Getenv("ML_DIAGNOSE_ENDPOINT"), "application/json", r.Body)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		defer resp.Body.Close()
 
+		buf, err := ioutil.ReadAll(resp.Body)
+
+		w.WriteHeader(resp.StatusCode)
+		w.Write(buf)
 	}
 }
 
@@ -1142,5 +1222,37 @@ func (s *server) handleIOTHealth() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(response.Message))
+	}
+}
+
+func (s *server) handleIOTUpload() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := r.URL.Query().Get("Data")
+		deviceID, err := s.getDeviceID(r)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		username, err := s.getUsername(r.URL.Query().Get("Key"))
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		iotData := iotService.IOTData{
+			Name:      username,
+			SensorID:  deviceID,
+			Data:      data,
+			Timestamp: time.Now().Format("02/01/2006 15:04:05"),
+		}
+
+		response, err := s.iotService.UploadData(context.Background(), &iotData)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
 	}
 }

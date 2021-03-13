@@ -67,13 +67,14 @@ func (DBJournal) TableName() string {
 }
 
 type DBToken struct {
-	Token      string    `gorm:"column:Token;primaryKey"`
-	Role       int32     `gorm:"column:Role"`
-	PatientID  int32     `gorm:"column:PatientId"`
-	EmployeeID int32     `gorm:"column:EmployeeId"`
-	Username   string    `gorm:"column:Username"`
-	IssuedAt   time.Time `gorm:"column:IssuedAt"`
-	ValidUntil time.Time `gorm:"column:ValidUntil"`
+	Token       string    `gorm:"column:Token;primaryKey"`
+	Role        int32     `gorm:"column:Role"`
+	PatientID   int32     `gorm:"column:PatientId"`
+	EmployeeID  int32     `gorm:"column:EmployeeId"`
+	Username    string    `gorm:"column:Username"`
+	IssuedAt    time.Time `gorm:"column:IssuedAt"`
+	ValidUntil  time.Time `gorm:"column:ValidUntil"`
+	IOTDeviceID int32     `gorm:"column:IOTDeviceId"`
 }
 
 func (DBToken) TableName() string {

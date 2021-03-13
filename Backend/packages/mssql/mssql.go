@@ -96,7 +96,7 @@ func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 		return nil, result.Error
 	}
 
-	if token.Username == "" {
+	if token.Token != tokenID {
 		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
 	}
 
@@ -205,7 +205,7 @@ func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error 
 
 func (m *MSSQL) GetJournalDocumentsByJournal(journalID int32) ([]*DBJournalDocument, error) {
 	var journalDocuments []*DBJournalDocument
-	result := m.db.Where("JournalId = ?", journalID).Find(&journalDocuments)
+	result := m.db.Where("JournalId = ?", journalID).Preload("Attachments.FileType").Preload("Attachments.FileStore").Find(&journalDocuments)
 	if result.Error != nil {
 		return nil, result.Error
 	}

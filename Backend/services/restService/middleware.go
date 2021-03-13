@@ -16,6 +16,7 @@ type authenticationConfig struct {
 	allowedRoles        []models.UserRole
 	allowedPatient      string
 	allowRelatedPatient bool
+	allowIOTDevice      bool
 }
 type corsHandler struct {
 	router *mux.Router
@@ -54,18 +55,29 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 		fmt.Println("authenticating")
 
 		vars := mux.Vars(r)
+		var reqToken string
 
-		reqToken := r.Header.Get("Authorization")
-		splitToken := strings.Split(reqToken, "Bearer ")
-		if len(splitToken) != 2 {
-			fmt.Println("trying to access with no token")
-			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
-			return
-		}
-		reqToken = splitToken[1]
-		if reqToken == "" {
-			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
-			return
+		if config.allowIOTDevice {
+			fmt.Println("Using IOT key")
+			reqToken = r.URL.Query().Get("Key")
+			if reqToken == "" {
+				s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+				return
+			}
+		} else {
+			reqToken = r.Header.Get("Authorization")
+			splitToken := strings.Split(reqToken, "Bearer ")
+			if len(splitToken) != 2 {
+				fmt.Println("trying to access with no token")
+				s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+				return
+			}
+			reqToken = splitToken[1]
+			if reqToken == "" {
+				s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+				return
+			}
+
 		}
 
 		tokenRequest := &authentication.TokenRequest{
@@ -105,6 +117,15 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 					break
 				}
 			}
+		}
+
+		if config.allowIOTDevice {
+			fmt.Println(response)
+			fmt.Println(response.IOTDeviceId)
+			if response.IOTDeviceId != 0 {
+				allowed = true
+			}
+
 		}
 
 		if !allowed {

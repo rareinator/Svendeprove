@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"encoding/base64"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
@@ -82,12 +84,49 @@ func (s *server) getEmployeeID(r *http.Request) (int32, error) {
 	return response.EmployeeID, nil
 }
 
-func (s *server) saveFile(base64Data, fileName string) error {
-	fmt.Println("Saving file")
-	dec, err := base64.StdEncoding.DecodeString(base64Data)
-	if err != nil {
-		return err
+func (s *server) getDeviceID(r *http.Request) (int32, error) {
+	reqToken := r.URL.Query().Get("Key")
+	if reqToken == "" {
+		return 0, fmt.Errorf("No valid token specified, found %v", reqToken)
 	}
+
+	tokenRequest := authentication.TokenRequest{
+		Token: reqToken,
+	}
+
+	response, err := s.authenticationService.ValidateToken(context.Background(), &tokenRequest)
+	if err != nil {
+		return 0, err
+	}
+
+	if !response.Valid {
+		return 0, fmt.Errorf("Could not find the token")
+	}
+
+	return response.IOTDeviceId, nil
+}
+
+func (s *server) getUsername(token string) (string, error) {
+	tokenRequest := authentication.TokenRequest{
+		Token: token,
+	}
+
+	response, err := s.authenticationService.ValidateToken(context.Background(), &tokenRequest)
+	if err != nil {
+		return "", err
+	}
+
+	if !response.Valid {
+		return "", fmt.Errorf("Could not find the token")
+	}
+
+	return response.Username, nil
+}
+
+func (s *server) saveFile(file multipart.File, fileName string) error {
+	fmt.Println("Saving file")
+	var buf bytes.Buffer
+	io.Copy(&buf, file)
 
 	filePath := fmt.Sprintf("%v/%v", s.staticFileDir, fileName)
 
@@ -104,7 +143,7 @@ func (s *server) saveFile(base64Data, fileName string) error {
 	}
 	defer f.Close()
 
-	if _, err := f.Write(dec); err != nil {
+	if _, err := f.Write(buf.Bytes()); err != nil {
 		return err
 	}
 

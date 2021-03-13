@@ -76,6 +76,16 @@ func (s *server) routes() {
 				allowedPatient: "",
 			}))).Methods("POST")
 
+	s.router.Handle("/journal/document/{documentID:[0-9]+}/attachment",
+		s.log(s.authenticate(
+			s.handleDocumentUpload(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+				allowIOTDevice:      false,
+			}))).Methods("POST")
+
 	s.router.Handle("/journal/document/byJournal/{id:[0-9]+}", //Get journal documents by journalID
 		s.log(s.authenticate(
 			s.handleJournalDocumentByJournal(),
@@ -343,5 +353,15 @@ func (s *server) routes() {
 
 	// IOT Methods
 	s.router.Handle("/iot/health", s.handleIOTHealth()).Methods("GET") //GetHealth
+
+	s.router.Handle("/iot/uploadData",
+		s.log(s.authenticate(
+			s.handleIOTUpload(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+				allowIOTDevice:      true,
+			}))).Queries("Key", "", "Data", "").Methods("POST")
 
 }

@@ -85,20 +85,25 @@ func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*Emp
 func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenRequest) (*ValidatorResponse, error) {
 
 	dbToken, err := a.DB.GetToken(tr.Token)
+	fmt.Println(dbToken.IOTDeviceID)
 	if err != nil {
 		return &ValidatorResponse{
-			Valid:      false,
-			Role:       0,
-			PatientID:  0,
-			EmployeeID: 0,
+			Valid:       false,
+			Role:        0,
+			PatientID:   0,
+			EmployeeID:  0,
+			IOTDeviceId: 0,
+			Username:    "",
 		}, err
 	}
 
 	return &ValidatorResponse{
-		Valid:      true,
-		Role:       dbToken.Role,
-		PatientID:  dbToken.PatientID,
-		EmployeeID: dbToken.EmployeeID,
+		Valid:       true,
+		Role:        dbToken.Role,
+		PatientID:   dbToken.PatientID,
+		EmployeeID:  dbToken.EmployeeID,
+		IOTDeviceId: dbToken.IOTDeviceID,
+		Username:    dbToken.Username,
 	}, nil
 }
 

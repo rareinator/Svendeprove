@@ -39,6 +39,8 @@ message ValidatorResponse {
   int32 Role = 2;
   int32 PatientID = 3;
   int32 EmployeeID = 4;
+  int32 IOTDeviceId = 5;
+  string Username = 6;
 }
 
 message AHealth {
