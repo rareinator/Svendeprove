@@ -12,8 +12,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/lestrrat-go/jwx/jwa"
+	"github.com/lestrrat-go/jwx/jwt"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	bookingService "github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
@@ -21,6 +25,7 @@ import (
 	journalService "github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 	useradminService "github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
+	"github.com/tidwall/buntdb"
 )
 
 func (s *server) returnError(w http.ResponseWriter, statusCode int, Message string) {
@@ -42,6 +47,172 @@ func (s *server) handleHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("🚀 Server is up and running!!!!"))
+	}
+}
+
+func (s *server) handleOauthToken() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var requestJson struct {
+			Code string `json:"code"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&requestJson); err != nil {
+			s.returnError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		var scope string
+		var role string
+		var userID int32
+		var username string
+		var fullname string
+
+		s.localDB.View(func(tx *buntdb.Tx) error {
+			value, err := tx.Get(requestJson.Code)
+			if err != nil {
+				return err
+			}
+			fmt.Println(value)
+
+			values := strings.Split(value, ";")
+			scope = values[0]
+			role = values[1]
+			parsedValue, err := strconv.Atoi(values[2])
+			if err != nil {
+				return err
+			}
+			userID = int32(parsedValue)
+			username = values[3]
+			fullname = values[4]
+
+			return nil
+		})
+
+		fmt.Println("stuff")
+		fmt.Printf("%v;%v;%v;%v;%v\n\r", scope, role, userID, username, fullname)
+
+		token := jwt.New()
+		token.Set("scope", scope)
+		token.Set("role", role)
+		token.Set("userID", userID)
+		token.Set("sub", username)
+		token.Set("fullname", fullname)
+
+		tokenSign, err := jwt.Sign(token, jwa.HS256, []byte("00000000"))
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		var response struct {
+			AccessToken string `json:"access_token"`
+			ExpiresIn   int    `json:"expires_in`
+			Scope       string `json:"scope"`
+			TokenType   string `json:"token_type"`
+		}
+		response.AccessToken = string(tokenSign)
+		response.ExpiresIn = 7200
+		response.Scope = scope
+		response.TokenType = "Bearer"
+
+		tokenRequest := authenticationService.TokenRequest{
+			Token: response.AccessToken,
+		}
+
+		validatorResponse, err := s.authenticationService.InsertToken(context.Background(), &tokenRequest)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if !validatorResponse.Valid {
+			s.returnError(w, http.StatusInternalServerError, "Something dire went wrong")
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response)
+	}
+}
+
+func (s *server) handleOauthAuth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("hit endpoint")
+		scope := r.URL.Query().Get("scope")
+		var login struct {
+			Username string
+			Password string
+		}
+
+		json.NewDecoder(r.Body).Decode(&login)
+
+		a := &authenticationService.User{
+			Username: login.Username,
+			Password: login.Password,
+		}
+
+		switch scope {
+		case "employee":
+			response, err := s.authenticationService.LoginEmployee(context.Background(), a)
+			if err != nil {
+				s.returnError(w, http.StatusForbidden, "Error logging in")
+				return
+			}
+			code := uuid.New().String()
+
+			s.localDB.Update(func(tx *buntdb.Tx) error {
+				fmt.Printf("savingToDB: employee;%v;%v;%v;%v\n\r",
+					response.Role,
+					response.UserID,
+					response.Username,
+					response.FullName)
+				_, _, err := tx.Set(code, fmt.Sprintf("employee;%v;%v;%v;%v",
+					response.Role,
+					response.UserID,
+					response.Username,
+					response.FullName), &buntdb.SetOptions{Expires: true, TTL: (time.Second * 30)})
+
+				if err != nil {
+					return err
+				}
+				return nil
+			})
+
+			w.WriteHeader(http.StatusOK)
+			var responseJson struct {
+				Code string `json:"code"`
+			}
+			responseJson.Code = code
+			json.NewEncoder(w).Encode(&responseJson)
+
+		case "patient":
+			response, err := s.authenticationService.LoginPatient(context.Background(), a)
+			if err != nil {
+				s.returnError(w, http.StatusForbidden, "Error logging in")
+				return
+			}
+
+			code := uuid.New().String()
+
+			s.localDB.Update(func(tx *buntdb.Tx) error {
+				_, _, err := tx.Set(code, fmt.Sprintf("patient;%v;%v;%v;%v",
+					response.Role,
+					response.UserID,
+					response.Username,
+					response.FullName), &buntdb.SetOptions{Expires: true, TTL: (time.Second * 30)})
+
+				if err != nil {
+					return err
+				}
+				return nil
+			})
+
+			w.WriteHeader(http.StatusOK)
+			var responseJson struct {
+				Code string `json:"code"`
+			}
+			responseJson.Code = code
+			json.NewEncoder(w).Encode(&responseJson)
+		}
 	}
 }
 
@@ -578,6 +749,20 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 
 func (s *server) handlePatientsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// store, err := session.Start(r.Context(), w, r)
+		// if err != nil {
+		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
+
+		// value, exist := store.Get("pp")
+		// if !exist {
+		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
+
+		// fmt.Printf("store key pp value: %v\n\r", value)
+
 		response, err := s.patientService.GetPatients(context.Background(), &patientService.PEmpty{})
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())

@@ -11,6 +11,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
 	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
+	"github.com/tidwall/buntdb"
 	"google.golang.org/grpc"
 )
 
@@ -67,6 +68,14 @@ func execute() error {
 		return err
 	}
 	defer iotConn.Close()
+
+	localDB, err := buntdb.Open("data.db")
+	if err != nil {
+		return err
+	}
+	defer localDB.Close()
+
+	srv.localDB = localDB
 
 	srv.journalService = journal.NewJournalServiceClient(journalConn)
 	srv.authenticationService = authentication.NewAuthenticationServiceClient(authenticationConn)

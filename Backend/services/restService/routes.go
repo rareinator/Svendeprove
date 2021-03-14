@@ -9,6 +9,10 @@ func (s *server) routes() {
 
 	s.router.Handle("/health", s.handleHealth()).Methods("GET")
 
+	//oauth 2.0 implicit auth flow
+	s.router.Handle("/auth", s.handleOauthAuth()).Queries("response_type", "code", "client_id", "000000", "scope", "{(\bpatient\b|\bemployee\b)}").Methods("POST")
+	s.router.Handle("/token", s.handleOauthToken()).Methods("POST")
+
 	//Journal methods
 	s.router.Handle("/journal/health", s.handleJournalHealth()).Methods("GET")
 

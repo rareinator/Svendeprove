@@ -19,15 +19,11 @@ message SaltRequest {
   string Username = 1;
 }
 
-message EmployeeTokenResponse {
-  string Token = 1;
-  int32 Role = 2;
-  bool Success = 3;
-}
-
 message TokenResponse {
-  string Token = 1;
-  bool Success = 2;
+  string FullName = 1;
+  int32 Role = 2;
+  string Username = 3;
+  int32 UserID = 4;
 }
 
 message TokenRequest {
@@ -36,11 +32,6 @@ message TokenRequest {
 
 message ValidatorResponse {
   bool valid = 1;
-  int32 Role = 2;
-  int32 PatientID = 3;
-  int32 EmployeeID = 4;
-  int32 IOTDeviceId = 5;
-  string Username = 6;
 }
 
 message AHealth {
@@ -64,8 +55,9 @@ message RelatedPatient {
 service AuthenticationService {
   rpc GetHealth(AEmpty) returns (AHealth) {}
   rpc LoginPatient(User) returns (TokenResponse) {}
-  rpc LoginEmployee(User) returns (EmployeeTokenResponse) {}
+  rpc LoginEmployee(User) returns (TokenResponse) {}
   rpc GetSalt(SaltRequest) returns (Salt) {}
   rpc ValidateToken(TokenRequest) returns (ValidatorResponse) {}
+  rpc InsertToken(TokenRequest) returns (ValidatorResponse) {}
   rpc GetRelatedPatient(RelatedPatientRequest) returns (RelatedPatient) {}
 }

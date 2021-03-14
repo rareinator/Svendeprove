@@ -1,6 +1,6 @@
 package models
 
-type UserRole int32
+type UserRole int
 
 const (
 	Doctor   UserRole = 1

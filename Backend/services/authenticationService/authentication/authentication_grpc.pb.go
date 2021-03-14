@@ -20,9 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 type AuthenticationServiceClient interface {
 	GetHealth(ctx context.Context, in *AEmpty, opts ...grpc.CallOption) (*AHealth, error)
 	LoginPatient(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
-	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*EmployeeTokenResponse, error)
+	LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error)
 	GetSalt(ctx context.Context, in *SaltRequest, opts ...grpc.CallOption) (*Salt, error)
 	ValidateToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
+	InsertToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error)
 	GetRelatedPatient(ctx context.Context, in *RelatedPatientRequest, opts ...grpc.CallOption) (*RelatedPatient, error)
 }
 
@@ -52,8 +53,8 @@ func (c *authenticationServiceClient) LoginPatient(ctx context.Context, in *User
 	return out, nil
 }
 
-func (c *authenticationServiceClient) LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*EmployeeTokenResponse, error) {
-	out := new(EmployeeTokenResponse)
+func (c *authenticationServiceClient) LoginEmployee(ctx context.Context, in *User, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
 	err := c.cc.Invoke(ctx, "/AuthenticationService/LoginEmployee", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -79,6 +80,15 @@ func (c *authenticationServiceClient) ValidateToken(ctx context.Context, in *Tok
 	return out, nil
 }
 
+func (c *authenticationServiceClient) InsertToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*ValidatorResponse, error) {
+	out := new(ValidatorResponse)
+	err := c.cc.Invoke(ctx, "/AuthenticationService/InsertToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authenticationServiceClient) GetRelatedPatient(ctx context.Context, in *RelatedPatientRequest, opts ...grpc.CallOption) (*RelatedPatient, error) {
 	out := new(RelatedPatient)
 	err := c.cc.Invoke(ctx, "/AuthenticationService/GetRelatedPatient", in, out, opts...)
@@ -94,9 +104,10 @@ func (c *authenticationServiceClient) GetRelatedPatient(ctx context.Context, in 
 type AuthenticationServiceServer interface {
 	GetHealth(context.Context, *AEmpty) (*AHealth, error)
 	LoginPatient(context.Context, *User) (*TokenResponse, error)
-	LoginEmployee(context.Context, *User) (*EmployeeTokenResponse, error)
+	LoginEmployee(context.Context, *User) (*TokenResponse, error)
 	GetSalt(context.Context, *SaltRequest) (*Salt, error)
 	ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error)
+	InsertToken(context.Context, *TokenRequest) (*ValidatorResponse, error)
 	GetRelatedPatient(context.Context, *RelatedPatientRequest) (*RelatedPatient, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
 }
@@ -111,7 +122,7 @@ func (UnimplementedAuthenticationServiceServer) GetHealth(context.Context, *AEmp
 func (UnimplementedAuthenticationServiceServer) LoginPatient(context.Context, *User) (*TokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginPatient not implemented")
 }
-func (UnimplementedAuthenticationServiceServer) LoginEmployee(context.Context, *User) (*EmployeeTokenResponse, error) {
+func (UnimplementedAuthenticationServiceServer) LoginEmployee(context.Context, *User) (*TokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginEmployee not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) GetSalt(context.Context, *SaltRequest) (*Salt, error) {
@@ -119,6 +130,9 @@ func (UnimplementedAuthenticationServiceServer) GetSalt(context.Context, *SaltRe
 }
 func (UnimplementedAuthenticationServiceServer) ValidateToken(context.Context, *TokenRequest) (*ValidatorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) InsertToken(context.Context, *TokenRequest) (*ValidatorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InsertToken not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) GetRelatedPatient(context.Context, *RelatedPatientRequest) (*RelatedPatient, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRelatedPatient not implemented")
@@ -226,6 +240,24 @@ func _AuthenticationService_ValidateToken_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthenticationService_InsertToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).InsertToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AuthenticationService/InsertToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).InsertToken(ctx, req.(*TokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthenticationService_GetRelatedPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RelatedPatientRequest)
 	if err := dec(in); err != nil {
@@ -270,6 +302,10 @@ var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateToken",
 			Handler:    _AuthenticationService_ValidateToken_Handler,
+		},
+		{
+			MethodName: "InsertToken",
+			Handler:    _AuthenticationService_InsertToken_Handler,
 		},
 		{
 			MethodName: "GetRelatedPatient",

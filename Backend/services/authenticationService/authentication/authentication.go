@@ -5,9 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/rareinator/Svendeprove/Backend/packages/ldap"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 )
@@ -41,69 +39,46 @@ func (a *AuthenticationServer) LoginPatient(ctx context.Context, u *User) (*Toke
 		return nil, err
 	}
 
-	tokenID := uuid.New()
-
-	dbToken := mssql.DBToken{
-		Token:      tokenID.String(),
-		PatientID:  user.PatientId,
-		Username:   u.Username,
-		IssuedAt:   time.Now(),
-		ValidUntil: time.Now().Add(time.Minute * 15),
+	response := TokenResponse{
+		FullName: user.Name,
+		Role:     0,
+		Username: user.Username,
+		UserID:   user.PatientId,
 	}
 
-	if err := a.DB.InsertToken(&dbToken); err != nil {
-		return nil, err
-	}
-
-	return &TokenResponse{Token: dbToken.Token}, nil
+	return &response, nil
 
 }
 
-func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*EmployeeTokenResponse, error) {
-	fmt.Println("Authenticating employee")
+func (a *AuthenticationServer) LoginEmployee(ctx context.Context, u *User) (*TokenResponse, error) {
 	role, err := a.Ldap.AuthenticateUser(u.Username, u.Password)
 	if err != nil {
 		fmt.Printf("Failed to authenticate user: %v", err)
 		return nil, err
 	}
 
-	tokenID := uuid.New()
-
-	dbToken := mssql.DBToken{
-		Token:      tokenID.String(),
-		Role:       int32(role),
-		Username:   u.Username,
-		IssuedAt:   time.Now(),
-		ValidUntil: time.Now().Add(time.Minute * 15),
+	//TODO: get actual info from LDAP
+	response := TokenResponse{
+		FullName: "Morten Nissen",
+		Role:     int32(role),
+		Username: u.Username,
+		UserID:   1,
 	}
 
-	a.DB.InsertToken(&dbToken)
-
-	return &EmployeeTokenResponse{Token: dbToken.Token, Role: int32(role)}, nil
+	return &response, nil
 }
 
 func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenRequest) (*ValidatorResponse, error) {
 
-	dbToken, err := a.DB.GetToken(tr.Token)
-	fmt.Println(dbToken.IOTDeviceID)
+	_, err := a.DB.GetToken(tr.Token)
 	if err != nil {
 		return &ValidatorResponse{
-			Valid:       false,
-			Role:        0,
-			PatientID:   0,
-			EmployeeID:  0,
-			IOTDeviceId: 0,
-			Username:    "",
+			Valid: false,
 		}, err
 	}
 
 	return &ValidatorResponse{
-		Valid:       true,
-		Role:        dbToken.Role,
-		PatientID:   dbToken.PatientID,
-		EmployeeID:  dbToken.EmployeeID,
-		IOTDeviceId: dbToken.IOTDeviceID,
-		Username:    dbToken.Username,
+		Valid: true,
 	}, nil
 }
 
@@ -123,6 +98,18 @@ func (a *AuthenticationServer) GetRelatedPatient(ctx context.Context, rpr *Relat
 	}
 
 	return &result, nil
+}
 
-	// patient, err := j.DB.GetPatientID()
+func (a *AuthenticationServer) InsertToken(ctx context.Context, tr *TokenRequest) (*ValidatorResponse, error) {
+	dbToken := mssql.DBToken{
+		Token: tr.Token,
+	}
+
+	if err := a.DB.InsertToken(&dbToken); err != nil {
+		return &ValidatorResponse{Valid: false}, err
+	}
+
+	return &ValidatorResponse{
+		Valid: true,
+	}, nil
 }

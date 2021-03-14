@@ -38,33 +38,6 @@ func NewConnection(dsn string) (MSSQL, error) {
 	return *mssql, nil
 }
 
-func (m *MSSQL) InsertToken(token *DBToken) error {
-	if token.Role == 0 {
-		result := m.db.Exec("INSERT INTO Tokens (Token,PatientId,Username,IssuedAt,ValidUntil) VALUES (?,?,?,?,?)",
-			token.Token,
-			token.PatientID,
-			token.Username,
-			token.IssuedAt,
-			token.ValidUntil)
-
-		return result.Error
-	} else {
-		employeeID, err := m.GetEmployeeID(token.Username)
-		if err != nil {
-			return err
-		}
-
-		result := m.db.Exec("INSERT INTO Tokens (Token,Role,Username,IssuedAt,ValidUntil,EmployeeId) VALUES (?,?,?,?,?,?)",
-			token.Token,
-			token.Role,
-			token.Username,
-			token.IssuedAt,
-			token.ValidUntil,
-			employeeID)
-		return result.Error
-	}
-}
-
 func (m *MSSQL) GetEmployee(id int32) (*DBEmployee, error) {
 	var employee DBEmployee
 	result := m.db.First(&employee, id)
@@ -101,6 +74,15 @@ func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 	}
 
 	return &token, nil
+}
+
+func (m *MSSQL) InsertToken(token *DBToken) error {
+	result := m.db.Omit("IssuedAt", "ValidUntil").Create(token)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }
 
 func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {

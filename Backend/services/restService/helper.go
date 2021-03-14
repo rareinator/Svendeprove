@@ -50,7 +50,7 @@ func (s *server) getPatientID(r *http.Request) (int32, error) {
 		return 0, fmt.Errorf("Could not find the token")
 	}
 
-	return response.PatientID, nil
+	return 1, nil
 }
 
 func (s *server) getEmployeeID(r *http.Request) (int32, error) {
@@ -79,7 +79,7 @@ func (s *server) getEmployeeID(r *http.Request) (int32, error) {
 		return 0, fmt.Errorf("Could not find the token")
 	}
 
-	return response.EmployeeID, nil
+	return 1, nil
 }
 
 func (s *server) getDeviceID(r *http.Request) (int32, error) {
@@ -101,7 +101,7 @@ func (s *server) getDeviceID(r *http.Request) (int32, error) {
 		return 0, fmt.Errorf("Could not find the token")
 	}
 
-	return response.IOTDeviceId, nil
+	return 1, nil
 }
 
 func (s *server) getUsername(token string) (string, error) {
@@ -118,7 +118,7 @@ func (s *server) getUsername(token string) (string, error) {
 		return "", fmt.Errorf("Could not find the token")
 	}
 
-	return response.Username, nil
+	return "", nil
 }
 
 func (s *server) saveFile(base64Data, fileName string) error {
@@ -155,36 +155,3 @@ func (s *server) saveFile(base64Data, fileName string) error {
 
 	return nil
 }
-
-// func (s *server) saveFile(file multipart.File, fileName string) error {
-// 	fmt.Println("Saving file")
-// 	var buf bytes.Buffer
-// 	io.Copy(&buf, file)
-
-// 	filePath := fmt.Sprintf("%v/%v", s.staticFileDir, fileName)
-
-// 	fmt.Printf("Saving file to %v\n\r", filePath)
-
-// 	basepath := path.Dir(filePath)
-// 	if err := os.MkdirAll(basepath, 0777); err != nil {
-// 		return err
-// 	}
-
-// 	f, err := os.Create(filePath)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer f.Close()
-
-// 	if _, err := f.Write(buf.Bytes()); err != nil {
-// 		return err
-// 	}
-
-// 	if err := f.Sync(); err != nil {
-// 		return err
-// 	}
-
-// 	fmt.Println("got done saving file")
-
-// 	return nil
-// }
