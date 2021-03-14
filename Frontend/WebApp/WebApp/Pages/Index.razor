@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.IdentityModel.Tokens.Jwt
 
 @if (error)
 {
@@ -58,10 +59,18 @@
         Console.WriteLine("Login");
         if (clicked)
         {
-            User.Token = await IUserData.LoginEmployee(User);
+            var tokenString = await IUserData.Login(User, "employee");
+            User.Token = tokenString.AccessToken;
             if (User.Token != "" && User.Token != null)
             {
-                User.Role = "Admin";
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadJwtToken(User.Token);
+
+                User.Role = jsonToken.Claims.First(claim => claim.Type == "role").Value;
+                User.Username = jsonToken.Claims.First(claim => claim.Type == "sub").Value;
+                User.Scope = jsonToken.Claims.First(claim => claim.Type == "scope").Value;
+                User.Name = jsonToken.Claims.First(claim => claim.Type == "fullname").Value;
+                User.UserID = Convert.ToInt32(jsonToken.Claims.First(claim => claim.Type == "userID").Value);
 
 
                 if (Http.DefaultRequestHeaders.Contains("Authorization"))
@@ -84,10 +93,18 @@
         else
         {
 
-            User.Token = await IUserData.LoginPatient(User);
+            var tokenString = await IUserData.Login(User, "patient");
+            User.Token = tokenString.AccessToken;
             if (User.Token != "" && User.Token != null)
             {
-                User.Role = "Patient";
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadJwtToken(User.Token);
+
+                User.Role = jsonToken.Claims.First(claim => claim.Type == "role").Value;
+                User.Username = jsonToken.Claims.First(claim => claim.Type == "sub").Value;
+                User.Scope = jsonToken.Claims.First(claim => claim.Type == "scope").Value;
+                User.Name = jsonToken.Claims.First(claim => claim.Type == "fullname").Value;
+                User.UserID = Convert.ToInt32(jsonToken.Claims.First(claim => claim.Type == "userID").Value);
 
 
                 if (Http.DefaultRequestHeaders.Contains("Authorization"))
