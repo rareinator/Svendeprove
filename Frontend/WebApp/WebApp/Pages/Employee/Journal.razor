@@ -17,6 +17,10 @@ else
         <a href="ViewDocument/@document.DocumentId"><h2>@document.CreationTime - @document.Title</h2></a>
         <div class="form-group">
             @((MarkupString)document.Summary)
+            @if (document.Attachments != null)
+            {
+                <p>@document.Attachments.Count fil(er)</p>
+            }
         </div>
         <hr />
     }
@@ -39,7 +43,12 @@ else
     private async Task NewJournalDocument()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(CreateDocument.SelectedDocument), new JournalDocumentModel { CreationTime = DateTime.Now, JournalId = JournalId });
+        parameters.Add(nameof(CreateDocument.SelectedDocument), 
+            new JournalDocumentModel { 
+                CreationTime = DateTime.Now, 
+                JournalId = JournalId, 
+                Attachments = new List<AttachmentModel>()
+            });
 
         var createDocument = Modal.Show<CreateDocument>("Opret Dokument", parameters);
         var result = await createDocument.Result;

@@ -17,5 +17,7 @@ namespace DataAccessLibrary.Models
         public string Content { get; set; }
         public int CreatedBy { get; set; }
         public int JournalId { get; set; }
+
+        public List<AttachmentModel> Attachments { get; set; }
     }
 }

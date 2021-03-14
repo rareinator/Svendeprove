@@ -17,6 +17,22 @@
         @((MarkupString)SelectedDocument.Content)
     </div>
 </div>
+@if (SelectedDocument.Attachments != null)
+{
+<div>
+    @foreach (var attacment in SelectedDocument.Attachments)
+    {
+        <img src="@attacment.Path" alt="Journal Document Photo" class="img-thumbnail img-fluid" />
+        @if (attacment.Prediction != null)
+        {
+            @((MarkupString)attacment.Prediction.Positive)
+            @((MarkupString)attacment.Prediction.Negative)
+        }
+    }
+    <button type="button" class="btn btn-success" @onclick="() => GetPrediction(SelectedDocument.Attachments)">Knap</button>
+</div>
+
+}
 
 @code {
     [CascadingParameter]
@@ -53,6 +69,27 @@
                 StateHasChanged();
                 Back();
             }
+        }
+    }
+
+    async void GetPrediction(List<AttachmentModel> attachments)
+    {
+        List<string> paths = new List<string>();
+
+        foreach (var attachment in attachments)
+        {
+            paths.Add(attachment.Path);
+        }
+
+        List<PredictionModel> predictions = await JournalData.GetPredictions(paths);
+
+        foreach (var prediction in predictions)
+        {
+            AttachmentModel attachment = SelectedDocument.Attachments.Where(a => a.Path == prediction.Url).FirstOrDefault();
+
+            attachment.Prediction.Positive = prediction.Data.Prediction.Positive;
+
+            attachment.Prediction.Positive = prediction.Data.Prediction.Positive;
         }
     }
 

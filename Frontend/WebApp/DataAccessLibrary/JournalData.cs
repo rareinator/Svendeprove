@@ -69,6 +69,16 @@ namespace DataAccessLibrary
             return responseDocument;
         }
 
+        public async Task<List<PredictionModel>> GetPredictions(List<string> images)
+        {
+            var response = await _client.PostAsJsonAsync($"journal/ml", images);
+            string responseMessage = await response.Content.ReadAsStringAsync();
+
+            List<PredictionModel> predictions = JsonSerializer.Deserialize<List<PredictionModel>>(responseMessage);
+
+            return predictions;
+        }
+
         public async void DeleteJournalDocument(int documentId)
         {
             await _client.DeleteAsync($"/journal/document/{documentId}");

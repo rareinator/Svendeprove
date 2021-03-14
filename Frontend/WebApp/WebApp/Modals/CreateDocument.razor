@@ -110,6 +110,12 @@
         <button type="button" class="btn btn-link" @onclick="RawHTMLEditor"><h6>[Raw HTML Editor]</h6></button>
     }
 </div>
+
+<h5>Attachments</h5>
+<div class="form-group">
+
+    <InputFile OnChange="@InputFileChanged" multiple />
+</div>
 <br />
 
 <!-- Button to save the user -->
@@ -137,6 +143,8 @@
     [Parameter]
     public JournalDocumentModel SelectedDocument { get; set; }
 
+    private int maxAllowedFiles = 3;
+
     BlazoredTextEditor QuillHtmlSummary;
     BlazoredTextEditor QuillHtml;
     bool RichTextEditorMode = true;
@@ -163,8 +171,35 @@
         await BlazoredModal.CloseAsync();
     }
 
+    async Task InputFileChanged(InputFileChangeEventArgs e)
+    {
+        using var content = new MultipartFormDataContent();
 
-    //Summary
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            if (SelectedDocument.Attachments.SingleOrDefault(f => f.FileName == file.Name) is null)
+            {
+                int extensionStart = file.Name.IndexOf(".");
+
+                var fileContent = new StreamContent(file.OpenReadStream());
+
+                byte[] fileBytes = await fileContent.ReadAsByteArrayAsync();
+
+                string fileContentString = Convert.ToBase64String(fileBytes);
+
+                SelectedDocument.Attachments.Add(
+                    new AttachmentModel
+                    {
+                        FileName = file.Name.Substring(0, extensionStart),
+                        FileType = file.Name.Substring(extensionStart + 1, (file.Name.Length - extensionStart - 1)),
+                        Content = fileContentString
+                    }
+                );
+            }
+        }
+    }
+
+    #region Summary
 
     private void RichTextEditorSummary()
     {
@@ -191,4 +226,5 @@
         SelectedDocument.Content =
         await this.QuillHtml.GetHTML();
     }
+    #endregion
 }
