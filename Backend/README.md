@@ -71,6 +71,6 @@
 * [x] GetEmployee /useradmin/{id:[0-9]+} GET
 
 ### IOT
-* [x] UploadData /iot POST
-* [ ] ReadData /iot/{id:[0-9]+} GET
-* [ ] ReadDataInTimeFrame /iot?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05) 
+* [x] UploadData /iot/uploadData POST
+* [x] ReadData /iot/{id:[0-9]+} GET
+* [x] ReadDataInTimeFrame /iot?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05) 

@@ -3,6 +3,7 @@ package iot
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mongo"
 )
@@ -23,10 +24,10 @@ func (i *IotServer) UploadData(ctx context.Context, input *IOTData) (*IOTData, e
 	fmt.Printf("saving %v for %v for device %v\n\r", input.Data, input.SensorID, input.Name)
 
 	data := mongo.Device{
-		Name:      input.Name,
-		SensorID:  input.SensorID,
-		Data:      input.Data,
-		Timestamp: input.Timestamp,
+		Name:     input.Name,
+		SensorID: input.SensorID,
+		Data:     input.Data,
+		Date:     time.Now(),
 	}
 
 	err := i.DB.UploadData(context.Background(), &data)
@@ -44,19 +45,17 @@ func (i *IotServer) ReadData(ctx context.Context, request *IOTRequest) (*IOTData
 		return nil, err
 	}
 
-	fmt.Println("Read IOT data")
-
 	response := IOTDatas{
 		IOTDatas: make([]*IOTData, 0),
 	}
 
 	for _, data := range datas {
 		iotData := IOTData{
-			ID:        data.ID.String(),
-			Name:      data.Name,
-			SensorID:  data.SensorID,
-			Data:      data.Data,
-			Timestamp: data.Timestamp,
+			ID:       data.ID.String(),
+			Name:     data.Name,
+			SensorID: data.SensorID,
+			Data:     data.Data,
+			Date:     data.Date.Format("02/01/2006 15:04:05"),
 		}
 
 		response.IOTDatas = append(response.IOTDatas, &iotData)
@@ -64,4 +63,39 @@ func (i *IotServer) ReadData(ctx context.Context, request *IOTRequest) (*IOTData
 
 	return &response, nil
 
+}
+
+func (i *IotServer) ReadDataInTimeFrame(ctx context.Context, request *IOTTimeframeRequest) (*IOTDatas, error) {
+	parsedStartTime, err := time.Parse("02/01/2006 15:04:05", request.TimeStart)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedEndTime, err := time.Parse("02/01/2006 15:04:05", request.TimeEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	datas, err := i.DB.ReadDataInTimeFrame(context.Background(), parsedStartTime, parsedEndTime)
+	if err != nil {
+		return nil, err
+	}
+
+	response := IOTDatas{
+		IOTDatas: make([]*IOTData, 0),
+	}
+
+	for _, data := range datas {
+		iotData := IOTData{
+			ID:       data.ID.String(),
+			Name:     data.Name,
+			SensorID: data.SensorID,
+			Data:     data.Data,
+			Date:     data.Date.Format("02/01/2006 15:04:05"),
+		}
+
+		response.IOTDatas = append(response.IOTDatas, &iotData)
+	}
+
+	return &response, nil
 }

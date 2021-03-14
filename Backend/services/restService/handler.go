@@ -12,7 +12,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
@@ -1241,10 +1240,9 @@ func (s *server) handleIOTUpload() http.HandlerFunc {
 		}
 
 		iotData := iotService.IOTData{
-			Name:      username,
-			SensorID:  deviceID,
-			Data:      data,
-			Timestamp: time.Now().Format("02/01/2006 15:04:05"),
+			Name:     username,
+			SensorID: deviceID,
+			Data:     data,
 		}
 
 		response, err := s.iotService.UploadData(context.Background(), &iotData)
@@ -1280,5 +1278,24 @@ func (s *server) handleIOTReadData() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(&response.IOTDatas)
 
+	}
+}
+
+func (s *server) handleIOTReadDataInTimeframe() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request iotService.IOTTimeframeRequest
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			s.returnError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		response, err := s.iotService.ReadDataInTimeFrame(context.Background(), &request)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response.IOTDatas)
 	}
 }

@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -63,6 +64,40 @@ func (m *MongoDB) ReadData(ctx context.Context, deviceID int32) ([]*Device, erro
 	var results []*Device
 
 	cur, err := devicesCollection.Find(ctx, bson.M{"sensorID": deviceID})
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("read data")
+
+	for cur.Next(ctx) {
+		fmt.Println("cursor.Next")
+		var device Device
+		if err := cur.Decode(&device); err != nil {
+			return nil, err
+		}
+
+		results = append(results, &device)
+	}
+
+	cur.Close(ctx)
+
+	return results, nil
+}
+
+func (m *MongoDB) ReadDataInTimeFrame(ctx context.Context, timeStart, timeEnd time.Time) ([]*Device, error) {
+	client, err := m.newConnection(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer client.Disconnect(ctx)
+
+	svendeProveDB := client.Database("Svendeprove")
+	devicesCollection := svendeProveDB.Collection("Devices")
+	fmt.Println("huh")
+	var results []*Device
+
+	cur, err := devicesCollection.Find(ctx, bson.M{"date": bson.M{"$gte": timeStart, "$lte": timeEnd}})
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,7 @@ message IOTData {
   string Name = 2;
   int32 SensorID = 3;
   string Data = 4;
-  string Timestamp = 5;
+  string Date = 5;
 }
 
 message IOTDatas {

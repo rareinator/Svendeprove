@@ -374,4 +374,14 @@ func (s *server) routes() {
 				allowIOTDevice:      false,
 			}))).Methods("GET")
 
+	s.router.Handle("/iot/readDataInTimeframe",
+		s.log(s.authenticate(
+			s.handleIOTReadDataInTimeframe(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+				allowIOTDevice:      false,
+			}))).Methods("POST")
+
 }
