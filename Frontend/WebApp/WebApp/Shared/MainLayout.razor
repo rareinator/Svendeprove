@@ -4,7 +4,7 @@
 
             @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
             {
-                <AuthorizeView Roles="Patient">
+                <AuthorizeView Roles="0">
                     <Authorized>
 
                         <div class="sidebar">
@@ -14,7 +14,7 @@
                     </Authorized>
                 </AuthorizeView>
 
-                <AuthorizeView Roles="Admin">
+                <AuthorizeView Roles="1,2,3">
                     <Authorized>
 
                         <div class="sidebar">
@@ -34,7 +34,7 @@
 
                             <div class="top-row px-4">
                                 <h4>Velkommen</h4>
-                                <h4 class="ml-md-auto">@user.Username</h4>
+                                <h4 class="ml-md-auto">@user.Name</h4>
                             </div>
 
                         </Authorized>

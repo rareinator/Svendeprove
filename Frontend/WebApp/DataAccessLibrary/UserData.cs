@@ -6,13 +6,32 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DataAccessLibrary
 {
 
-    public class TokenClass
+    public class CodeClass
     {
-        public string Token {get; set;}
+        [JsonPropertyName("code")]
+        public string Code {get; set;}
+    }
+
+    public class TokenModel
+    {
+
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
+        
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; }
+
+        [JsonPropertyName("scope")]
+        public string Scope { get; set; }
+
+        [JsonPropertyName("token_type")]
+        public string TokenType { get; set; }
+
     }
 
 
@@ -25,28 +44,19 @@ namespace DataAccessLibrary
             _client = client;
         }
 
-        public async Task<string> LoginPatient(UserModel user)
+        public async Task<TokenModel> Login(UserModel user, string scope)
         {
-            var response = await _client.PostAsJsonAsync<UserModel>("/authentication/patient/login", user);
-            string responseMessage = await response.Content.ReadAsStringAsync();
+            var codeResponse = await _client.PostAsJsonAsync<UserModel>(string.Format("/auth?response_type=code&client_id=000000&scope={0}",scope), user);
+            string codeResponseMessage = await codeResponse.Content.ReadAsStringAsync();
 
-            var token = JsonSerializer.Deserialize<TokenClass>(responseMessage);
+            var code = JsonSerializer.Deserialize<CodeClass>(codeResponseMessage);
+            
+            var tokenResponse = await _client.PostAsJsonAsync<CodeClass>("/token",code);
+            string tokenResponseMessage = await tokenResponse.Content.ReadAsStringAsync();
 
+            var token = JsonSerializer.Deserialize<TokenModel>(tokenResponseMessage);
 
-
-            return token.Token;
-        }
-
-        public async Task<string> LoginEmployee(UserModel user)
-        {
-            var response = await _client.PostAsJsonAsync<UserModel>("/authentication/employee/login", user);
-            string responseMessage = await response.Content.ReadAsStringAsync();
-
-            var token = JsonSerializer.Deserialize<TokenClass>(responseMessage);
-
-
-
-            return token.Token;
+            return token;
         }
     }
 }

@@ -10,5 +10,9 @@ namespace DataAccessLibrary.Models
         public string Password { get; set; }
         public string Token { get; set; }
         public string Role { get; set; }
+
+        public string Scope { get; set; }
+        public int UserID { get; set; }
+        public string Name { get; set; }
     }
 }
