@@ -59,7 +59,7 @@
         Console.WriteLine("Login");
         if (clicked)
         {
-            var tokenString = await IUserData.Login(User, "employee");
+            var tokenString = await UserData.Login(User, "employee");
             User.Token = tokenString.AccessToken;
             if (User.Token != "" && User.Token != null)
             {
@@ -93,7 +93,7 @@
         else
         {
 
-            var tokenString = await IUserData.Login(User, "patient");
+            var tokenString = await UserData.Login(User, "patient");
             User.Token = tokenString.AccessToken;
             if (User.Token != "" && User.Token != null)
             {

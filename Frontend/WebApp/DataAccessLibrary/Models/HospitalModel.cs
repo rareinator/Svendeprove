@@ -4,14 +4,15 @@ using System.Text;
 
 namespace DataAccessLibrary.Models
 {
-    public class PatientModel
+    public class HospitalModel
     {
-        public string UserName { get; set; }
+        public int HospitalId { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
-        public string SocialIdNr { get; set; }
+
+        public ICollection<BookingModel> Bookings { get; set; }
     }
 }

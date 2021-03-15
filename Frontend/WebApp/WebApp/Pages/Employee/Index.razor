@@ -1,9 +1,13 @@
 ﻿@page "/Administration"
+@attribute [Authorize(Roles = "1,2")]
 
 
 <div class="d-flex justify-content-center align-items-center flex-column">
     <h1>Oversigt</h1>
-    <p>Her kan du se journaler, Undersøgelser óg Indlæggelser for en patient. Samt oprette </p>
+    <p>
+        Her kan du se journaler, Undersøgelser og Indlæggelser for en patient. <br />
+        Samt oprette nye journaler, Undersøgelser og Indlæggelser.
+    </p>
 
     <div class="m-4 w-25">
         <BlazoredTypeahead SearchMethod="GetPatientsLocal"
@@ -18,7 +22,7 @@
                 @context.Name - @context.SocialIdNr
             </SelectedTemplate>
             <ResultTemplate Context="patient">
-                @patient.Name @patient.SocialIdNr (PatientId: @patient.PatientId)
+                @patient.Name @patient.SocialIdNr
             </ResultTemplate>
         </BlazoredTypeahead>
     </div>
@@ -33,14 +37,23 @@
             {
                 <p><b>Patient:</b> @selectedPatient.Name</p>
                 <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                <button @onclick="ShowModal" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Journal</button>
+                <button @onclick="ShowJournalModal" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Journal</button>
             }
 
             <Journals journals="journals" />
         </div>
     </TabPage>
     <TabPage Text="Undersøgelser">
+        <div class="d-flex flex-column p-4">
+            @if (selectedPatient != null)
+            {
+                <p><b>Patient:</b> @selectedPatient.Name</p>
+                <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
+            }
 
+            <Examinations OnEditClick="ShowExaminationModal"  Bookings="bookings"/>
+        </div>
     </TabPage>
     <TabPage Text="Indlæggelser">
 
@@ -55,6 +68,7 @@
     private PatientModel selectedPatient;
 
     private List<JournalModel> journals;
+    private List<BookingModel> bookings;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,13 +81,14 @@
     }
 
 
-    private async Task SelectedPatientChanged(PatientModel patient)
+    private async void SelectedPatientChanged(PatientModel patient)
     {
         selectedPatient = patient;
-        journals = await JournalData.GetJournalsByPatient(patient.PatientId);
+        journals = await JournalData.GetJournalsByPatient(patient.UserName);
+        bookings = await BookingData.GetBookingsByPatient(patient.UserName);
     }
 
-    private async Task ShowModal()
+    private async Task ShowJournalModal()
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(CreateJournal.Patient), selectedPatient);
@@ -86,6 +101,26 @@
         {
             JournalModel newJournal = await JournalData.InsertJournal((JournalModel)result.Data);
             journals.Add(newJournal);
+        }
+    }
+
+    private async void ShowExaminationModal(BookingModel booking)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateExamimation.SelectedPatient), selectedPatient);
+        if (booking.BookingId != 0)
+        {
+            parameters.Add(nameof(CreateExamimation.SelectedBooking), booking);
+        }
+
+        var createJournal = Modal.Show<CreateJournal>("Opret Undersøgelse", parameters);
+        var result = await createJournal.Result;
+
+
+        if (!result.Cancelled)
+        {
+            BookingModel newBooking = await JournalData.InsertJournal((JournalModel)result.Data);
+            journals.Add(newBooking);
         }
     }
 }

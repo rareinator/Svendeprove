@@ -23,11 +23,13 @@
 @using Blazored.Modal.Services
 @using Blazored.TextEditor;
 
-@inject IAccountService _accountService
 @inject NavigationManager MyNavigationManager
 @inject HttpClient Http
-@inject IUserData IUserData
-@inject IUserUpdateService IUserUpdateService
+
+@inject IAccountService _accountService
+@inject IUserData UserData
 @inject IPatientData PatientData
 @inject IJournalData JournalData
+@inject IBookingData BookingData
+
 @inject IJSRuntime JSRuntime

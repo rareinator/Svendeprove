@@ -29,7 +29,7 @@
 
     private async Task SubmitForm()
     {
-        newJournal.PatientId = Patient.PatientId;
+        newJournal.Patient = Patient.UserName;
         await BlazoredModal.CloseAsync(ModalResult.Ok(newJournal));
     }
 
