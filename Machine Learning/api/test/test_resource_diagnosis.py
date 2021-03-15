@@ -43,11 +43,3 @@ def test_scan_negative_result(client):
     data = response.json
     assert data[0] * 100.0 > 50.0
     assert data[1] * 100.0 < 50.0
-    # def test_diagnosis_name_filter(self):
-    #     assert
-
-    # def test_diagnosis_prediction_by_symptom(self):
-    #     assert
-
-    # def test_diagnosis_prediction_by_partial_symptom(self):
-    #     assert
