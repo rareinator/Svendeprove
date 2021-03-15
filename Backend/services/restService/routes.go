@@ -306,6 +306,16 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("GET")
 
+	s.router.Handle("/booking/byEmployee/{username}", //GetBookingsByEmployee
+		s.log(s.authenticate(
+			s.handleBookingsByEmployee(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse, models.Patient},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+				allowIOTDevice:      false,
+			}))).Methods("GET")
+
 	// Useradmin methods
 	s.router.Handle("/useradmin/health", s.handleUseradminHealth()).Methods("GET") //GetHealth)
 

@@ -57,7 +57,7 @@ service BookingService {
   rpc UpdateBooking(Booking) returns (Booking) {}
   rpc DeleteBooking(BRequest) returns (BStatus) {}
   rpc GetBookingsByPatient(BRequest) returns (Bookings) {}
-  rpc GetBookingsByCreatingEmployee(BRequest) returns (Bookings) {}
+  rpc GetBookingsByEmployee(BRequest) returns (Bookings) {}
   rpc GetBookingsByInTimeFrame(BTimeFrameRequest) returns (Bookings) {}
 
 }

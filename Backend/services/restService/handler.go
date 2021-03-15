@@ -1173,6 +1173,27 @@ func (s *server) handleBookingsByPatient() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleBookingsByEmployee() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		br := bookingService.BRequest{
+			Username: vars["username"],
+		}
+
+		response, err := s.bookingService.GetBookingsByEmployee(context.Background(), &br)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		if len(response.Bookings) == 0 {
+			response.Bookings = make([]*bookingService.Booking, 0)
+		}
+		json.NewEncoder(w).Encode(response.Bookings)
+	}
+}
+
 func (s *server) handleUseradminHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u := useradminService.UAEmpty{}

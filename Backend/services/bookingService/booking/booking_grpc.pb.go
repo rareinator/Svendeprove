@@ -24,7 +24,7 @@ type BookingServiceClient interface {
 	UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
 	DeleteBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*BStatus, error)
 	GetBookingsByPatient(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error)
-	GetBookingsByCreatingEmployee(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error)
+	GetBookingsByEmployee(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error)
 	GetBookingsByInTimeFrame(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Bookings, error)
 }
 
@@ -90,9 +90,9 @@ func (c *bookingServiceClient) GetBookingsByPatient(ctx context.Context, in *BRe
 	return out, nil
 }
 
-func (c *bookingServiceClient) GetBookingsByCreatingEmployee(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error) {
+func (c *bookingServiceClient) GetBookingsByEmployee(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error) {
 	out := new(Bookings)
-	err := c.cc.Invoke(ctx, "/BookingService/GetBookingsByCreatingEmployee", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/BookingService/GetBookingsByEmployee", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ type BookingServiceServer interface {
 	UpdateBooking(context.Context, *Booking) (*Booking, error)
 	DeleteBooking(context.Context, *BRequest) (*BStatus, error)
 	GetBookingsByPatient(context.Context, *BRequest) (*Bookings, error)
-	GetBookingsByCreatingEmployee(context.Context, *BRequest) (*Bookings, error)
+	GetBookingsByEmployee(context.Context, *BRequest) (*Bookings, error)
 	GetBookingsByInTimeFrame(context.Context, *BTimeFrameRequest) (*Bookings, error)
 	mustEmbedUnimplementedBookingServiceServer()
 }
@@ -145,8 +145,8 @@ func (UnimplementedBookingServiceServer) DeleteBooking(context.Context, *BReques
 func (UnimplementedBookingServiceServer) GetBookingsByPatient(context.Context, *BRequest) (*Bookings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByPatient not implemented")
 }
-func (UnimplementedBookingServiceServer) GetBookingsByCreatingEmployee(context.Context, *BRequest) (*Bookings, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByCreatingEmployee not implemented")
+func (UnimplementedBookingServiceServer) GetBookingsByEmployee(context.Context, *BRequest) (*Bookings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByEmployee not implemented")
 }
 func (UnimplementedBookingServiceServer) GetBookingsByInTimeFrame(context.Context, *BTimeFrameRequest) (*Bookings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByInTimeFrame not implemented")
@@ -272,20 +272,20 @@ func _BookingService_GetBookingsByPatient_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookingService_GetBookingsByCreatingEmployee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _BookingService_GetBookingsByEmployee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BookingServiceServer).GetBookingsByCreatingEmployee(ctx, in)
+		return srv.(BookingServiceServer).GetBookingsByEmployee(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/BookingService/GetBookingsByCreatingEmployee",
+		FullMethod: "/BookingService/GetBookingsByEmployee",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).GetBookingsByCreatingEmployee(ctx, req.(*BRequest))
+		return srv.(BookingServiceServer).GetBookingsByEmployee(ctx, req.(*BRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -340,8 +340,8 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookingService_GetBookingsByPatient_Handler,
 		},
 		{
-			MethodName: "GetBookingsByCreatingEmployee",
-			Handler:    _BookingService_GetBookingsByCreatingEmployee_Handler,
+			MethodName: "GetBookingsByEmployee",
+			Handler:    _BookingService_GetBookingsByEmployee_Handler,
 		},
 		{
 			MethodName: "GetBookingsByInTimeFrame",

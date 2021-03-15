@@ -229,3 +229,65 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) 
 
 	return &bookings, nil
 }
+
+func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *BRequest) (*Bookings, error) {
+	bookings := Bookings{
+		Bookings: make([]*Booking, 0),
+	}
+
+	dbBookings, err := b.DB.GetBookingsByEmployee(br.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbBooking := range dbBookings {
+
+		var bookingType string
+		var description string
+
+		hospitilization, err := b.DB.GetHospitilizationByBookingId(dbBooking.BookingId)
+		if err != nil {
+			return nil, err
+		}
+
+		if true {
+			examination, err := b.DB.GetExaminationByBookingId(dbBooking.BookingId)
+			if err != nil {
+				return nil, err
+			}
+
+			if examination == nil {
+				return nil, fmt.Errorf("Could not find either hospitilization or examination data")
+			} else {
+				bookingType = string(models.Examination)
+				description = examination.Description
+			}
+		} else {
+			bookingType = string(models.Hospitilization)
+			description = hospitilization.Description
+		}
+
+		booking := Booking{
+			BookingId:   dbBooking.BookingId,
+			BookedTime:  dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
+			BookedEnd:   dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
+			Patient:     dbBooking.Patient,
+			Employee:    dbBooking.Employee,
+			Approved:    dbBooking.Approved,
+			Type:        bookingType,
+			Description: description,
+			Hospital: &Hospital{
+				HospitalId: dbBooking.Hospital.HospitalId,
+				Name:       dbBooking.Hospital.Name,
+				Address:    dbBooking.Hospital.Address,
+				City:       dbBooking.Hospital.City,
+				PostalCode: dbBooking.Hospital.PostalCode,
+				Country:    dbBooking.Hospital.Country,
+			},
+		}
+
+		bookings.Bookings = append(bookings.Bookings, &booking)
+	}
+
+	return &bookings, nil
+}

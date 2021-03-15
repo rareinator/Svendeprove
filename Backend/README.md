@@ -63,11 +63,12 @@
 * [x] UpdateBooking /booking/{id:[0-9]+} POST
 * [x] DeleteBooking /booking/{id:[0-9]+} DELETE
 * [x] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET
-* [ ] GetBookingsByEmployee /booking/byEmployee/{id:[0-9]+]} GET
+* [x] GetBookingsByEmployee /booking/byEmployee/{id:[0-9]+]} GET
 * [ ] GetAvailableDoctorsInTimeframe /booking/availableEmployee POST
 
 ### User administration
 * [x] GetEmployee /useradmin/{id:[0-9]+} GET
+* [x] GetHospitals /admin/hospitals GET
 
 ### IOT
 * [x] UploadData /iot/uploadData POST

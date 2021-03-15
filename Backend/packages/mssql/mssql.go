@@ -437,3 +437,13 @@ func (m *MSSQL) GetBookingsByPatient(username string) ([]*DBBooking, error) {
 
 	return bookings, nil
 }
+
+func (m *MSSQL) GetBookingsByEmployee(username string) ([]*DBBooking, error) {
+	var bookings []*DBBooking
+	result := m.db.Preload("Hospital").Where("Employee = ?", username).Find(&bookings)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return bookings, nil
+}
