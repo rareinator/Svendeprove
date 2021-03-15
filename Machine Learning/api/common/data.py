@@ -55,5 +55,10 @@ class DataCache(object):
             for key, value in sym_dis.items():
                 diagnosis = next(dis for dis in self.diagnosis if dis.id == key)
                 diagnosis.symptoms = value
-                    
+
+    def parse_symptom_name(self, name):
+        return [sym for sym in self.symptoms if name.lower() in sym.name.lower()]
+    def parse_diagnosis_name(self, name):
+        return [dis for dis in self.diagnosis if name.lower() in dis.name.lower()]
+            
 data = DataCache()
