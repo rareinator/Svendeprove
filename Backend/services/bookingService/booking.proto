@@ -18,6 +18,20 @@ message BRequest {
   int32 Id = 2;
 }
 
+message BUser {
+  string Address = 1;
+  string City = 2;
+  string Country = 3;
+  string Name = 4;
+  string PostalCode = 5;
+  string SocialIdNr = 6;
+  string Username = 7;
+}
+
+message BUsers {
+  repeated BUser Users = 1;
+}
+
 message Hospital {
   int32 HospitalId = 1;
   string Name = 2;
@@ -44,8 +58,12 @@ message Bookings {
 }
 
 message BTimeFrameRequest {
-  string Start = 1;
-  string End = 2;
+  string Day = 1;
+  string Doctor = 2;
+}
+
+message Strings {
+  repeated string Strings = 1;
 }
 
 
@@ -58,6 +76,5 @@ service BookingService {
   rpc DeleteBooking(BRequest) returns (BStatus) {}
   rpc GetBookingsByPatient(BRequest) returns (Bookings) {}
   rpc GetBookingsByEmployee(BRequest) returns (Bookings) {}
-  rpc GetBookingsByInTimeFrame(BTimeFrameRequest) returns (Bookings) {}
-
+  rpc GetAvailableTimesForDoctor(BTimeFrameRequest) returns (Strings) {}
 }

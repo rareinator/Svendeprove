@@ -447,3 +447,18 @@ func (m *MSSQL) GetBookingsByEmployee(username string) ([]*DBBooking, error) {
 
 	return bookings, nil
 }
+
+func (m *MSSQL) GetBookedTimesForDoctor(day time.Time, doctor string) ([]time.Time, error) {
+	var bookings []*DBBooking
+	var response []time.Time
+	result := m.db.Where("BookedTime BETWEEN ? AND ?", day, day.Add(time.Hour*24)).Find(&bookings)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	for _, booking := range bookings {
+		response = append(response, booking.Bookedtime)
+	}
+
+	return response, nil
+}

@@ -25,7 +25,7 @@ type BookingServiceClient interface {
 	DeleteBooking(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*BStatus, error)
 	GetBookingsByPatient(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error)
 	GetBookingsByEmployee(ctx context.Context, in *BRequest, opts ...grpc.CallOption) (*Bookings, error)
-	GetBookingsByInTimeFrame(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Bookings, error)
+	GetAvailableTimesForDoctor(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Strings, error)
 }
 
 type bookingServiceClient struct {
@@ -99,9 +99,9 @@ func (c *bookingServiceClient) GetBookingsByEmployee(ctx context.Context, in *BR
 	return out, nil
 }
 
-func (c *bookingServiceClient) GetBookingsByInTimeFrame(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Bookings, error) {
-	out := new(Bookings)
-	err := c.cc.Invoke(ctx, "/BookingService/GetBookingsByInTimeFrame", in, out, opts...)
+func (c *bookingServiceClient) GetAvailableTimesForDoctor(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Strings, error) {
+	out := new(Strings)
+	err := c.cc.Invoke(ctx, "/BookingService/GetAvailableTimesForDoctor", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ type BookingServiceServer interface {
 	DeleteBooking(context.Context, *BRequest) (*BStatus, error)
 	GetBookingsByPatient(context.Context, *BRequest) (*Bookings, error)
 	GetBookingsByEmployee(context.Context, *BRequest) (*Bookings, error)
-	GetBookingsByInTimeFrame(context.Context, *BTimeFrameRequest) (*Bookings, error)
+	GetAvailableTimesForDoctor(context.Context, *BTimeFrameRequest) (*Strings, error)
 	mustEmbedUnimplementedBookingServiceServer()
 }
 
@@ -148,8 +148,8 @@ func (UnimplementedBookingServiceServer) GetBookingsByPatient(context.Context, *
 func (UnimplementedBookingServiceServer) GetBookingsByEmployee(context.Context, *BRequest) (*Bookings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByEmployee not implemented")
 }
-func (UnimplementedBookingServiceServer) GetBookingsByInTimeFrame(context.Context, *BTimeFrameRequest) (*Bookings, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByInTimeFrame not implemented")
+func (UnimplementedBookingServiceServer) GetAvailableTimesForDoctor(context.Context, *BTimeFrameRequest) (*Strings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableTimesForDoctor not implemented")
 }
 func (UnimplementedBookingServiceServer) mustEmbedUnimplementedBookingServiceServer() {}
 
@@ -290,20 +290,20 @@ func _BookingService_GetBookingsByEmployee_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookingService_GetBookingsByInTimeFrame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _BookingService_GetAvailableTimesForDoctor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BTimeFrameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BookingServiceServer).GetBookingsByInTimeFrame(ctx, in)
+		return srv.(BookingServiceServer).GetAvailableTimesForDoctor(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/BookingService/GetBookingsByInTimeFrame",
+		FullMethod: "/BookingService/GetAvailableTimesForDoctor",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).GetBookingsByInTimeFrame(ctx, req.(*BTimeFrameRequest))
+		return srv.(BookingServiceServer).GetAvailableTimesForDoctor(ctx, req.(*BTimeFrameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -344,8 +344,8 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookingService_GetBookingsByEmployee_Handler,
 		},
 		{
-			MethodName: "GetBookingsByInTimeFrame",
-			Handler:    _BookingService_GetBookingsByInTimeFrame_Handler,
+			MethodName: "GetAvailableTimesForDoctor",
+			Handler:    _BookingService_GetAvailableTimesForDoctor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

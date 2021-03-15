@@ -706,6 +706,40 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 	}
 }
 
+type doctor struct {
+	Username string `json:"Username"`
+	Name     string `json:"Name"`
+}
+
+func (s *server) handleGetDoctorsInHospital() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//TODO: fix so it also check on department ID
+
+		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl("https://dev-63345262.okta.com"), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		users, _, err := client.Group.ListGroupUsers(context.Background(), "00gbrw99eH74jULM95d6", &query.Params{})
+
+		result := make([]*doctor, 0)
+
+		for _, user := range users {
+			doctor := doctor{
+				Name:     fmt.Sprintf("%v", (*user.Profile)["displayName"]),
+				Username: fmt.Sprintf("%v", (*user.Profile)["login"]),
+			}
+
+			result = append(result, &doctor)
+
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&result)
+	}
+}
+
 func (s *server) handlePatientsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl("https://dev-63345262.okta.com"), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
@@ -1191,6 +1225,23 @@ func (s *server) handleBookingsByEmployee() http.HandlerFunc {
 			response.Bookings = make([]*bookingService.Booking, 0)
 		}
 		json.NewEncoder(w).Encode(response.Bookings)
+	}
+}
+
+func (s *server) handleAvailableTimesForDoctor() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request bookingService.BTimeFrameRequest
+
+		json.NewDecoder(r.Body).Decode(&request)
+
+		response, err := s.bookingService.GetAvailableTimesForDoctor(context.Background(), &request)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response.Strings)
 	}
 }
 

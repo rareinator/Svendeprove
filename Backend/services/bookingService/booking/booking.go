@@ -291,3 +291,52 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *BRequest)
 
 	return &bookings, nil
 }
+
+func (b *BookingServer) GetAvailableTimesForDoctor(ctx context.Context, request *BTimeFrameRequest) (*Strings, error) {
+	parsedTime, err := time.Parse("02/01/2006 15:04:05", request.Day)
+	if err != nil {
+		return nil, err
+	}
+
+	roundedTime := time.Date(parsedTime.Year(), parsedTime.Month(), parsedTime.Day(), 0, 0, 0, 0, parsedTime.Location())
+
+	bookedTimes, err := b.DB.GetBookedTimesForDoctor(roundedTime, request.Doctor)
+	if err != nil {
+		return nil, err
+	}
+
+	times := Strings{
+		Strings: []string{},
+	}
+
+	availableTimes := make([]time.Time, 8)
+	availableTimes[0] = roundedTime.Add(time.Hour * 8)
+	availableTimes[1] = roundedTime.Add(time.Hour * 9)
+	availableTimes[2] = roundedTime.Add(time.Hour * 10)
+	availableTimes[3] = roundedTime.Add(time.Hour * 11)
+	availableTimes[4] = roundedTime.Add(time.Hour * 12)
+	availableTimes[5] = roundedTime.Add(time.Hour * 13)
+	availableTimes[6] = roundedTime.Add(time.Hour * 14)
+	availableTimes[7] = roundedTime.Add(time.Hour * 15)
+
+	for idx, availableTime := range availableTimes {
+		add := true
+
+		for _, bookedTime := range bookedTimes {
+			roundedBookedTime := time.Date(bookedTime.Year(), bookedTime.Month(), bookedTime.Day(), bookedTime.Hour(), 0, 0, 0, bookedTime.Location())
+			if availableTime == roundedBookedTime {
+				add = false
+			}
+		}
+
+		if add {
+			times.Strings = append(times.Strings, availableTimes[idx].Format("02/01/2006 15:04:05"))
+		}
+	}
+
+	return &times, nil
+}
+
+func removeTime(slice []time.Time, s int) []time.Time {
+	return append(slice[:s], slice[s+1:]...)
+}

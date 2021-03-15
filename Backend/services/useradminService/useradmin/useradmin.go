@@ -52,5 +52,4 @@ func (u *UseradminServer) GetHospitals(ctx context.Context, e *UAEmpty) (*Hospit
 	}
 
 	return &hospitals, nil
-
 }
