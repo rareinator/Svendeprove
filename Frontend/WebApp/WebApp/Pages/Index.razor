@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <form @onsubmit="Login">
+    <form @onsubmit="TestLogin">
         <div class="row text-center mt-1">
             <div class="col-4"></div>
             <div class="col-4">
@@ -123,6 +123,24 @@
                 errorMessage = "Could not login";
                 StateHasChanged();
             }
+        }
+    }
+
+    private async void TestLogin()
+    {
+        if (clicked)
+        {
+            User.Role = "1";
+            User.Token = "TestToken";
+            _accountService.Login(User);
+            MyNavigationManager.NavigateTo("/Administration");
+        }
+        else
+        {
+            User.Role = "0";
+            User.Token = "TestToken";
+            _accountService.Login(User);
+            MyNavigationManager.NavigateTo("/Journals");
         }
     }
 
