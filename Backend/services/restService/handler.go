@@ -18,7 +18,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwt"
-	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
+	"github.com/okta/okta-sdk-golang/v2/okta"
+	"github.com/okta/okta-sdk-golang/v2/okta/query"
 	authenticationService "github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 	bookingService "github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	iotService "github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
@@ -235,14 +236,9 @@ func (s *server) handleJournalSave() http.HandlerFunc {
 		var journal journalService.Journal
 		json.NewDecoder(r.Body).Decode(&journal)
 
-		employeeID, err := s.getEmployeeID(r)
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		journal.CreatedBy = employeeID
+		employee := s.getUsername(r)
 
-		fmt.Printf("TEST!!!! %v\n\r", employeeID)
+		journal.CreatedBy = employee
 
 		response, err := s.journalService.CreateJournal(context.Background(), &journal)
 		if err != nil {
@@ -331,14 +327,9 @@ func (s *server) handleJournalDelete() http.HandlerFunc {
 func (s *server) handleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No journals found for that patientId")
-			return
-		}
 
 		pr := &journalService.PatientRequest{
-			PatientId: int32(patientID),
+			Patient: vars["username"],
 		}
 
 		response, err := s.journalService.GetJournalsByPatient(context.Background(), pr)
@@ -415,12 +406,12 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 
 		fmt.Println("Inserting Journal Document")
 
-		employeeID, err := s.getEmployeeID(r)
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		journalDocument.CreatedBy = employeeID
+		// employeeID, err := s.getEmployeeID(r)
+		// if err != nil {
+		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
+		journalDocument.CreatedBy = "mni@hospi.local" //TODO: Fix
 
 		fmt.Println("Calling journalService")
 
@@ -537,27 +528,9 @@ func (s *server) handleJournalDocumentByJournal() http.HandlerFunc {
 			return
 		}
 
-		patientID, err := s.getPatientID(r)
-		if err != nil {
-			s.returnError(w, http.StatusForbidden, "")
-			return
-		}
+		//TODO: oauth fix
 
-		var allowed bool
-		if patientID == 0 {
-			allowed = true
-		} else {
-			allowed = false
-			if len(response.JournalDocuments) > 0 {
-				allowed, err = s.patientIsAuthenticated(mssql.DBJournalDocument{}, response.JournalDocuments[0].DocumentId, patientID)
-				if err != nil {
-					s.returnError(w, http.StatusForbidden, err.Error())
-					return
-				}
-			} else {
-				allowed = true
-			}
-		}
+		allowed := true
 
 		if allowed {
 			w.WriteHeader(http.StatusOK)
@@ -726,14 +699,9 @@ func (s *server) handlePatientSave() http.HandlerFunc {
 func (s *server) handlePatientRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No patient found with that id")
-			return
-		}
 
 		p := patientService.PRequest{
-			Id: int32(patientID),
+			Username: vars["username"],
 		}
 
 		response, err := s.patientService.GetPatient(context.Background(), &p)
@@ -749,47 +717,48 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 
 func (s *server) handlePatientsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// store, err := session.Start(r.Context(), w, r)
-		// if err != nil {
-		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-
-		// value, exist := store.Get("pp")
-		// if !exist {
-		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-
-		// fmt.Printf("store key pp value: %v\n\r", value)
-
-		response, err := s.patientService.GetPatients(context.Background(), &patientService.PEmpty{})
+		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl("https://dev-63345262.okta.com"), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		if len(response.Patients) == 0 {
-			response.Patients = make([]*patientService.Patient, 0)
+		users, _, err := client.Group.ListGroupUsers(context.Background(), "00gbqw93aeIKYWqww5d6", &query.Params{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
 		}
-		json.NewEncoder(w).Encode(response.Patients)
+
+		result := make([]*patientService.Patient, 0)
+
+		for _, user := range users {
+			patient := patientService.Patient{
+				Name:       user.Type.Name,
+				Address:    fmt.Sprintf("%v", (*user.Profile)["streetAddress"]),
+				City:       fmt.Sprintf("%v", (*user.Profile)["city"]),
+				PostalCode: fmt.Sprintf("%v", (*user.Profile)["zipCode"]),
+				Country:    fmt.Sprintf("%v", (*user.Profile)["full_country"]),
+				SocialIdNr: fmt.Sprintf("%v", (*user.Profile)["social_id"]),
+				Username:   fmt.Sprintf("%v", (*user.Profile)["login"]),
+			}
+
+			result = append(result, &patient)
+
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(result)
 	}
 }
 
 func (s *server) handlePatientUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No patient found for that id")
-			return
-		}
 
 		var patient patientService.Patient
 		json.NewDecoder(r.Body).Decode(&patient)
 
-		patient.PatientId = int32(patientID)
+		patient.Username = vars["username"]
 
 		response, err := s.patientService.UpdatePatient(context.Background(), &patient)
 		if err != nil {
@@ -804,39 +773,30 @@ func (s *server) handlePatientUpdate() http.HandlerFunc {
 
 func (s *server) handlePatientDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No patient found for that id")
-			return
-		}
+		// vars := mux.Vars(r)
 
-		response, err := s.patientService.DeletePatient(context.Background(), &patientService.PRequest{Id: int32(patientID)})
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		//TODO: fix
 
-		if response.Success {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
+		// response, err := s.patientService.DeletePatient(context.Background(), &patientService.PRequest{Id: int32(patientID)})
+		// if err != nil {
+		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		s.returnError(w, http.StatusInternalServerError, "Somethin unknown went gorribly wrong!!! ☠️☠️☠️")
+		// if response.Success {
+		// 	w.WriteHeader(http.StatusOK)
+		// 	return
+		// }
+
+		// s.returnError(w, http.StatusInternalServerError, "Somethin unknown went gorribly wrong!!! ☠️☠️☠️")
 	}
 }
 
 func (s *server) handleDiagnoseGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
-			return
-		}
-
 		p := patientService.PRequest{
-			Id: int32(id),
+			Username: vars["username"],
 		}
 
 		response, err := s.patientService.GetDiagnose(context.Background(), &p)
@@ -869,14 +829,9 @@ func (s *server) handleDiagnosesGet() http.HandlerFunc {
 func (s *server) handleSymptomGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No symptom found with that id")
-			return
-		}
 
 		p := patientService.PRequest{
-			Id: int32(id),
+			Username: vars["username"],
 		}
 
 		response, err := s.patientService.GetSymptom(context.Background(), &p)
@@ -910,14 +865,9 @@ func (s *server) handleSymptomsGet() http.HandlerFunc {
 func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["patientID"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "patient with that id not found")
-			return
-		}
 		var patientDiagnose patientService.PatientDiagnose
 		json.NewDecoder(r.Body).Decode(&patientDiagnose)
-		patientDiagnose.PatientId = int32(patientID)
+		patientDiagnose.Patient = vars["username"]
 
 		response, err := s.patientService.CreatePatientDiagnose(context.Background(), &patientDiagnose)
 		if err != nil {
@@ -933,14 +883,9 @@ func (s *server) handlePatientDiagnoseSave() http.HandlerFunc {
 func (s *server) handlePatientDiagnosesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["patientID"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "Patient for that id not found")
-			return
-		}
 
 		pr := patientService.PRequest{
-			Id: int32(patientID),
+			Username: vars["username"],
 		}
 
 		response, err := s.patientService.GetPatientDiagnoses(context.Background(), &pr)
@@ -1049,14 +994,14 @@ func (s *server) handlePatientSymptomCreate() http.HandlerFunc {
 func (s *server) handlePatientSymptomsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		diagnoseID, err := strconv.Atoi(vars["diagnoseID"])
+		id, err := strconv.Atoi(vars["diagnoseID"])
 		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No diagnose found with that id")
+			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		pr := patientService.PRequest{
-			Id: int32(diagnoseID),
+			Id: int32(id),
 		}
 
 		response, err := s.patientService.GetDiagnoseSymptoms(context.Background(), &pr)
@@ -1167,13 +1112,7 @@ func (s *server) handleBookingCreate() http.HandlerFunc {
 		var booking bookingService.Booking
 		json.NewDecoder(r.Body).Decode(&booking)
 
-		employeeID, err := s.getEmployeeID(r)
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		booking.ApprovedByEmployee = employeeID
+		booking.Employee = s.getUsername(r)
 
 		response, err := s.bookingService.CreateBooking(context.Background(), &booking)
 		if err != nil {
@@ -1266,14 +1205,8 @@ func (s *server) handleBookingDelete() http.HandlerFunc {
 func (s *server) handleBookingsByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		patientID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No bookings found for that patientID")
-			return
-		}
-
 		br := bookingService.BRequest{
-			Id: int32(patientID),
+			Username: vars["username"],
 		}
 
 		response, err := s.bookingService.GetBookingsByPatient(context.Background(), &br)
@@ -1308,14 +1241,9 @@ func (s *server) handleUseradminHealth() http.HandlerFunc {
 func (s *server) handleUseradminGetEmployee() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		ID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.returnError(w, http.StatusNotFound, "No employee found with that id")
-			return
-		}
 
 		er := useradminService.EmployeeRequest{
-			EmployeeId: int32(ID),
+			Employee: vars["username"],
 		}
 
 		response, err := s.useradminService.GetEmployee(context.Background(), &er)
@@ -1418,11 +1346,9 @@ func (s *server) handleIOTUpload() http.HandlerFunc {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		username, err := s.getUsername(r.URL.Query().Get("Key"))
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		username := s.getUsername(r)
+
+		//TODO: fix
 
 		iotData := iotService.IOTData{
 			Name:     username,

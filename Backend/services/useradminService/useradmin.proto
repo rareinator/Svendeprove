@@ -9,15 +9,14 @@ message UAHealth {
 
 
 message EmployeeRequest {
-  int32 EmployeeId = 1;
+  string Employee = 1;
 }
 
 message Employee {
-  int32 EmployeeId = 1;
-  string Name = 2;
-  int32 WorktitleId = 3;
-  int32 DepartmentId = 4;
-  string Username = 5;
+  string Name = 1;
+  int32 WorktitleId = 2;
+  int32 DepartmentId = 3;
+  string Username = 4;
 }
 
 

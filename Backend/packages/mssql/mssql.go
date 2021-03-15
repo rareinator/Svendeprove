@@ -38,29 +38,29 @@ func NewConnection(dsn string) (MSSQL, error) {
 	return *mssql, nil
 }
 
-func (m *MSSQL) GetEmployee(id int32) (*DBEmployee, error) {
-	var employee DBEmployee
-	result := m.db.First(&employee, id)
-	if result.Error != nil {
-		return nil, result.Error
-	}
+// func (m *MSSQL) GetEmployee(id int32) (*DBEmployee, error) {
+// 	var employee DBEmployee
+// 	result := m.db.First(&employee, id)
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
 
-	return &employee, nil
-}
+// 	return &employee, nil
+// }
 
-func (m *MSSQL) GetEmployeeID(username string) (int32, error) {
-	var employee DBEmployee
-	result := m.db.Where("Username = ?", username).First(&employee)
-	if result.Error != nil {
-		return 0, result.Error
-	}
+// func (m *MSSQL) GetEmployeeID(username string) (int32, error) {
+// 	var employee DBEmployee
+// 	result := m.db.Where("Username = ?", username).First(&employee)
+// 	if result.Error != nil {
+// 		return 0, result.Error
+// 	}
 
-	if employee.EmployeeId == 0 {
-		return 0, fmt.Errorf("Could not find an employee with that username")
-	}
+// 	if employee.EmployeeId == 0 {
+// 		return 0, fmt.Errorf("Could not find an employee with that username")
+// 	}
 
-	return employee.EmployeeId, nil
-}
+// 	return employee.EmployeeId, nil
+// }
 
 func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 	var token DBToken
@@ -95,34 +95,34 @@ func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {
 	return &journal, nil
 }
 
-func (m *MSSQL) GetJournalsByPatient(id int32) ([]*DBJournal, error) {
+func (m *MSSQL) GetJournalsByPatient(username string) ([]*DBJournal, error) {
 	var journals []*DBJournal
-	result := m.db.Where("PatientId = ?", id).Find(&journals)
+	result := m.db.Where("Patient = ?", username).Find(&journals)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return journals, nil
 }
 
-func (m *MSSQL) LoginPatient(username string, password string) (*DBPatient, error) {
-	var patient DBPatient
-	m.db.First(&patient, "Username = ? AND Password = ?", username, password)
-	if patient.Username == "" {
-		return nil, fmt.Errorf("Could not login")
-	}
+// func (m *MSSQL) LoginPatient(username string, password string) (*DBPatient, error) {
+// 	var patient DBPatient
+// 	m.db.First(&patient, "Username = ? AND Password = ?", username, password)
+// 	if patient.Username == "" {
+// 		return nil, fmt.Errorf("Could not login")
+// 	}
 
-	return &patient, nil
-}
+// 	return &patient, nil
+// }
 
-func (m *MSSQL) GetPatientSalt(username string) (string, error) {
-	var patient DBPatient
-	m.db.First(&patient, "Username = ?", username)
-	if patient.Salt == "" {
-		return "", fmt.Errorf("Could not find user")
-	}
+// func (m *MSSQL) GetPatientSalt(username string) (string, error) {
+// 	var patient DBPatient
+// 	m.db.First(&patient, "Username = ?", username)
+// 	if patient.Salt == "" {
+// 		return "", fmt.Errorf("Could not find user")
+// 	}
 
-	return patient.Salt, nil
-}
+// 	return patient.Salt, nil
+// }
 
 func (m *MSSQL) CreateJournal(journal *DBJournal) error {
 	result := m.db.Create(journal)
@@ -205,69 +205,69 @@ func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument,
 	return &journalDocument, nil
 }
 
-func (m *MSSQL) GetPatientID(query string, id int32) (int32, error) {
-	var resultData struct {
-		PatientId int32
-	}
+// func (m *MSSQL) GetPatientID(query string, id int32) (int32, error) {
+// 	var resultData struct {
+// 		PatientId int32
+// 	}
 
-	result := m.db.Raw(query, id).Scan(&resultData)
-	if result.Error != nil {
-		return 0, result.Error
-	}
+// 	result := m.db.Raw(query, id).Scan(&resultData)
+// 	if result.Error != nil {
+// 		return 0, result.Error
+// 	}
 
-	if resultData.PatientId == 0 {
-		return 0, fmt.Errorf("Could not find a related patient")
-	}
+// 	if resultData.PatientId == 0 {
+// 		return 0, fmt.Errorf("Could not find a related patient")
+// 	}
 
-	return int32(resultData.PatientId), nil
-}
+// 	return int32(resultData.PatientId), nil
+// }
 
-func (m *MSSQL) CreatePatient(patient *DBPatient) error {
-	result := m.db.Create(patient)
-	if result.Error != nil {
-		return result.Error
-	}
+// func (m *MSSQL) CreatePatient(patient *DBPatient) error {
+// 	result := m.db.Create(patient)
+// 	if result.Error != nil {
+// 		return result.Error
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func (m *MSSQL) GetPatients() ([]*DBPatient, error) {
-	var patient []*DBPatient
-	result := m.db.Find(&patient)
-	if result.Error != nil {
-		return nil, result.Error
-	}
+// func (m *MSSQL) GetPatients() ([]*DBPatient, error) {
+// 	var patient []*DBPatient
+// 	result := m.db.Find(&patient)
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
 
-	return patient, nil
-}
+// 	return patient, nil
+// }
 
-func (m *MSSQL) GetPatient(id int32) (*DBPatient, error) {
-	var patient DBPatient
-	result := m.db.First(&patient, id)
-	if result.Error != nil {
-		return nil, result.Error
-	}
+// func (m *MSSQL) GetPatient(id int32) (*DBPatient, error) {
+// 	var patient DBPatient
+// 	result := m.db.First(&patient, id)
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
 
-	return &patient, nil
-}
+// 	return &patient, nil
+// }
 
-func (m *MSSQL) UpdatePatient(patient *DBPatient) error {
-	result := m.db.Where("PatientId = ?", patient.PatientId).Omit("Password", "Salt").Save(&patient)
-	if result.Error != nil {
-		return result.Error
-	}
+// func (m *MSSQL) UpdatePatient(patient *DBPatient) error {
+// 	result := m.db.Where("PatientId = ?", patient.PatientId).Omit("Password", "Salt").Save(&patient)
+// 	if result.Error != nil {
+// 		return result.Error
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func (m *MSSQL) DeletePatient(patient *DBPatient) error {
-	result := m.db.Where("PatientId = ?", patient.PatientId).Delete(patient)
-	if result.Error != nil {
-		return result.Error
-	}
+// func (m *MSSQL) DeletePatient(patient *DBPatient) error {
+// 	result := m.db.Where("PatientId = ?", patient.PatientId).Delete(patient)
+// 	if result.Error != nil {
+// 		return result.Error
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (m *MSSQL) GetDiagnose(id int32) (*DBDiagnose, error) {
 	var diagnose DBDiagnose
@@ -324,9 +324,9 @@ func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error 
 	return nil
 }
 
-func (m *MSSQL) GetPatientDiagnoses(id int32) ([]*DBPatientDiagnose, error) {
+func (m *MSSQL) GetPatientDiagnoses(username string) ([]*DBPatientDiagnose, error) {
 	var patientDiagnoses []*DBPatientDiagnose
-	result := m.db.Where("PatientId = ?", id).Find(&patientDiagnoses)
+	result := m.db.Where("Patient = ?", username).Find(&patientDiagnoses)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -459,17 +459,39 @@ func (m *MSSQL) CreateBooking(booking *DBBooking) error {
 
 func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
 	var booking DBBooking
-	result := m.db.First(&booking, id)
+	result := m.db.Preload("Hospital").First(&booking, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return &booking, nil
+}
 
+func (m *MSSQL) GetHospitilizationByBookingId(id int32) (*DBHospitilization, error) {
+	var hospitilization DBHospitilization
+	result := m.db.Where("BookingId = ?", id).First(&hospitilization)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+
+	return &hospitilization, nil
+}
+
+func (m *MSSQL) GetExaminationByBookingId(id int32) (*DBExamination, error) {
+	var examination DBExamination
+	result := m.db.Where("BookingId = ?", id).First(&examination)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &examination, nil
 }
 
 func (m *MSSQL) UpdateBooking(booking *DBBooking) error {
-	result := m.db.Where("BookingId = ?", booking.PatientId).Save(&booking)
+	result := m.db.Where("BookingId = ?", booking.BookingId).Save(&booking)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -486,9 +508,9 @@ func (m *MSSQL) DeleteBooking(booking *DBBooking) error {
 	return nil
 }
 
-func (m *MSSQL) GetBookingsByPatient(id int32) ([]*DBBooking, error) {
+func (m *MSSQL) GetBookingsByPatient(username string) ([]*DBBooking, error) {
 	var bookings []*DBBooking
-	result := m.db.Where("PatientId = ?", id).Find(&bookings)
+	result := m.db.Where("Patient = ?", username).Find(&bookings)
 	if result.Error != nil {
 		return nil, result.Error
 	}

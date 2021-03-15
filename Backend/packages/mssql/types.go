@@ -39,7 +39,7 @@ type DBJournalDocument struct {
 	DocumentId   int32          `gorm:"column:DocumentId;primaryKey"`
 	Content      string         `gorm:"column:Content"`
 	JournalId    int32          `gorm:"column:Journalid"`
-	CreatedBy    int32          `gorm:"column:CreatedBy"`
+	CreatedBy    string         `gorm:"column:CreatedBy"`
 	Title        string         `gorm:"column:Title"`
 	Summary      string         `gorm:"column:Summary"`
 	CreationTime time.Time      `gorm:"column:CreationTime"`
@@ -58,8 +58,8 @@ type DBJournal struct {
 	JournalId    int32     `gorm:"column:JournalId;primaryKey"`
 	CreationTime time.Time `gorm:"column:CreationTime"`
 	Intro        string    `gorm:"column:Intro"`
-	PatientId    int32     `gorm:"column:PatientId"`
-	CreatedBy    int32     `gorm:"column:CreatedBy"`
+	Patient      string    `gorm:"column:Patient"`
+	CreatedBy    string    `gorm:"column:CreatedBy"`
 }
 
 func (DBJournal) TableName() string {
@@ -76,26 +76,26 @@ func (DBToken) TableName() string {
 	return "Tokens"
 }
 
-type DBPatient struct {
-	PatientId  int32  `gorm:"column:PatientId;primaryKey"`
-	Name       string `gorm:"column:Name"`
-	Address    string `gorm:"column:Address"`
-	City       string `gorm:"column:City"`
-	PostalCode string `gorm:"column:PostalCode"`
-	Country    string `gorm:"column:Country"`
-	SocialIdNr string `gorm:"column:SocialIdNr"`
-	Username   string `gorm:"column:Username"`
-	Password   string `gorm:"column:Password"`
-	Salt       string `gorm:"column:Salt"`
-}
+// type DBPatient struct {
+// 	PatientId  int32  `gorm:"column:PatientId;primaryKey"`
+// 	Name       string `gorm:"column:Name"`
+// 	Address    string `gorm:"column:Address"`
+// 	City       string `gorm:"column:City"`
+// 	PostalCode string `gorm:"column:PostalCode"`
+// 	Country    string `gorm:"column:Country"`
+// 	SocialIdNr string `gorm:"column:SocialIdNr"`
+// 	Username   string `gorm:"column:Username"`
+// 	Password   string `gorm:"column:Password"`
+// 	Salt       string `gorm:"column:Salt"`
+// }
 
-func (DBPatient) TableName() string {
-	return "Patient"
-}
+// func (DBPatient) TableName() string {
+// 	return "Patient"
+// }
 
 type DBPatientDiagnose struct {
 	PatientDiagnoseId int32     `gorm:"column:PatientDiagnoseId;primaryKey"`
-	PatientId         int32     `gorm:"column:PatientId"`
+	Patient           string    `gorm:"column:Patient"`
 	DiagnoseId        int32     `gorm:"column:DiagnoseId"`
 	CreationTime      time.Time `gorm:"column:CreationTime"`
 }
@@ -131,26 +131,81 @@ func (DBPatientDiagnoseSymptom) TableName() string {
 	return "PatientDiagnoseSymptom"
 }
 
+type DBHospital struct {
+	HospitalId int32  `gorm:"column:HospitalId"`
+	Name       string `gorm:"column:Name"`
+	Address    string `gorm:"column:Address"`
+	City       string `gorm:"column:City"`
+	PostalCode string `gorm:"column:PostalCode"`
+	Country    string `gorm:"column:Country"`
+}
+
+func (DBHospital) TableName() string {
+	return "Hospital"
+}
+
 type DBBooking struct {
-	BookingId          int32     `gorm:"column:BookingId;primaryKey"`
-	Bookedtime         time.Time `gorm:"column:Bookedtime"`
-	BookedEnd          time.Time `gorm:"column:BookedEnd"`
-	PatientId          int32     `gorm:"column:PatientId"`
-	ApprovedByEmployee int32     `gorm:"column:ApprovedByEmployee"`
+	BookingId          int32      `gorm:"column:BookingId;primaryKey"`
+	Bookedtime         time.Time  `gorm:"column:Bookedtime"`
+	BookedEnd          time.Time  `gorm:"column:BookedEnd"`
+	Patient            string     `gorm:"column:Patient"`
+	Employee           string     `gorm:"column:Employee"`
+	ApprovedByEmployee bool       `gorm:"column:ApprovedByEmployee"`
+	HospitalId         int32      `gorm:"column:HospitalId"`
+	Hospital           DBHospital `gorm:"foreignKey:HospitalId;references:HospitalId"`
 }
 
 func (DBBooking) TableName() string {
 	return "Booking"
 }
 
-type DBEmployee struct {
-	EmployeeId   int32  `gorm:"column:EmployeeId;primaryKey"`
+// type DBEmployee struct {
+// 	EmployeeId   int32  `gorm:"column:EmployeeId;primaryKey"`
+// 	Name         string `gorm:"column:Name"`
+// 	WorktitleId  int32  `gorm:"column:WorktitleId"`
+// 	DepartmentId int32  `gorm:"column:DepartmentId"`
+// 	Username     string `gorm:"column:Username"`
+// }
+
+// func (DBEmployee) TableName() string {
+// 	return "Employee"
+// }
+
+type DBBed struct {
+	BedId        int32  `gorm:"column:BedId"`
 	Name         string `gorm:"column:Name"`
-	WorktitleId  int32  `gorm:"column:WorktitleId"`
 	DepartmentId int32  `gorm:"column:DepartmentId"`
-	Username     string `gorm:"column:Username"`
+	IsAvailable  bool   `gorm:"column:IsAvailable"`
 }
 
-func (DBEmployee) TableName() string {
-	return "Employee"
+func (DBBed) TableName() string {
+	return "Bed"
+}
+
+type DBHospitilization struct {
+	HospitilizationId int32     `gorm:"column:HospitilizationId,primaryKey"`
+	BookingId         int32     `gorm:"column:BookingId"`
+	Description       string    `gorm:"column:Description"`
+	StartedTime       time.Time `gorm:"column:StartedTime"`
+	EndedTime         time.Time `gorm:"column:EndedTime"`
+	BedId             int32     `gorm:"column:BedId"`
+	Bed               DBBed     `gorm:"foreignKey:BedId;references;BedId"`
+	Booking           DBBooking `gorm:"foreignKey:BookingId;references;BookingId"`
+}
+
+func (DBHospitilization) TableName() string {
+	return "Hospitilization"
+}
+
+type DBExamination struct {
+	ExaminationId int32     `gorm:"column:ExaminationId"`
+	Description   string    `gorm:"column:Description"`
+	StartedTime   time.Time `gorm:"column:StartedTime"`
+	EndedTime     time.Time `gorm:"column:EndedTime"`
+	BookingId     int32     `gorm:"column:BookingId"`
+	Booking       DBBooking `gorm:"foreignKey:BookingId;references:BookingId"`
+}
+
+func (DBExamination) TableName() string {
+	return "Examination"
 }

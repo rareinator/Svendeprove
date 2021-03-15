@@ -18,17 +18,13 @@ func (u *UseradminServer) GetHealth(ctx context.Context, e *UAEmpty) (*UAHealth,
 }
 
 func (u *UseradminServer) GetEmployee(ctx context.Context, er *EmployeeRequest) (*Employee, error) {
-	dbEmployee, err := u.DB.GetEmployee(er.EmployeeId)
-	if err != nil {
-		return nil, err
-	}
+	//TODO: implement okta sdk
 
 	result := Employee{
-		EmployeeId:   dbEmployee.EmployeeId,
-		Name:         dbEmployee.Name,
-		WorktitleId:  dbEmployee.WorktitleId,
-		DepartmentId: dbEmployee.DepartmentId,
-		Username:     dbEmployee.Username,
+		Name:         "Morten Nissen",
+		WorktitleId:  1,
+		DepartmentId: 1,
+		Username:     er.Employee,
 	}
 
 	return &result, nil

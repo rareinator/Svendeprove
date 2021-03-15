@@ -14,15 +14,29 @@ message BStatus {
 }
 
 message BRequest {
-  int32 Id = 1;
+  string Username = 1;
+  int32 Id = 2;
+}
+
+message Hospital {
+  int32 HospitalId = 1;
+  string Name = 2;
+  string Address = 3;
+  string City = 4;
+  string PostalCode = 5;
+  string Country = 6;
 }
 
 message Booking {
   int32 BookingId = 1;
   string BookedTime = 2;
   string BookedEnd = 3;
-  int32 PatientId = 4;
-  int32 ApprovedByEmployee = 5;
+  string Patient = 4;
+  string Employee = 5; 
+  bool ApprovedByEmployee = 6;
+  string Description = 7;
+  int32 Type = 8;
+  Hospital Hospital = 9;
 }
 
 message Bookings {

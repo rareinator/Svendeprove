@@ -48,7 +48,7 @@ func (s *server) routes() {
 				allowedPatient: "",
 			}))).Methods("DELETE")
 
-	s.router.Handle("/journal/byPatient/{id:[0-9]+}", //Get patient journals
+	s.router.Handle("/journal/byPatient/{username}", //Get patient journals
 		s.log(s.authenticate(
 			s.handleJournalByPatient(),
 			&authenticationConfig{
@@ -79,16 +79,6 @@ func (s *server) routes() {
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
 			}))).Methods("POST")
-
-	// s.router.Handle("/journal/document/{documentID:[0-9]+}/attachment",
-	// 	s.log(s.authenticate(
-	// 		s.handleDocumentUpload(),
-	// 		&authenticationConfig{
-	// 			allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
-	// 			allowedPatient:      "",
-	// 			allowRelatedPatient: false,
-	// 			allowIOTDevice:      false,
-	// 		}))).Methods("POST")
 
 	s.router.Handle("/journal/document/byJournal/{id:[0-9]+}", //Get journal documents by journalID
 		s.log(s.authenticate(
@@ -127,22 +117,13 @@ func (s *server) routes() {
 	// Authentication methods
 	s.router.Handle("/authentication/health", s.handleAuthenticationHealth()).Methods("GET")
 
-	s.router.Handle("/authentication/patient/login", s.handleAuthenticationPatientLogin()).Methods("POST")
-	s.router.Handle("/authentication/employee/login", s.handleAuthenticationEmployeeLogin()).Methods("POST")
+	// s.router.Handle("/authentication/patient/login", s.handleAuthenticationPatientLogin()).Methods("POST")
+	// s.router.Handle("/authentication/employee/login", s.handleAuthenticationEmployeeLogin()).Methods("POST")
 
 	// Patient methods
 	s.router.Handle("/patient/health", s.handlePatientHealth()).Methods("GET")
 
-	s.router.Handle("/patient", //CreatePatient
-		s.log(s.authenticate(
-			s.handlePatientSave(),
-			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-			}))).Methods("POST")
-
-	s.router.Handle("/patient/{id:[0-9]+}", //GetPatient
+	s.router.Handle("/patient/{username}", //GetPatient //TODO:
 		s.log(s.authenticate(
 			s.handlePatientRead(),
 			&authenticationConfig{
@@ -159,24 +140,6 @@ func (s *server) routes() {
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("GET")
-
-	s.router.Handle("/patient/{id:[0-9]+}", //UpdatePatient
-		s.log(s.authenticate(
-			s.handlePatientUpdate(),
-			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-			}))).Methods("POST")
-
-	s.router.Handle("/patient/{id:[0-9]+}", //DeletePatient
-		s.log(s.authenticate(
-			s.handlePatientDelete(),
-			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-			}))).Methods("DELETE")
 
 	s.router.Handle("/diagnose/{id:[0-9]+}", //GetDiagnose
 		s.log(s.authenticate(
@@ -214,7 +177,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("GET")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose", //CreatePatientDiagnose
+	s.router.Handle("/patient/{username}/diagnose", //CreatePatientDiagnose
 		s.log(s.authenticate(
 			s.handlePatientDiagnoseSave(),
 			&authenticationConfig{
@@ -223,7 +186,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("POST")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose", //GetDiagnoses
+	s.router.Handle("/patient/{username}/diagnose", //GetDiagnoses
 		s.log(s.authenticate(
 			s.handlePatientDiagnosesGet(),
 			&authenticationConfig{
@@ -232,7 +195,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("GET")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+}", //GetDiagnose
+	s.router.Handle("/patient/{username}/diagnose/{id:[0-9]+}", //GetDiagnose
 		s.log(s.authenticate(
 			s.handlePatientDiagnoseGet(),
 			&authenticationConfig{
@@ -241,7 +204,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("GET")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+}", //UpdateDiagnose
+	s.router.Handle("/patient/{username}/diagnose/{id:[0-9]+}", //UpdateDiagnose
 		s.log(s.authenticate(
 			s.handlePatientDiagnoseUpdate(),
 			&authenticationConfig{
@@ -250,7 +213,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("POST")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+}",
+	s.router.Handle("/patient/{username}/diagnose/{id:[0-9]+}",
 		s.log(s.authenticate(
 			s.handlePatientDiagnoseDelete(),
 			&authenticationConfig{
@@ -259,7 +222,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("DELETE")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
+	s.router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
 		s.log(s.authenticate(
 			s.handlePatientSymptomCreate(),
 			&authenticationConfig{
@@ -268,7 +231,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("POST")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom", //GetPatientSymptoms
+	s.router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom", //GetPatientSymptoms
 		s.log(s.authenticate(
 			s.handlePatientSymptomsGet(),
 			&authenticationConfig{
@@ -277,7 +240,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("GET")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //UpdatePatientSymptom
+	s.router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //UpdatePatientSymptom
 		s.log(s.authenticate(
 			s.handlePatientSymptomUpdate(),
 			&authenticationConfig{
@@ -286,7 +249,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("POST")
 
-	s.router.Handle("/patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //DeletePatientSymptom
+	s.router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //DeletePatientSymptom
 		s.log(s.authenticate(
 			s.handlePatientSymptomDelete(),
 			&authenticationConfig{
@@ -334,7 +297,7 @@ func (s *server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("DELETE")
 
-	s.router.Handle("/booking/byPatient/{id:[0-9]+}", //GetBookingsByPatient
+	s.router.Handle("/booking/byPatient/{username}", //GetBookingsByPatient
 		s.log(s.authenticate(
 			s.handleBookingsByPatient(),
 			&authenticationConfig{
@@ -346,7 +309,7 @@ func (s *server) routes() {
 	// Useradmin methods
 	s.router.Handle("/useradmin/health", s.handleUseradminHealth()).Methods("GET") //GetHealth)
 
-	s.router.Handle("/useradmin/{id:[0-9]+}", //GetEmployee
+	s.router.Handle("/useradmin/{username}", //GetUser //TODO:
 		s.log(s.authenticate(
 			s.handleUseradminGetEmployee(),
 			&authenticationConfig{

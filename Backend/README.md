@@ -7,7 +7,7 @@
 ### Authentication
 * [x] Health /authentication/health GET
 * [x] PatientLogin /authentication/patient/login POST
-* [x] EmployeeLogin /authentication/employee/login POSt
+* [x] EmployeeLogin /authentication/employee/login POST
 
 ### Journal
 * [x] Health /journal/health GET
@@ -63,8 +63,9 @@
 * [x] UpdateBooking /booking/{id:[0-9]+} POST
 * [x] DeleteBooking /booking/{id:[0-9]+} DELETE
 * [x] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET
-* [ ] GetBookingsByCreatingEmployee /booking/byEmployee/{id:[0-9]+]} GET
-* [ ] GetBookingsInTimeFrame /booking?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05)
+* [ ] GetBookingsByEmployee /booking/byEmployee/{id:[0-9]+]} GET
+* [ ] GetAvailableDoctorsInTimeframe /booking/availableEmployee POST
+
 
 
 ### User administration

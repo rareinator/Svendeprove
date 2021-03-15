@@ -9,8 +9,8 @@ message Journal {
   int32 JournalId = 1;
   string CreationTime = 2;
   string Intro = 3;
-  int32 PatientId = 4;
-  int32 CreatedBy = 5;
+  string Patient = 4;
+  string CreatedBy = 5;
 }
 
 message JournalRequest {
@@ -18,7 +18,7 @@ message JournalRequest {
 }
 
 message PatientRequest {
-  int32 PatientId = 1;
+  string Patient = 1;
 }
 
 message Status {
@@ -37,7 +37,7 @@ message JournalDocument {
   int32 DocumentId = 1;
   string Content = 2;
   int32 JournalId = 3;
-  int32 CreatedBy = 4;
+  string CreatedBy = 4;
   string Title = 5;
   string Summary = 6;
   string CreationTime = 7;

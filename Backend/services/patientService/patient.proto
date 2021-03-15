@@ -14,23 +14,23 @@ message PStatus {
 }
 
 message Patient {
-  int32 PatientId = 1;
-  string Name = 2;
-  string Address = 3;
-  string City = 4;
-  string PostalCode = 5;
-  string Country = 6;
-  string SocialIdNr = 7;
-  string Username = 8;
+  string Name = 1;
+  string Address = 2;
+  string City = 3;
+  string PostalCode = 4;
+  string Country = 5;
+  string SocialIdNr = 6;
+  string Username = 7;
 }
 
 message PRequest {
-  int32 Id = 1;
+  string Username = 1;
+  int32 Id = 2;
 }
 
 message PatientDiagnose {
   int32 PatientDiagnoseId = 1;
-  int32 PatientId = 2;
+  string Patient = 2;
   int32 DiagnoseId = 3;
   string CreationTime = 4;
 }
@@ -79,11 +79,6 @@ message DiagnoseSymptomUpdateRequest {
 
 service PatientService {
   rpc GetHealth(PEmpty) returns (PHealth) {}
-  rpc CreatePatient(Patient) returns (Patient) {}
-  rpc GetPatients(PEmpty) returns (Patients) {}
-  rpc GetPatient(PRequest) returns (Patient) {}
-  rpc UpdatePatient(Patient) returns (Patient) {}
-  rpc DeletePatient(PRequest) returns (PStatus) {}
 
   rpc GetDiagnose(PRequest) returns (Diagnose) {}
   rpc GetDiagnoses(PEmpty) returns (Diagnoses) {}

@@ -16,6 +16,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.3.0
 	github.com/lestrrat-go/jwx v1.1.5
+	github.com/okta/okta-sdk-golang/v2 v2.3.0
 	github.com/rs/cors v1.7.0
 	github.com/tidwall/buntdb v1.2.0
 	go.mongodb.org/mongo-driver v1.5.0

@@ -19,77 +19,82 @@ func (p *PatientServer) GetHealth(ctx context.Context, e *PEmpty) (*PHealth, err
 }
 
 func (p *PatientServer) CreatePatient(ctx context.Context, patient *Patient) (*Patient, error) {
-	dbPatient := mssql.DBPatient{
-		Name:       patient.Name,
-		Address:    patient.Address,
-		City:       patient.City,
-		PostalCode: patient.PostalCode,
-		Country:    patient.Country,
-		SocialIdNr: patient.SocialIdNr,
-		Username:   patient.Username,
-		Password:   "",
-		Salt:       "",
-	}
+	//TODO: oauth fix
+	// dbPatient := mssql.DBPatient{
+	// 	Name:       patient.Name,
+	// 	Address:    patient.Address,
+	// 	City:       patient.City,
+	// 	PostalCode: patient.PostalCode,
+	// 	Country:    patient.Country,
+	// 	SocialIdNr: patient.SocialIdNr,
+	// 	Username:   patient.Username,
+	// 	Password:   "",
+	// 	Salt:       "",
+	// }
 
-	if err := p.DB.CreatePatient(&dbPatient); err != nil {
-		return nil, err
-	}
+	// if err := p.DB.CreatePatient(&dbPatient); err != nil {
+	// 	return nil, err
+	// }
 
-	patient.PatientId = dbPatient.PatientId
+	// patient.PatientId = dbPatient.PatientId
 
 	return patient, nil
 }
 
 func (p *PatientServer) GetPatient(ctx context.Context, pr *PRequest) (*Patient, error) {
-	dbPatient, err := p.DB.GetPatient(pr.Id)
-	if err != nil {
-		return nil, err
-	}
+	// dbPatient, err := p.DB.GetPatient(pr.Id)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	result := Patient{
-		Name:       dbPatient.Name,
-		Address:    dbPatient.Address,
-		City:       dbPatient.City,
-		PostalCode: dbPatient.PostalCode,
-		Country:    dbPatient.Country,
-		SocialIdNr: dbPatient.SocialIdNr,
-		Username:   dbPatient.Username,
-	}
-
-	return &result, nil
+	// result := Patient{
+	// 	Name:       dbPatient.Name,
+	// 	Address:    dbPatient.Address,
+	// 	City:       dbPatient.City,
+	// 	PostalCode: dbPatient.PostalCode,
+	// 	Country:    dbPatient.Country,
+	// 	SocialIdNr: dbPatient.SocialIdNr,
+	// 	Username:   dbPatient.Username,
+	// }
+	//TODO: oauth fix
+	return nil, nil
 }
 
 func (p *PatientServer) UpdatePatient(ctx context.Context, patient *Patient) (*Patient, error) {
-	dbPatient := mssql.DBPatient{
-		PatientId:  patient.PatientId,
-		Name:       patient.Name,
-		Address:    patient.Address,
-		City:       patient.City,
-		PostalCode: patient.PostalCode,
-		Country:    patient.Country,
-		SocialIdNr: patient.SocialIdNr,
-		Username:   patient.Username,
-	}
+	// dbPatient := mssql.DBPatient{
+	// 	PatientId:  patient.PatientId,
+	// 	Name:       patient.Name,
+	// 	Address:    patient.Address,
+	// 	City:       patient.City,
+	// 	PostalCode: patient.PostalCode,
+	// 	Country:    patient.Country,
+	// 	SocialIdNr: patient.SocialIdNr,
+	// 	Username:   patient.Username,
+	// }
 
-	if err := p.DB.UpdatePatient(&dbPatient); err != nil {
-		return nil, err
-	}
+	// if err := p.DB.UpdatePatient(&dbPatient); err != nil {
+	// 	return nil, err
+	// }
+
+	//TODO: oauth fix
 
 	return patient, nil
 }
 
 func (p *PatientServer) DeletePatient(ctx context.Context, pr *PRequest) (*PStatus, error) {
-	dbPatient := mssql.DBPatient{
-		PatientId: pr.Id,
-	}
+	// dbPatient := mssql.DBPatient{
+	// 	PatientId: pr.Id,
+	// }
 
-	if err := p.DB.DeletePatient(&dbPatient); err != nil {
-		return &PStatus{
-			Success: false,
-		}, err
-	}
+	// if err := p.DB.DeletePatient(&dbPatient); err != nil {
+	// 	return &PStatus{
+	// 		Success: false,
+	// 	}, err
+	// }
 
-	return &PStatus{Success: true}, nil
+	// return &PStatus{Success: true}, nil
+	//TODO: oauth fix
+	return nil, nil
 }
 
 func (p *PatientServer) GetDiagnose(ctx context.Context, pr *PRequest) (*Diagnose, error) {
@@ -143,31 +148,33 @@ func (p *PatientServer) GetSymptom(ctx context.Context, pr *PRequest) (*Symptom,
 }
 
 func (p *PatientServer) GetPatients(ctx context.Context, e *PEmpty) (*Patients, error) {
-	patients := Patients{
-		Patients: make([]*Patient, 0),
-	}
+	// patients := Patients{
+	// 	Patients: make([]*Patient, 0),
+	// }
 
-	dbPatients, err := p.DB.GetPatients()
-	if err != nil {
-		return nil, err
-	}
+	// dbPatients, err := p.DB.GetPatients()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	for _, dbPatient := range dbPatients {
-		patient := Patient{
-			PatientId:  dbPatient.PatientId,
-			Name:       dbPatient.Name,
-			Address:    dbPatient.Address,
-			City:       dbPatient.City,
-			PostalCode: dbPatient.PostalCode,
-			Country:    dbPatient.Country,
-			SocialIdNr: dbPatient.SocialIdNr,
-			Username:   dbPatient.Username,
-		}
+	// for _, dbPatient := range dbPatients {
+	// 	patient := Patient{
+	// 		PatientId:  dbPatient.PatientId,
+	// 		Name:       dbPatient.Name,
+	// 		Address:    dbPatient.Address,
+	// 		City:       dbPatient.City,
+	// 		PostalCode: dbPatient.PostalCode,
+	// 		Country:    dbPatient.Country,
+	// 		SocialIdNr: dbPatient.SocialIdNr,
+	// 		Username:   dbPatient.Username,
+	// 	}
 
-		patients.Patients = append(patients.Patients, &patient)
-	}
+	// 	patients.Patients = append(patients.Patients, &patient)
+	// }
 
-	return &patients, nil
+	// return &patients, nil
+	//TODO: oauth fix
+	return nil, nil
 }
 
 func (p *PatientServer) GetSymptoms(ctx context.Context, e *PEmpty) (*Symptoms, error) {
@@ -195,7 +202,7 @@ func (p *PatientServer) GetSymptoms(ctx context.Context, e *PEmpty) (*Symptoms, 
 func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: patientDiagnose.PatientDiagnoseId,
-		PatientId:         patientDiagnose.PatientId,
+		Patient:           patientDiagnose.Patient,
 		DiagnoseId:        patientDiagnose.DiagnoseId,
 		CreationTime:      time.Now(),
 	}
@@ -217,7 +224,7 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (
 		PatientDiagnoses: make([]*PatientDiagnose, 0),
 	}
 
-	dbPatientDiagnoses, err := p.DB.GetPatientDiagnoses(pr.Id)
+	dbPatientDiagnoses, err := p.DB.GetPatientDiagnoses(pr.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +232,7 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (
 	for _, dbPatientDiagnose := range dbPatientDiagnoses {
 		patientDiagnose := PatientDiagnose{
 			PatientDiagnoseId: dbPatientDiagnose.PatientDiagnoseId,
-			PatientId:         dbPatientDiagnose.PatientId,
+			Patient:           dbPatientDiagnose.Patient,
 			DiagnoseId:        dbPatientDiagnose.DiagnoseId,
 			CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
 		}
@@ -245,7 +252,7 @@ func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *PRequest) (*
 
 	patientDiagnose := PatientDiagnose{
 		PatientDiagnoseId: dbPatientDiagnose.PatientDiagnoseId,
-		PatientId:         dbPatientDiagnose.PatientId,
+		Patient:           dbPatientDiagnose.Patient,
 		DiagnoseId:        dbPatientDiagnose.DiagnoseId,
 		CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
 	}
@@ -256,7 +263,7 @@ func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *PRequest) (*
 func (p *PatientServer) UpdatePatientDiagnose(ctx context.Context, pd *PatientDiagnose) (*PatientDiagnose, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: pd.PatientDiagnoseId,
-		PatientId:         pd.PatientId,
+		Patient:           pd.Patient,
 		DiagnoseId:        pd.DiagnoseId,
 	}
 

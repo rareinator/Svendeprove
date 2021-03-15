@@ -24,7 +24,7 @@ func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest)
 		JournalId:    dbJournal.JournalId,
 		CreationTime: dbJournal.CreationTime.Format("02/01/2006 15:04:05"),
 		Intro:        dbJournal.Intro,
-		PatientId:    dbJournal.PatientId,
+		Patient:      dbJournal.Patient,
 		CreatedBy:    dbJournal.CreatedBy,
 	}
 
@@ -39,7 +39,7 @@ func (j *JournalServer) GetJournalsByPatient(ctx context.Context, pr *PatientReq
 	journals := &Journals{}
 	journals.Journals = make([]*Journal, 0)
 
-	dbJournals, err := j.DB.GetJournalsByPatient(pr.PatientId)
+	dbJournals, err := j.DB.GetJournalsByPatient(pr.Patient)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (j *JournalServer) GetJournalsByPatient(ctx context.Context, pr *PatientReq
 			JournalId:    dbJournal.JournalId,
 			CreationTime: dbJournal.CreationTime.Format("02/01/2006 15:04:05"),
 			Intro:        dbJournal.Intro,
-			PatientId:    dbJournal.PatientId,
+			Patient:      dbJournal.Patient,
 			CreatedBy:    dbJournal.CreatedBy,
 		}
 
@@ -64,7 +64,7 @@ func (j *JournalServer) CreateJournal(ctx context.Context, journal *Journal) (*J
 	dbJournal := mssql.DBJournal{
 		CreationTime: time.Now(),
 		Intro:        journal.Intro,
-		PatientId:    journal.PatientId,
+		Patient:      journal.Patient,
 		CreatedBy:    journal.CreatedBy,
 	}
 
@@ -90,7 +90,7 @@ func (j *JournalServer) UpdateJournal(ctx context.Context, journal *Journal) (*J
 		JournalId:    journal.JournalId,
 		CreationTime: parsedtime,
 		Intro:        journal.Intro,
-		PatientId:    journal.PatientId,
+		Patient:      journal.Patient,
 		CreatedBy:    journal.CreatedBy,
 	}
 

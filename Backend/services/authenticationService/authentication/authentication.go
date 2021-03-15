@@ -2,8 +2,6 @@ package authentication
 
 import (
 	context "context"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/ldap"
@@ -22,31 +20,33 @@ func (a *AuthenticationServer) GetHealth(ctx context.Context, e *AEmpty) (*AHeal
 }
 
 func (a *AuthenticationServer) LoginPatient(ctx context.Context, u *User) (*TokenResponse, error) {
-	salt, err := a.DB.GetPatientSalt(u.Username)
-	if err != nil {
-		return nil, err
-	}
-	h := sha256.New()
-	h.Write([]byte(u.Password + salt))
-	hashedPassword := h.Sum(nil)
+	// salt, err := a.DB.GetPatientSalt(u.Username)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// h := sha256.New()
+	// h.Write([]byte(u.Password + salt))
+	// hashedPassword := h.Sum(nil)
 
-	basePassword := base64.StdEncoding.EncodeToString(hashedPassword)
+	// basePassword := base64.StdEncoding.EncodeToString(hashedPassword)
 
-	fmt.Println(basePassword)
+	// fmt.Println(basePassword)
 
-	user, err := a.DB.LoginPatient(u.Username, basePassword)
-	if err != nil {
-		return nil, err
-	}
+	// user, err := a.DB.LoginPatient(u.Username, basePassword)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	response := TokenResponse{
-		FullName: user.Name,
-		Role:     0,
-		Username: user.Username,
-		UserID:   user.PatientId,
-	}
+	// response := TokenResponse{
+	// 	FullName: user.Name,
+	// 	Role:     0,
+	// 	Username: user.Username,
+	// 	UserID:   user.PatientId,
+	// }
 
-	return &response, nil
+	// return &response, nil
+	return nil, nil
+	//TODO: oauth fix
 
 }
 
@@ -83,21 +83,22 @@ func (a *AuthenticationServer) ValidateToken(ctx context.Context, tr *TokenReque
 }
 
 func (a *AuthenticationServer) GetRelatedPatient(ctx context.Context, rpr *RelatedPatientRequest) (*RelatedPatient, error) {
-	var result RelatedPatient
+	// var result RelatedPatient
 
-	switch rpr.Type {
-	case "DBJournalDocument":
-		document := mssql.DBJournalDocument{}
-		patientID, err := a.DB.GetPatientID(document.GetPatientIDQuery(), rpr.Id)
-		if err != nil {
-			return nil, err
-		}
-		result.PatientId = patientID
-	default:
-		return nil, fmt.Errorf("Could not find a valid type")
-	}
+	// switch rpr.Type {
+	// case "DBJournalDocument":
+	// 	document := mssql.DBJournalDocument{}
+	// 	patientID, err := a.DB.GetPatientID(document.GetPatientIDQuery(), rpr.Id)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	result.PatientId = patientID
+	// default:
+	// 	return nil, fmt.Errorf("Could not find a valid type")
+	// }
 
-	return &result, nil
+	// return &result, nil
+	return nil, nil
 }
 
 func (a *AuthenticationServer) InsertToken(ctx context.Context, tr *TokenRequest) (*ValidatorResponse, error) {
