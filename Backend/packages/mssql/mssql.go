@@ -181,6 +181,16 @@ func (m *MSSQL) GetDiagnoses() ([]*DBDiagnose, error) {
 	return diagnoses, nil
 }
 
+func (m *MSSQL) GetHospitals() ([]*DBHospital, error) {
+	var hospitals []*DBHospital
+	result := m.db.Find(&hospitals)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return hospitals, nil
+}
+
 func (m *MSSQL) GetSymptom(id int32) (*DBSymptom, error) {
 	var symptom DBSymptom
 	result := m.db.First(&symptom, id)
@@ -342,6 +352,24 @@ func (m *MSSQL) GetOrCreateFileStoreByPath(path string) (*DBFileStore, error) {
 
 func (m *MSSQL) CreateBooking(booking *DBBooking) error {
 	result := m.db.Create(booking)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (m *MSSQL) CreateHospitilization(hospitilization *DBHospitilization) error {
+	result := m.db.Create(hospitilization)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (m *MSSQL) CreateExamination(examination *DBExamination) error {
+	result := m.db.Create(examination)
 	if result.Error != nil {
 		return result.Error
 	}

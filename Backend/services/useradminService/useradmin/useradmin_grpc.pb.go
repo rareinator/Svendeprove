@@ -19,7 +19,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UseradminServiceClient interface {
 	GetHealth(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*UAHealth, error)
-	GetEmployee(ctx context.Context, in *EmployeeRequest, opts ...grpc.CallOption) (*Employee, error)
+	GetEmployee(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UAUser, error)
+	GetPatients(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Users, error)
+	GetHospitals(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Hospitals, error)
 }
 
 type useradminServiceClient struct {
@@ -39,9 +41,27 @@ func (c *useradminServiceClient) GetHealth(ctx context.Context, in *UAEmpty, opt
 	return out, nil
 }
 
-func (c *useradminServiceClient) GetEmployee(ctx context.Context, in *EmployeeRequest, opts ...grpc.CallOption) (*Employee, error) {
-	out := new(Employee)
+func (c *useradminServiceClient) GetEmployee(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UAUser, error) {
+	out := new(UAUser)
 	err := c.cc.Invoke(ctx, "/UseradminService/GetEmployee", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *useradminServiceClient) GetPatients(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Users, error) {
+	out := new(Users)
+	err := c.cc.Invoke(ctx, "/UseradminService/GetPatients", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *useradminServiceClient) GetHospitals(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Hospitals, error) {
+	out := new(Hospitals)
+	err := c.cc.Invoke(ctx, "/UseradminService/GetHospitals", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +73,9 @@ func (c *useradminServiceClient) GetEmployee(ctx context.Context, in *EmployeeRe
 // for forward compatibility
 type UseradminServiceServer interface {
 	GetHealth(context.Context, *UAEmpty) (*UAHealth, error)
-	GetEmployee(context.Context, *EmployeeRequest) (*Employee, error)
+	GetEmployee(context.Context, *UserRequest) (*UAUser, error)
+	GetPatients(context.Context, *UAEmpty) (*Users, error)
+	GetHospitals(context.Context, *UAEmpty) (*Hospitals, error)
 	mustEmbedUnimplementedUseradminServiceServer()
 }
 
@@ -64,8 +86,14 @@ type UnimplementedUseradminServiceServer struct {
 func (UnimplementedUseradminServiceServer) GetHealth(context.Context, *UAEmpty) (*UAHealth, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
-func (UnimplementedUseradminServiceServer) GetEmployee(context.Context, *EmployeeRequest) (*Employee, error) {
+func (UnimplementedUseradminServiceServer) GetEmployee(context.Context, *UserRequest) (*UAUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEmployee not implemented")
+}
+func (UnimplementedUseradminServiceServer) GetPatients(context.Context, *UAEmpty) (*Users, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPatients not implemented")
+}
+func (UnimplementedUseradminServiceServer) GetHospitals(context.Context, *UAEmpty) (*Hospitals, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHospitals not implemented")
 }
 func (UnimplementedUseradminServiceServer) mustEmbedUnimplementedUseradminServiceServer() {}
 
@@ -99,7 +127,7 @@ func _UseradminService_GetHealth_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _UseradminService_GetEmployee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmployeeRequest)
+	in := new(UserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -111,7 +139,43 @@ func _UseradminService_GetEmployee_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/UseradminService/GetEmployee",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetEmployee(ctx, req.(*EmployeeRequest))
+		return srv.(UseradminServiceServer).GetEmployee(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UseradminService_GetPatients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UAEmpty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UseradminServiceServer).GetPatients(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UseradminService/GetPatients",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UseradminServiceServer).GetPatients(ctx, req.(*UAEmpty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UseradminService_GetHospitals_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UAEmpty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UseradminServiceServer).GetHospitals(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UseradminService/GetHospitals",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UseradminServiceServer).GetHospitals(ctx, req.(*UAEmpty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -130,6 +194,14 @@ var UseradminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetEmployee",
 			Handler:    _UseradminService_GetEmployee_Handler,
+		},
+		{
+			MethodName: "GetPatients",
+			Handler:    _UseradminService_GetPatients_Handler,
+		},
+		{
+			MethodName: "GetHospitals",
+			Handler:    _UseradminService_GetHospitals_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

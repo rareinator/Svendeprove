@@ -8,20 +8,43 @@ message UAHealth {
 }
 
 
-message EmployeeRequest {
-  string Employee = 1;
+message UserRequest {
+  string Username = 1;
 }
 
-message Employee {
-  string Name = 1;
-  int32 WorktitleId = 2;
-  int32 DepartmentId = 3;
-  string Username = 4;
+message UAUser {
+  string Address = 1;
+  string City = 2;
+  string Country = 3;
+  string Name = 4;
+  string PostalCode = 5;
+  string SocialIdNr = 6;
+  string Username = 7;
+}
+
+message Users {
+  repeated UAUser Users = 1;
+}
+
+message UAHospital {
+  int32 HospitalId = 1;
+  string Name = 2;
+  string Address = 3;
+  string City = 4;
+  string PostalCode = 5;
+  string Country = 6;
+}
+
+message Hospitals {
+  repeated UAHospital Hospitals = 1;
 }
 
 
 service UseradminService {
   rpc GetHealth(UAEmpty) returns (UAHealth) {}
 
-  rpc GetEmployee(EmployeeRequest) returns (Employee) {}
+  rpc GetEmployee(UserRequest) returns (UAUser) {}
+  rpc GetPatients(UAEmpty) returns (Users) {}
+
+  rpc GetHospitals(UAEmpty) returns (Hospitals) {}
 }

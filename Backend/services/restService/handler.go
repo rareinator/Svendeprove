@@ -1192,8 +1192,8 @@ func (s *server) handleUseradminGetEmployee() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		er := useradminService.EmployeeRequest{
-			Employee: vars["username"],
+		er := useradminService.UserRequest{
+			Username: vars["username"],
 		}
 
 		response, err := s.useradminService.GetEmployee(context.Background(), &er)
@@ -1204,6 +1204,20 @@ func (s *server) handleUseradminGetEmployee() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func (s *server) handleHospitalsGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		response, err := s.useradminService.GetHospitals(context.Background(), &useradminService.UAEmpty{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response.Hospitals)
 	}
 }
 

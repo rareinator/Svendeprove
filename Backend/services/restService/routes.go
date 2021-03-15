@@ -314,8 +314,18 @@ func (s *server) routes() {
 			s.handleUseradminGetEmployee(),
 			&authenticationConfig{
 				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedPatient:      "username",
+				allowRelatedPatient: false,
+			}))).Methods("GET")
+
+	s.router.Handle("/admin/hospitals", //GetHospitals
+		s.log(s.authenticate(
+			s.handleHospitalsGet(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse, models.Patient},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
+				allowIOTDevice:      false,
 			}))).Methods("GET")
 
 	// IOT Methods

@@ -66,8 +66,6 @@
 * [ ] GetBookingsByEmployee /booking/byEmployee/{id:[0-9]+]} GET
 * [ ] GetAvailableDoctorsInTimeframe /booking/availableEmployee POST
 
-
-
 ### User administration
 * [x] GetEmployee /useradmin/{id:[0-9]+} GET
 

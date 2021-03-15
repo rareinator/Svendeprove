@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/rareinator/Svendeprove/Backend/packages/models"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
 )
 
@@ -34,7 +35,9 @@ func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*B
 		Bookedtime: bookedTime,
 		BookedEnd:  bookedEnd,
 		Patient:    booking.Patient,
+		Employee:   booking.Employee,
 		Approved:   booking.Approved,
+		HospitalId: booking.Hospital.HospitalId,
 	}
 
 	if err := b.DB.CreateBooking(&dbBooking); err != nil {
@@ -42,6 +45,32 @@ func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*B
 	}
 
 	booking.BookingId = dbBooking.BookingId
+
+	switch booking.Type {
+	case string(models.Examination):
+		examination := mssql.DBExamination{
+			Description: booking.Description,
+			StartedTime: bookedTime,
+			EndedTime:   bookedEnd,
+			BookingId:   booking.BookingId,
+		}
+
+		if err := b.DB.CreateExamination(&examination); err != nil {
+			return nil, err
+		}
+
+	case string(models.Hospitilization): //Hospitilization
+		hospitilization := mssql.DBHospitilization{
+			Description: booking.Description,
+			StartedTime: bookedTime,
+			EndedTime:   bookedEnd,
+			BookingId:   booking.BookingId,
+		}
+
+		if err := b.DB.CreateHospitilization(&hospitilization); err != nil {
+			return nil, err
+		}
+	}
 
 	return booking, nil
 }
@@ -110,6 +139,8 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 		return nil, err
 	}
 
+	//TODO: FIX
+
 	dbBooking := mssql.DBBooking{
 		BookingId:  booking.BookingId,
 		Bookedtime: bookedTime,
@@ -166,11 +197,11 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) 
 			if examination == nil {
 				return nil, fmt.Errorf("Could not find either hospitilization or examination data")
 			} else {
-				bookingType = "0"
+				bookingType = string(models.Examination)
 				description = examination.Description
 			}
 		} else {
-			bookingType = "1"
+			bookingType = string(models.Hospitilization)
 			description = hospitilization.Description
 		}
 
