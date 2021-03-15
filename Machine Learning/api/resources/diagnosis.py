@@ -52,14 +52,3 @@ class Diagnosis(Resource):
         diagnosis = list(filter(lambda dis: dis.id in prediction, data.diagnosis))
         return {"code": 200,
                 "diagnosis": [{'name': dis.name} for dis in diagnosis]}
-
-        # diagnosis = filter(lambda dis: any([dis_sym for dis_sym in dis.symptoms if sym.lower() in dis_sym.name.lower()] for sym in symptoms), data.diagnosis)
-        # if not diagnosis:
-        #     return {'code': 404,
-        #             'message': "Not found"}, 404
-
-        # return {'code': 200,
-        #     'diagnosis': [{
-        #     'name': dis.name,
-        #     'symptoms': [sym.name for sym in dis.symptoms]
-        # } for dis in diagnosis]}, 200
