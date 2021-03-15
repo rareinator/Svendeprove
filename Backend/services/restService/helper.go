@@ -47,7 +47,7 @@ func (s *server) getUsername(request *http.Request) string {
 	// 	return "", fmt.Errorf("Could not find the token")
 	// }
 
-	return ""
+	return "mni@hospi.local"
 }
 
 func (s *server) saveFile(base64Data, fileName string) error {

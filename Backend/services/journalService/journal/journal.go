@@ -234,6 +234,25 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 	}
 
 	for _, dbJournalDocument := range dbJournalDocuments {
+		var attachments []*Attachment
+
+		if len(dbJournalDocument.Attachments) > 0 {
+			fmt.Println("Found attachments")
+			for _, attachment := range dbJournalDocument.Attachments {
+				resultAttachment := Attachment{
+					AttachmentId: attachment.AttachmentId,
+					FileName:     attachment.FileName,
+					FileType:     new(string),
+					Path:         new(string),
+				}
+				path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", attachment.FileStore.Path, attachment.FileName, attachment.FileType.Name)
+				fmt.Printf("path: %v\n\r", path)
+				resultAttachment.Path = &path
+				resultAttachment.FileType = &attachment.FileType.Name
+				attachments = append(attachments, &resultAttachment)
+			}
+		}
+
 		journalDocument := &JournalDocument{
 			DocumentId:   dbJournalDocument.DocumentId,
 			Content:      dbJournalDocument.Content,
@@ -242,6 +261,7 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 			Title:        dbJournalDocument.Title,
 			Summary:      dbJournalDocument.Summary,
 			CreationTime: dbJournalDocument.CreationTime.Format("02/01/2006 15:04:05"),
+			Attachments:  attachments,
 		}
 
 		journalDocuments.JournalDocuments = append(journalDocuments.JournalDocuments, journalDocument)

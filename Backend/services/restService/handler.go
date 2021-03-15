@@ -404,16 +404,7 @@ func (s *server) handleJournalDocumentSave() http.HandlerFunc {
 		var journalDocument journalService.JournalDocument
 		json.NewDecoder(r.Body).Decode(&journalDocument)
 
-		fmt.Println("Inserting Journal Document")
-
-		// employeeID, err := s.getEmployeeID(r)
-		// if err != nil {
-		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-		journalDocument.CreatedBy = "mni@hospi.local" //TODO: Fix
-
-		fmt.Println("Calling journalService")
+		journalDocument.CreatedBy = s.getUsername(r)
 
 		response, err := s.journalService.CreateJournalDocument(context.Background(), &journalDocument)
 		if err != nil {
@@ -748,47 +739,6 @@ func (s *server) handlePatientsGet() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(result)
-	}
-}
-
-func (s *server) handlePatientUpdate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		var patient patientService.Patient
-		json.NewDecoder(r.Body).Decode(&patient)
-
-		patient.Username = vars["username"]
-
-		response, err := s.patientService.UpdatePatient(context.Background(), &patient)
-		if err != nil {
-			s.returnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
-	}
-}
-
-func (s *server) handlePatientDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// vars := mux.Vars(r)
-
-		//TODO: fix
-
-		// response, err := s.patientService.DeletePatient(context.Background(), &patientService.PRequest{Id: int32(patientID)})
-		// if err != nil {
-		// 	s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-
-		// if response.Success {
-		// 	w.WriteHeader(http.StatusOK)
-		// 	return
-		// }
-
-		// s.returnError(w, http.StatusInternalServerError, "Somethin unknown went gorribly wrong!!! ☠️☠️☠️")
 	}
 }
 
