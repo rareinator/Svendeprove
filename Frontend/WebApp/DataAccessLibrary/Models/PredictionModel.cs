@@ -12,13 +12,13 @@ namespace DataAccessLibrary.Models
 
     public class Data
     {
-        public int Code { get; set; }
-        public Prediction Prediction { get; set; }
+        public int code { get; set; }
+        public Prediction prediction { get; set; }
     }
 
     public class Prediction
     {
-        public string Negative { get; set; }
-        public string Positive { get; set; }
+        public string negative { get; set; }
+        public string positive { get; set; }
     }
 }
