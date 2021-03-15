@@ -10,7 +10,7 @@ namespace DataAccessLibrary.Models
     {
         public int JournalId { get; set; }
 
-        [JsonConverter(typeof(DateTimeFormatter))]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime CreationTime { get; set; }
         public string Intro { get; set; }
         public string Patient { get; set; }

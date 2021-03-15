@@ -44,9 +44,9 @@ namespace DataAccessLibrary
             _client = client;
         }
 
-        public async Task<TokenModel> Login(UserModel user, string scope)
+        public async Task<TokenModel> Login(UserModelOld user, string scope)
         {
-            var codeResponse = await _client.PostAsJsonAsync<UserModel>(string.Format("/auth?response_type=code&client_id=000000&scope={0}",scope), user);
+            var codeResponse = await _client.PostAsJsonAsync<UserModelOld>(string.Format("/auth?response_type=code&client_id=000000&scope={0}",scope), user);
             string codeResponseMessage = await codeResponse.Content.ReadAsStringAsync();
 
             var code = JsonSerializer.Deserialize<CodeClass>(codeResponseMessage);

@@ -14,7 +14,7 @@ namespace DataAccessLibrary
         {
             _authenticationStateProvider = authenticationStateProvider;
         }
-        public bool Login(UserModel user)
+        public bool Login(UserModelOld user)
         {
             (_authenticationStateProvider as CustomAuthenticationProvider).LoginNotify(user);
             return true;

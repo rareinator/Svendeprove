@@ -13,32 +13,19 @@
 
                     </Authorized>
                 </AuthorizeView>
-
-                <AuthorizeView Roles="1,2,3">
-                    <Authorized>
-
                         <div class="sidebar">
-                            <AdminNavMenu />
+                            <NavMenu />
                         </div>
-
-                    </Authorized>
-                </AuthorizeView>
 
             }
 
             <div class="main">
                 @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
                 {
-                    <AuthorizeView>
-                        <Authorized>
-
                             <div class="top-row px-4">
                                 <h4>Velkommen</h4>
-                                <h4 class="ml-md-auto">@user.Name</h4>
+                                <h4 class="ml-md-auto">{USER NAME HERE}</h4>
                             </div>
-
-                        </Authorized>
-                    </AuthorizeView>
                 }
                 <div class="content px-4">
                     @Body
@@ -59,39 +46,7 @@
 
         protected async override Task OnInitializedAsync()
         {
-            //IUserUpdateService.OnUserUpdate += Handle;
-
-
             base.OnInitialized();
         }
 
-        protected void Handle(UserModel args)
-        {
-            //user = args;
-            StateHasChanged();
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            //Get cookie
-            //string cookieJson = await JSRuntime.InvokeAsync<string>("getCookie", "Data");
-            //Deserialize json
-            //Fill data to user object
-            //try
-            //{
-            //    if (cookieJson != "")
-            //    {
-            //        user = JsonSerializer.Deserialize<UserModel>(cookieJson);
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //
-            //    throw;
-            //}
-            //if (firstRender)
-            //{
-            //    StateHasChanged();
-            //}
-        }
     }

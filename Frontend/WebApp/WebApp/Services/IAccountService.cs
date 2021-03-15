@@ -4,7 +4,7 @@ namespace DataAccessLibrary
 {
     public interface IAccountService
     {
-        bool Login(UserModel user);
+        bool Login(UserModelOld user);
         bool Logout();
     }
 }

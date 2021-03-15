@@ -1,12 +1,6 @@
 ﻿@page "/"
 @using System.IdentityModel.Tokens.Jwt
 
-@if (error)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
 
 
 <div class="h-100 container">
@@ -49,8 +43,8 @@
 @code{
 
     [CascadingParameter(Name = "User")]
-    public UserModel User { get; set; }
-    public PatientModel patient { get; set; }
+    public UserModelOld User { get; set; }
+    public UserModel patient { get; set; }
     bool error = false;
     string errorMessage;
 

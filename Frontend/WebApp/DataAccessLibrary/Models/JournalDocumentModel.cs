@@ -10,7 +10,7 @@ namespace DataAccessLibrary.Models
     {
         public int DocumentId { get; set; }
 
-        [JsonConverter(typeof(DateTimeFormatter))]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime CreationTime { get; set; }
         public string Title { get; set; }
         public string Summary { get; set; }

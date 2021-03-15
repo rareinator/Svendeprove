@@ -1,5 +1,4 @@
 ﻿@page "/Administration"
-@attribute [Authorize(Roles = "1,2")]
 
 
 <div class="d-flex justify-content-center align-items-center flex-column">
@@ -11,8 +10,8 @@
 
     <div class="m-4 w-25">
         <BlazoredTypeahead SearchMethod="GetPatientsLocal"
-                           TValue="PatientModel"
-                           TItem="PatientModel"
+                           TValue="UserModel"
+                           TItem="UserModel"
                            Value="selectedPatient"
                            ValueChanged="SelectedPatientChanged"
                            ValueExpression="@(() => selectedPatient)"
@@ -52,7 +51,7 @@
                 <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
             }
 
-            <Examinations OnEditClick="ShowExaminationModal"  Bookings="bookings"/>
+            <Examinations OnEditClick="ShowExaminationModal" Bookings="bookings" />
         </div>
     </TabPage>
     <TabPage Text="Indlæggelser">
@@ -64,8 +63,8 @@
     [CascadingParameter]
     public IModalService Modal { get; set; }
 
-    private List<PatientModel> patients;
-    private PatientModel selectedPatient;
+    private List<UserModel> patients;
+    private UserModel selectedPatient;
 
     private List<JournalModel> journals;
     private List<BookingModel> bookings;
@@ -75,13 +74,13 @@
         patients = await PatientData.GetPatients();
     }
 
-    private async Task<IEnumerable<PatientModel>> GetPatientsLocal(string searchText)
+    private async Task<IEnumerable<UserModel>> GetPatientsLocal(string searchText)
     {
         return await Task.FromResult(patients.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
     }
 
 
-    private async void SelectedPatientChanged(PatientModel patient)
+    private async Task SelectedPatientChanged(UserModel patient)
     {
         selectedPatient = patient;
         journals = await JournalData.GetJournalsByPatient(patient.UserName);
@@ -111,16 +110,25 @@
         if (booking.BookingId != 0)
         {
             parameters.Add(nameof(CreateExamimation.SelectedBooking), booking);
+            parameters.Add(nameof(CreateExamimation.availableEmployees), await BookingData.GetAvailableEmployees(booking.Hospital.HospitalId));
+        }
+        else
+        {
+            parameters.Add(nameof(CreateExamimation.SelectedBooking),
+                new BookingModel
+                {
+                    Type = BookingType.Examination
+                });
         }
 
-        var createJournal = Modal.Show<CreateJournal>("Opret Undersøgelse", parameters);
+        var createJournal = Modal.Show<CreateExamimation>("Opret Undersøgelse", parameters);
         var result = await createJournal.Result;
 
 
         if (!result.Cancelled)
         {
-            BookingModel newBooking = await JournalData.InsertJournal((JournalModel)result.Data);
-            journals.Add(newBooking);
+            BookingModel newBooking = await BookingData.InsertBooking((BookingModel)result.Data);
+            bookings.Add(newBooking);
         }
     }
 }
