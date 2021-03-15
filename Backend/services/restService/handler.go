@@ -733,7 +733,7 @@ func (s *server) handlePatientsGet() http.HandlerFunc {
 
 		for _, user := range users {
 			patient := patientService.Patient{
-				Name:       user.Type.Name,
+				Name:       fmt.Sprintf("%v", (*user.Profile)["displayName"]),
 				Address:    fmt.Sprintf("%v", (*user.Profile)["streetAddress"]),
 				City:       fmt.Sprintf("%v", (*user.Profile)["city"]),
 				PostalCode: fmt.Sprintf("%v", (*user.Profile)["zipCode"]),

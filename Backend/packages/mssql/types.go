@@ -145,14 +145,14 @@ func (DBHospital) TableName() string {
 }
 
 type DBBooking struct {
-	BookingId          int32      `gorm:"column:BookingId;primaryKey"`
-	Bookedtime         time.Time  `gorm:"column:Bookedtime"`
-	BookedEnd          time.Time  `gorm:"column:BookedEnd"`
-	Patient            string     `gorm:"column:Patient"`
-	Employee           string     `gorm:"column:Employee"`
-	ApprovedByEmployee bool       `gorm:"column:ApprovedByEmployee"`
-	HospitalId         int32      `gorm:"column:HospitalId"`
-	Hospital           DBHospital `gorm:"foreignKey:HospitalId;references:HospitalId"`
+	BookingId  int32      `gorm:"column:BookingId;primaryKey"`
+	Bookedtime time.Time  `gorm:"column:BookedTime"`
+	BookedEnd  time.Time  `gorm:"column:BookedEnd`
+	Patient    string     `gorm:"column:Patient"`
+	Employee   string     `gorm:"column:Employee"`
+	Approved   bool       `gorm:"column:Approved"`
+	HospitalId int32      `gorm:"column:HospitalId"`
+	Hospital   DBHospital `gorm:"foreignKey:HospitalId;references:HospitalId"`
 }
 
 func (DBBooking) TableName() string {
@@ -172,7 +172,7 @@ func (DBBooking) TableName() string {
 // }
 
 type DBBed struct {
-	BedId        int32  `gorm:"column:BedId"`
+	BedId        int32  `gorm:"column:BedId,primaryKey"`
 	Name         string `gorm:"column:Name"`
 	DepartmentId int32  `gorm:"column:DepartmentId"`
 	IsAvailable  bool   `gorm:"column:IsAvailable"`
@@ -183,14 +183,14 @@ func (DBBed) TableName() string {
 }
 
 type DBHospitilization struct {
-	HospitilizationId int32     `gorm:"column:HospitilizationId,primaryKey"`
+	HospitilizationId int32     `gorm:"column:HospitilizationId;primaryKey"`
 	BookingId         int32     `gorm:"column:BookingId"`
 	Description       string    `gorm:"column:Description"`
 	StartedTime       time.Time `gorm:"column:StartedTime"`
 	EndedTime         time.Time `gorm:"column:EndedTime"`
 	BedId             int32     `gorm:"column:BedId"`
-	Bed               DBBed     `gorm:"foreignKey:BedId;references;BedId"`
-	Booking           DBBooking `gorm:"foreignKey:BookingId;references;BookingId"`
+	Bed               DBBed     `gorm:"foreignKey:BedId;references:BedId"`
+	Booking           DBBooking `gorm:"foreignKey:BookingId;references:BookingId"`
 }
 
 func (DBHospitilization) TableName() string {

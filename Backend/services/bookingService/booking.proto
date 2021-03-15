@@ -33,9 +33,9 @@ message Booking {
   string BookedEnd = 3;
   string Patient = 4;
   string Employee = 5; 
-  bool ApprovedByEmployee = 6;
+  bool Approved = 6;
   string Description = 7;
-  int32 Type = 8;
+  string Type = 8;
   Hospital Hospital = 9;
 }
 
