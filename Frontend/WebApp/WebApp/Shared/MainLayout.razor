@@ -1,52 +1,43 @@
 ﻿@inherits LayoutComponentBase
-    <div class="page">
-        <CascadingValue Value="@user" Name="User">
+<div class="page">
 
-            @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
-            {
-                <AuthorizeView Roles="0">
-                    <Authorized>
-
-                        <div class="sidebar">
-                            <NavMenu />
-                        </div>
-
-                    </Authorized>
-                </AuthorizeView>
-                        <div class="sidebar">
-                            <NavMenu />
-                        </div>
-
-            }
-
-            <div class="main">
-                @if (MyNavigationManager.Uri != MyNavigationManager.BaseUri)
-                {
-                            <div class="top-row px-4">
-                                <h4>Velkommen</h4>
-                                <h4 class="ml-md-auto">{USER NAME HERE}</h4>
-                            </div>
-                }
-                <div class="content px-4">
-                    @Body
-                </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar">
+                <NavMenu />
             </div>
-        </CascadingValue>
+        </Authorized>
+    </AuthorizeView>
+
+    <div class="main">
+        <AuthorizeView>
+            <Authorized>
+                <div class="top-row px-4">
+                    <h4>Velkommen</h4>
+                    <h4 class="ml-md-auto">@context.User.Identity.Name</h4>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="content px-4">
+            @Body
+        </div>
     </div>
+</div>
 
-    @code{
 
-        [CascadingParameter]
-        private Task<AuthenticationState> authenticationStateTask { get; set; }
-        public UserModel user = new UserModel();
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public UserModel user = new UserModel();
 
-    }
-
-    @functions{
-
-        protected async override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        var user = (await authenticationStateTask).User;
+        if (!user.Identity.IsAuthenticated)
         {
-            base.OnInitialized();
+            MyNavigationManager.NavigateTo($"authentication/login");
         }
-
     }
+}

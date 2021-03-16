@@ -1,0 +1,66 @@
+﻿@page "/Approvals"
+@if (bookings == null)
+{
+    <p>Ingen bookinger til bekræftelse</p>
+}
+else
+{
+    @if (!bookings.Where(b => b.Approved == false).Any())
+    {
+        <p>Ingen bookinger til bekræftelse</p>
+    }
+    else
+    {
+        <table class="table text-center table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Start</th>
+                    <th>Slut</th>
+                    <th>Beskrivelse</th>
+                    <th>Patient</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in bookings)
+                {
+                    @if (booking.Type == BookingType.Examination)
+                    {
+                        @if (!booking.Approved)
+                        {
+                            <tr>
+                                <td><button class="btn btn-primary" @onclick="() => ApproveBooking(booking)">Godkend</button></td>
+                                <td>@booking.BookedTime</td>
+                                <td>@booking.BookedEnd</td>
+                                <td>@booking.Description</td>
+                                <td>@patients.Where(p => p.UserName == booking.Patient).FirstOrDefault().Name</td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    }
+}
+
+
+@code {
+    List<BookingModel> bookings;
+    List<UserModel> patients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        string userName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
+
+        bookings = await BookingData.GetBookingsByEmployee(userName);
+        patients = await PatientData.GetPatients();
+    }
+
+    async Task ApproveBooking(BookingModel booking)
+    {
+        booking.Approved = true;
+        await BookingData.UpdateBooking(booking);
+    }
+}

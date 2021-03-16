@@ -1,5 +1,4 @@
-﻿@page "/Administration"
-
+﻿@page "/"
 
 <div class="d-flex justify-content-center align-items-center flex-column">
     <h1>Oversigt</h1>
@@ -17,8 +16,8 @@
                            ValueExpression="@(() => selectedPatient)"
                            DisableClear="true"
                            placeholder="Søg efter patient navn...">
-            <SelectedTemplate>
-                @context.Name - @context.SocialIdNr
+            <SelectedTemplate Context="patient">
+                @patient.Name - @patient.SocialIdNr
             </SelectedTemplate>
             <ResultTemplate Context="patient">
                 @patient.Name @patient.SocialIdNr
@@ -60,6 +59,8 @@
 </TabControl>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
     [CascadingParameter]
     public IModalService Modal { get; set; }
 
@@ -103,7 +104,7 @@
         }
     }
 
-    private async void ShowExaminationModal(BookingModel booking)
+    private async Task ShowExaminationModal(BookingModel booking)
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(CreateExamimation.SelectedPatient), selectedPatient);
@@ -114,10 +115,22 @@
         }
         else
         {
+            bool approved = false;
+
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+            var userRole = user.Claims.Where(c => c.Type == "user_role").FirstOrDefault();
+
+            if (userRole.Value == "Doctor" || userRole.Value == "Nurse")
+            {
+                approved = true;
+            }
+
             parameters.Add(nameof(CreateExamimation.SelectedBooking),
                 new BookingModel
                 {
-                    Type = BookingType.Examination
+                    Type = BookingType.Examination,
+                    Approved = approved
                 });
         }
 
@@ -127,8 +140,23 @@
 
         if (!result.Cancelled)
         {
-            BookingModel newBooking = await BookingData.InsertBooking((BookingModel)result.Data);
-            bookings.Add(newBooking);
+            BookingModel updatedBooking = (BookingModel)result.Data;
+            if (updatedBooking != null)
+            {
+                if (updatedBooking.BookingId == 0)
+                {
+                    BookingModel newBooking = await BookingData.InsertBooking(updatedBooking);
+                    bookings.Add(newBooking);
+                }
+                else
+                {
+                    await BookingData.UpdateBooking(updatedBooking);
+                }
+            }
+            else
+            {
+                bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
+            }
         }
     }
 }

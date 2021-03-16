@@ -1,8 +1,24 @@
-@inject NavigationManager Navigation
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
 @code {
-    protected override void OnInitialized()
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
     {
-        Navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+        var authenticationState = await AuthenticationStateTask;
+
+        if (authenticationState?.User?.Identity is null || !authenticationState.User.Identity.IsAuthenticated)
+        {
+            var returnUrl = MyNavigationManager.ToBaseRelativePath(MyNavigationManager.Uri);
+
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                MyNavigationManager.NavigateTo("authentication/login", true);
+            }
+            else
+            {
+                MyNavigationManager.NavigateTo($"authentication/login?returnUrl={returnUrl}", true);
+            }
+        }
     }
 }

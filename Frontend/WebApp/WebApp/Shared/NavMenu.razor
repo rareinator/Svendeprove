@@ -1,31 +1,36 @@
 ﻿@inject SignOutSessionStateManager SignOutManager
-       
-        <div class="top-row pl-4 navbar navbar-dark">
-            <p class="navbar-brand" style="cursor:default">HOSPI Inc.</p>
-            <button class="navbar-toggler" @onclick="ToggleNavMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
 
-        <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-            <ul class="nav flex-column">
+<div class="top-row pl-4 navbar navbar-dark">
+    <p class="navbar-brand" style="cursor:default">HOSPI Inc.</p>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="">
+                <span class="oi oi-home" aria-hidden="true"></span> Forside
+            </NavLink>
+        </li>
+
+        <AuthorizeView Roles="Doctor, Nurse">
+            <Authorized>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="">
-                        <span class="oi oi-document" aria-hidden="true"></span> Journaler
+                    <NavLink class="nav-link" href="Approvals">
+                        <span class="oi oi-medical-cross" aria-hidden="true"></span> Godkend Bookings
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="Examinations">
-                        <span class="oi oi-medical-cross" aria-hidden="true"></span> Undersoegelser
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" style="cursor:pointer" @onclick="Logout" Match="NavLinkMatch.All">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log af
-                    </NavLink>
-                </li>
-            </ul>
-        </div>
+            </Authorized>
+        </AuthorizeView>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" style="cursor:pointer" @onclick="Logout" Match="NavLinkMatch.All">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Log af
+            </NavLink>
+        </li>
+    </ul>
+</div>
 @code {
     private bool collapseNavMenu = true;
 

@@ -25,6 +25,11 @@ namespace DataAccessLibrary
             return await _client.GetFromJsonAsync<List<BookingModel>>($"/booking/byPatient/{patient}");
         }
 
+        public async Task<List<BookingModel>> GetBookingsByEmployee(string employee)
+        {
+            return await _client.GetFromJsonAsync<List<BookingModel>>($"/booking/byEmployee/{employee}");
+        }
+
         public async void DeleteBooking(int bookingId)
         {
             await _client.DeleteAsync($"/booking/{bookingId}");
@@ -33,6 +38,16 @@ namespace DataAccessLibrary
         public async Task<BookingModel> InsertBooking(BookingModel booking)
         {
             var response = await _client.PostAsJsonAsync($"/booking", booking);
+            string responseMessage = await response.Content.ReadAsStringAsync();
+
+            BookingModel responseJournal = JsonSerializer.Deserialize<BookingModel>(responseMessage);
+
+            return responseJournal;
+        }
+
+        public async Task<BookingModel> UpdateBooking(BookingModel booking)
+        {
+            var response = await _client.PostAsJsonAsync($"/booking/{booking.BookingId}", booking);
             string responseMessage = await response.Content.ReadAsStringAsync();
 
             BookingModel responseJournal = JsonSerializer.Deserialize<BookingModel>(responseMessage);
