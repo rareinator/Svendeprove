@@ -143,8 +143,10 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 		BookingId:  booking.BookingId,
 		Bookedtime: bookedTime,
 		BookedEnd:  bookedEnd,
+		Employee:   booking.Employee,
 		Patient:    booking.Patient,
 		Approved:   booking.Approved,
+		HospitalId: booking.Hospital.HospitalId,
 	}
 
 	if err := b.DB.UpdateBooking(&dbBooking); err != nil {

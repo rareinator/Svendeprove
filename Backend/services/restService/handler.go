@@ -709,26 +709,26 @@ func (s *server) handlePatientRead() http.HandlerFunc {
 type doctor struct {
 	Username string `json:"Username"`
 	Name     string `json:"Name"`
+	Type     string `json:"Type"`
 }
 
 func (s *server) handleGetDoctorsInHospital() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//TODO: fix so it also check on department ID
-
 		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl(os.Getenv("OKTA_URL")), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		users, _, err := client.Group.ListGroupUsers(context.Background(), "00gbrw99eH74jULM95d6", &query.Params{})
+		users, _, err := client.Group.ListGroupUsers(context.Background(), "00gbttsw3ArE8GSCV5d6", &query.Params{})
 
 		result := make([]*doctor, 0)
 
 		for _, user := range users {
 			doctor := doctor{
-				Name:     fmt.Sprintf("%v", (*user.Profile)["displayName"]),
+				Name:     fmt.Sprintf("%v %v", (*user.Profile)["firstName"], (*user.Profile)["lastName"]),
 				Username: fmt.Sprintf("%v", (*user.Profile)["login"]),
+				Type:     fmt.Sprintf("%v", (*user.Profile)["userType"]),
 			}
 
 			result = append(result, &doctor)
