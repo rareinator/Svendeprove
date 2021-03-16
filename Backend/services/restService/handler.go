@@ -715,7 +715,7 @@ func (s *server) handleGetDoctorsInHospital() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//TODO: fix so it also check on department ID
 
-		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl("https://dev-63345262.okta.com"), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
+		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl(os.Getenv("OKTA_URL")), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -742,7 +742,7 @@ func (s *server) handleGetDoctorsInHospital() http.HandlerFunc {
 
 func (s *server) handlePatientsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl("https://dev-63345262.okta.com"), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
+		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl(os.Getenv("OKTA_URL")), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
 			s.returnError(w, http.StatusInternalServerError, err.Error())
 			return

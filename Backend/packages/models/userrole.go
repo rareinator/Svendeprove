@@ -1,10 +1,10 @@
 package models
 
-type UserRole int
+type UserRole string
 
 const (
-	Patient  UserRole = 0
-	Doctor   UserRole = 1
-	Nurse    UserRole = 2
-	Employee UserRole = 3
+	Patient UserRole = "Patient"
+	Doctor  UserRole = "Doctor"
+	Nurse   UserRole = "Nurse"
+	Office  UserRole = "Office"
 )

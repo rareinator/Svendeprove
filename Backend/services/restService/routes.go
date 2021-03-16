@@ -28,7 +28,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleJournalRead(),
 			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Employee, models.Doctor, models.Nurse},
+				allowedRoles:   []models.UserRole{models.Office, models.Doctor, models.Nurse},
 				allowedPatient: "id",
 			}))).Methods("GET")
 
@@ -101,7 +101,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleJournalMLUpload(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Employee, models.Doctor, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Office, models.Doctor, models.Nurse},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("POST")
@@ -109,16 +109,13 @@ func (s *server) routes() {
 	s.router.Handle("/journal/symptoms", //Upload symptoms to ML
 		s.log(s.authenticate(s.handleJournalUploadSymptoms(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("POST")
 
 	// Authentication methods
 	s.router.Handle("/authentication/health", s.handleAuthenticationHealth()).Methods("GET")
-
-	// s.router.Handle("/authentication/patient/login", s.handleAuthenticationPatientLogin()).Methods("POST")
-	// s.router.Handle("/authentication/employee/login", s.handleAuthenticationEmployeeLogin()).Methods("POST")
 
 	// Patient methods
 	s.router.Handle("/patient/health", s.handlePatientHealth()).Methods("GET")
@@ -127,7 +124,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handlePatientRead(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "id",
 				allowRelatedPatient: false,
 			}))).Methods("GET")
@@ -136,7 +133,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handlePatientsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("GET")
@@ -265,7 +262,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleBookingCreate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("POST")
@@ -274,7 +271,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleBookingGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("GET")
@@ -283,7 +280,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleBookingUpdate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("POST")
@@ -292,7 +289,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleBookingDelete(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 			}))).Methods("DELETE")
@@ -301,7 +298,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleBookingsByPatient(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Employee},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient:      "id",
 				allowRelatedPatient: false,
 			}))).Methods("GET")
@@ -310,7 +307,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleBookingsByEmployee(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse, models.Patient},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 				allowIOTDevice:      false,
@@ -320,7 +317,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleAvailableTimesForDoctor(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse, models.Patient},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 				allowIOTDevice:      false,
@@ -333,7 +330,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleUseradminGetEmployee(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient:      "username",
 				allowRelatedPatient: false,
 			}))).Methods("GET")
@@ -342,7 +339,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleHospitalsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse, models.Patient},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 				allowIOTDevice:      false,
@@ -352,7 +349,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleGetDoctorsInHospital(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse, models.Patient},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 				allowIOTDevice:      false,
@@ -375,7 +372,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleIOTReadData(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 				allowIOTDevice:      false,
@@ -385,7 +382,7 @@ func (s *server) routes() {
 		s.log(s.authenticate(
 			s.handleIOTReadDataInTimeframe(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Employee, models.Nurse},
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient:      "",
 				allowRelatedPatient: false,
 				allowIOTDevice:      false,

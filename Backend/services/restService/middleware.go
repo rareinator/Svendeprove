@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/gorilla/mux"
+	jwtverifier "github.com/okta/okta-jwt-verifier-golang"
 	"github.com/rareinator/Svendeprove/Backend/packages/models"
 )
 
@@ -47,99 +50,65 @@ func (s *server) log(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {
-	//TODO: oauth fix
 	return func(w http.ResponseWriter, r *http.Request) {
-		// 	fmt.Println("authenticating")
-		// 	vars := mux.Vars(r)
-		// 	var reqToken string
-		// 	reqToken = r.Header.Get("Authorization")
-		// 	splitToken := strings.Split(reqToken, "Bearer ")
-		// 	if len(splitToken) != 2 {
-		// 		fmt.Println("trying to access with no token")
-		// 		s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
-		// 		return
-		// 	}
-		// 	reqToken = splitToken[1]
-		// 	if reqToken == "" {
-		// 		s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
-		// 		return
-		// 	}
+		fmt.Println("authenticating")
+		vars := mux.Vars(r)
 
-		// 	tokenRequest := &authentication.TokenRequest{
-		// 		Token: reqToken,
-		// 	}
+		var reqToken string
+		reqToken = r.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) != 2 {
+			fmt.Println("trying to access with no token")
+			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+			return
+		}
+		reqToken = splitToken[1]
+		if reqToken == "" {
+			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+			return
+		}
 
-		// 	allowed := false
-		// 	if config.allowRelatedPatient {
-		// 		allowed = true
-		// 	}
+		fmt.Printf("---------TOKEN-----------\n\r%v\n\r\n\r", reqToken)
 
-		// 	response, err := s.authenticationService.ValidateToken(context.Background(), tokenRequest)
-		// 	if err != nil {
-		// 		s.returnError(w, http.StatusForbidden, fmt.Sprintf("%v", err))
-		// 		return
-		// 	}
-		// 	if !response.Valid {
-		// 		s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you, response not valid")
-		// 		return
-		// 	}
+		toValidate := map[string]string{}
+		toValidate["aud"] = os.Getenv("OKTA_AUTH_ENDPOINT")
+		toValidate["cid"] = os.Getenv("OKTA_CLIENT_ID")
 
-		// 	fmt.Println("1")
+		jwt := jwtverifier.JwtVerifier{
+			Issuer:           fmt.Sprintf("%v/oauth2/default", os.Getenv("OKTA_URL")),
+			ClaimsToValidate: toValidate,
+		}
 
-		// 	jwtToken, err := jwt.Parse([]byte(reqToken))
-		// 	if err != nil {
-		// 		s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 		return
-		// 	}
+		verifier := jwt.New()
 
-		// 	fmt.Println("2")
+		token, err := verifier.VerifyAccessToken(reqToken)
+		if err != nil {
+			s.returnError(w, http.StatusNotAcceptable, "Not allowed")
+			fmt.Println("Not allowed:", err)
+			return
+		}
 
-		// 	userID, exists := jwtToken.Get("userID")
-		// 	if !exists {
-		// 		s.returnError(w, http.StatusBadRequest, err.Error())
-		// 		return
-		// 	}
+		role := token.Claims["role"]
+		username := token.Claims["username"]
 
-		// 	fmt.Println("3")
+		allowed := false
 
-		// 	role, exists := jwtToken.Get("role")
-		// 	if !exists {
-		// 		s.returnError(w, http.StatusBadRequest, err.Error())
-		// 		return
-		// 	}
+		if config.allowedPatient != "" {
+			patient := vars[config.allowedPatient]
 
-		// 	fmt.Println("4")
+			if patient == username {
+				allowed = true
+			}
+		}
 
-		// 	fmt.Println("Token")
-		// 	fmt.Println(jwtToken.Get("fullname"))
-
-		// 	if config.allowedPatient != "" {
-		// 		patientID, err := strconv.Atoi(vars[config.allowedPatient])
-		// 		if err != nil {
-		// 			s.returnError(w, http.StatusForbidden, "Could not convert the id to an int")
-		// 			return
-		// 		}
-
-		// 		if userID == int32(patientID) {
-		// 			allowed = true
-		// 		}
-		// 	}
-		// 	fmt.Println("5")
-		// 	if len(config.allowedRoles) > 0 {
-		// 		for _, allowedRole := range config.allowedRoles {
-		// 			fmt.Printf("role: %v\n\rallowedRole: %v\n\r", role, int32(allowedRole))
-		// 			roleInt, err := strconv.Atoi(role.(string))
-		// 			if err != nil {
-		// 				s.returnError(w, http.StatusInternalServerError, err.Error())
-		// 				return
-		// 			}
-		// 			if roleInt == int(allowedRole) {
-		// 				allowed = true
-		// 				break
-		// 			}
-		// 		}
-		// 	}
-		// 	fmt.Println("5")
+		if len(config.allowedRoles) > 0 {
+			for _, allowedRole := range config.allowedRoles {
+				if fmt.Sprintf("%v", role) == string(allowedRole) {
+					allowed = true
+					break
+				}
+			}
+		}
 
 		// 	if config.allowIOTDevice {
 		// 		// fmt.Println(response)
@@ -151,9 +120,6 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 		// 		//TODO: find out what to do here properly
 		// 		allowed = true
 		// 	}
-
-		allowed := true
-		//TODO: for the time being until auth has been reimplemented everything is allowed
 
 		if !allowed {
 			s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
