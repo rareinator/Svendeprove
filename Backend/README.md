@@ -69,6 +69,9 @@
 ### User administration
 * [x] GetEmployee /useradmin/{id:[0-9]+} GET
 * [x] GetHospitals /admin/hospitals GET
+* [x] GetDepartments /admin/departments GET
+* [x] GetBeds /admin/beds GET
+
 
 ### IOT
 * [x] UploadData /iot/uploadData POST

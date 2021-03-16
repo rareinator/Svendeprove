@@ -1293,6 +1293,34 @@ func (s *server) handleHospitalsGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleDepartmentsGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		response, err := s.useradminService.GetDepartments(context.Background(), &useradminService.UAEmpty{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response.Departments)
+	}
+}
+
+func (s *server) handleBedsGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		response, err := s.useradminService.GetBeds(context.Background(), &useradminService.UAEmpty{})
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&response.Beds)
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

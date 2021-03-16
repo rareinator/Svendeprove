@@ -39,12 +39,35 @@ message Hospitals {
   repeated UAHospital Hospitals = 1;
 }
 
+message Bed {
+  int32 BedId = 1;
+  string Name = 2;
+  int32 Departmentid = 3;
+  bool isAvailable = 4;
+}
+
+message Beds {
+  repeated Bed Beds = 1;
+}
+
+message Department {
+  int32 Departmentid = 1;
+  string Name = 2;
+  string Description = 3;
+  int32 HospitalId = 4;
+}
+
+message Departments {
+  repeated Department Departments = 1;
+}
 
 service UseradminService {
   rpc GetHealth(UAEmpty) returns (UAHealth) {}
 
   rpc GetEmployee(UserRequest) returns (UAUser) {}
   rpc GetPatients(UAEmpty) returns (Users) {}
+  rpc GetDepartments(UAEmpty) returns (Departments) {}
+  rpc GetBeds(UAEmpty) returns (Beds) {}
 
   rpc GetHospitals(UAEmpty) returns (Hospitals) {}
 }

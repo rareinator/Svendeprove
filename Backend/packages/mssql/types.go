@@ -147,7 +147,7 @@ func (DBHospital) TableName() string {
 type DBBooking struct {
 	BookingId  int32      `gorm:"column:BookingId;primaryKey"`
 	Bookedtime time.Time  `gorm:"column:BookedTime"`
-	BookedEnd  time.Time  `gorm:"column:BookedEnd`
+	BookedEnd  time.Time  `gorm:"column:BookedEnd"`
 	Patient    string     `gorm:"column:Patient"`
 	Employee   string     `gorm:"column:Employee"`
 	Approved   bool       `gorm:"column:Approved"`
@@ -198,7 +198,7 @@ func (DBHospitilization) TableName() string {
 }
 
 type DBExamination struct {
-	ExaminationId int32     `gorm:"column:ExaminationId"`
+	ExaminationId int32     `gorm:"column:ExaminationId;primaryKey"`
 	Description   string    `gorm:"column:Description"`
 	StartedTime   time.Time `gorm:"column:StartedTime"`
 	EndedTime     time.Time `gorm:"column:EndedTime"`
@@ -208,4 +208,16 @@ type DBExamination struct {
 
 func (DBExamination) TableName() string {
 	return "Examination"
+}
+
+type DBDepartment struct {
+	DepartmentId int32      `gorm:"column:DepartmentId;primaryKey"`
+	Name         string     `gorm:"column:Name"`
+	Description  string     `gorm:"column:Description"`
+	HospitalId   int32      `gorm:"column:HospitalId"`
+	Hospital     DBHospital `gorm:"foreignKey:HospitalId;references:HospitalId"`
+}
+
+func (DBDepartment) TableName() string {
+	return "Department"
 }

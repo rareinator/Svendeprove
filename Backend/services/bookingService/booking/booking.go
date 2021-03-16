@@ -139,8 +139,6 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 		return nil, err
 	}
 
-	//TODO: FIX
-
 	dbBooking := mssql.DBBooking{
 		BookingId:  booking.BookingId,
 		Bookedtime: bookedTime,
@@ -159,6 +157,14 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 func (b *BookingServer) DeleteBooking(ctx context.Context, br *BRequest) (*BStatus, error) {
 	dbBooking := mssql.DBBooking{
 		BookingId: br.Id,
+	}
+
+	if err := b.DB.DeleteHospitilization(&mssql.DBHospitilization{BookingId: br.Id}); err != nil {
+		return nil, err
+	}
+
+	if err := b.DB.DeleteExamination(&mssql.DBExamination{BookingId: br.Id}); err != nil {
+		return nil, err
 	}
 
 	if err := b.DB.DeleteBooking(&dbBooking); err != nil {

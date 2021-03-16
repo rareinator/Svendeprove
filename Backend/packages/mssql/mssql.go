@@ -191,6 +191,26 @@ func (m *MSSQL) GetHospitals() ([]*DBHospital, error) {
 	return hospitals, nil
 }
 
+func (m *MSSQL) GetDepartments() ([]*DBDepartment, error) {
+	var departments []*DBDepartment
+	result := m.db.Find(&departments)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return departments, nil
+}
+
+func (m *MSSQL) GetBeds() ([]*DBBed, error) {
+	var beds []*DBBed
+	result := m.db.Find(&beds)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return beds, nil
+}
+
 func (m *MSSQL) GetSymptom(id int32) (*DBSymptom, error) {
 	var symptom DBSymptom
 	result := m.db.First(&symptom, id)
@@ -351,7 +371,7 @@ func (m *MSSQL) GetOrCreateFileStoreByPath(path string) (*DBFileStore, error) {
 }
 
 func (m *MSSQL) CreateBooking(booking *DBBooking) error {
-	result := m.db.Create(booking)
+	result := m.db.Omit("BookedEnd").Create(booking)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -425,6 +445,28 @@ func (m *MSSQL) DeleteBooking(booking *DBBooking) error {
 		return result.Error
 	}
 
+	return nil
+}
+
+func (m *MSSQL) DeleteExamination(examination *DBExamination) error {
+	result := m.db.Where("BookingId = ?", examination.BookingId).Delete(examination)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return result.Error
+	}
+	return nil
+}
+
+func (m *MSSQL) DeleteHospitilization(hospitilization *DBHospitilization) error {
+	result := m.db.Where("BookingId = ?", hospitilization.BookingId).Delete(hospitilization)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return result.Error
+	}
 	return nil
 }
 

@@ -18,8 +18,7 @@ func (u *UseradminServer) GetHealth(ctx context.Context, e *UAEmpty) (*UAHealth,
 }
 
 func (u *UseradminServer) GetUser(ctx context.Context, er *UserRequest) (*UAUser, error) {
-	//TODO: implement okta sdk
-
+	//TODO: Clean???
 	result := UAUser{
 		Name:     "Morten Nissen",
 		Username: er.Username,
@@ -52,4 +51,52 @@ func (u *UseradminServer) GetHospitals(ctx context.Context, e *UAEmpty) (*Hospit
 	}
 
 	return &hospitals, nil
+}
+
+func (u *UseradminServer) GetDepartments(ctx context.Context, e *UAEmpty) (*Departments, error) {
+	departments := Departments{
+		Departments: make([]*Department, 0),
+	}
+
+	dbDepartments, err := u.DB.GetDepartments()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbDepartment := range dbDepartments {
+		department := Department{
+			Departmentid: dbDepartment.DepartmentId,
+			Name:         dbDepartment.Name,
+			Description:  dbDepartment.Description,
+			HospitalId:   dbDepartment.HospitalId,
+		}
+
+		departments.Departments = append(departments.Departments, &department)
+	}
+
+	return &departments, nil
+}
+
+func (u *UseradminServer) GetBeds(ctx context.Context, e *UAEmpty) (*Beds, error) {
+	beds := Beds{
+		Beds: make([]*Bed, 0),
+	}
+
+	dbBeds, err := u.DB.GetBeds()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbBed := range dbBeds {
+		Bed := Bed{
+			BedId:        dbBed.BedId,
+			Name:         dbBed.Name,
+			Departmentid: dbBed.DepartmentId,
+			IsAvailable:  dbBed.IsAvailable,
+		}
+
+		beds.Beds = append(beds.Beds, &Bed)
+	}
+
+	return &beds, nil
 }

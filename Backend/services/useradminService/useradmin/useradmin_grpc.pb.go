@@ -21,6 +21,8 @@ type UseradminServiceClient interface {
 	GetHealth(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*UAHealth, error)
 	GetEmployee(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UAUser, error)
 	GetPatients(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Users, error)
+	GetDepartments(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Departments, error)
+	GetBeds(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Beds, error)
 	GetHospitals(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Hospitals, error)
 }
 
@@ -59,6 +61,24 @@ func (c *useradminServiceClient) GetPatients(ctx context.Context, in *UAEmpty, o
 	return out, nil
 }
 
+func (c *useradminServiceClient) GetDepartments(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Departments, error) {
+	out := new(Departments)
+	err := c.cc.Invoke(ctx, "/UseradminService/GetDepartments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *useradminServiceClient) GetBeds(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Beds, error) {
+	out := new(Beds)
+	err := c.cc.Invoke(ctx, "/UseradminService/GetBeds", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *useradminServiceClient) GetHospitals(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Hospitals, error) {
 	out := new(Hospitals)
 	err := c.cc.Invoke(ctx, "/UseradminService/GetHospitals", in, out, opts...)
@@ -75,6 +95,8 @@ type UseradminServiceServer interface {
 	GetHealth(context.Context, *UAEmpty) (*UAHealth, error)
 	GetEmployee(context.Context, *UserRequest) (*UAUser, error)
 	GetPatients(context.Context, *UAEmpty) (*Users, error)
+	GetDepartments(context.Context, *UAEmpty) (*Departments, error)
+	GetBeds(context.Context, *UAEmpty) (*Beds, error)
 	GetHospitals(context.Context, *UAEmpty) (*Hospitals, error)
 	mustEmbedUnimplementedUseradminServiceServer()
 }
@@ -91,6 +113,12 @@ func (UnimplementedUseradminServiceServer) GetEmployee(context.Context, *UserReq
 }
 func (UnimplementedUseradminServiceServer) GetPatients(context.Context, *UAEmpty) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPatients not implemented")
+}
+func (UnimplementedUseradminServiceServer) GetDepartments(context.Context, *UAEmpty) (*Departments, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDepartments not implemented")
+}
+func (UnimplementedUseradminServiceServer) GetBeds(context.Context, *UAEmpty) (*Beds, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBeds not implemented")
 }
 func (UnimplementedUseradminServiceServer) GetHospitals(context.Context, *UAEmpty) (*Hospitals, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHospitals not implemented")
@@ -162,6 +190,42 @@ func _UseradminService_GetPatients_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UseradminService_GetDepartments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UAEmpty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UseradminServiceServer).GetDepartments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UseradminService/GetDepartments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UseradminServiceServer).GetDepartments(ctx, req.(*UAEmpty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UseradminService_GetBeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UAEmpty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UseradminServiceServer).GetBeds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UseradminService/GetBeds",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UseradminServiceServer).GetBeds(ctx, req.(*UAEmpty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UseradminService_GetHospitals_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UAEmpty)
 	if err := dec(in); err != nil {
@@ -198,6 +262,14 @@ var UseradminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPatients",
 			Handler:    _UseradminService_GetPatients_Handler,
+		},
+		{
+			MethodName: "GetDepartments",
+			Handler:    _UseradminService_GetDepartments_Handler,
+		},
+		{
+			MethodName: "GetBeds",
+			Handler:    _UseradminService_GetBeds_Handler,
 		},
 		{
 			MethodName: "GetHospitals",
