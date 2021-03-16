@@ -15,5 +15,9 @@ namespace DataAccessLibrary
         Task<List<HospitalModel>> GetHospitals();
         Task<List<UserModel>> GetAvailableEmployees(int hospitalId);
         Task<List<DateTime>> GetAvailableTimes(AvailableEmpDto data);
+        Task<List<DepartmentModel>> GetDepartments();
+        Task<List<DepartmentModel>> GetAvailableDepartments(int hospitalId);
+        Task<List<BedModel>> GetBeds();
+        Task<List<BedModel>> GetAvailableBeds(int departmentId);
     }
 }

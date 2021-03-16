@@ -25,10 +25,8 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
-    private async Task Logout()
+    private void Logout()
     {
-        string cookieJson = "";
-        await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 0);
         MyNavigationManager.NavigateTo("/", true);
     }
 }

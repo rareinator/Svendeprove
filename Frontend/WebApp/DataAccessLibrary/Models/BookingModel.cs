@@ -27,5 +27,6 @@ namespace DataAccessLibrary.Models
         public BookingType Type { get; set; }
 
         public HospitalModel Hospital { get; set; }
+        public BedModel Bed { get; set; }
     }
 }
