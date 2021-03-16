@@ -153,6 +153,32 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 		return nil, err
 	}
 
+	switch booking.Type {
+	case string(models.Examination):
+		examination := mssql.DBExamination{
+			Description: booking.Description,
+			StartedTime: bookedTime,
+			EndedTime:   bookedEnd,
+			BookingId:   booking.BookingId,
+		}
+
+		if err := b.DB.UpdateExamination(&examination); err != nil {
+			return nil, err
+		}
+
+	case string(models.Hospitilization): //Hospitilization
+		hospitilization := mssql.DBHospitilization{
+			Description: booking.Description,
+			StartedTime: bookedTime,
+			EndedTime:   bookedEnd,
+			BookingId:   booking.BookingId,
+		}
+
+		if err := b.DB.UpdateHospitilization(&hospitilization); err != nil {
+			return nil, err
+		}
+	}
+
 	return booking, nil
 }
 

@@ -455,6 +455,22 @@ func (m *MSSQL) UpdateBooking(booking *DBBooking) error {
 
 	return nil
 }
+func (m *MSSQL) UpdateExamination(examination *DBExamination) error {
+	result := m.db.Where("BookingId = ?", examination.BookingId).Save(&examination)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+func (m *MSSQL) UpdateHospitilization(hospitilization *DBHospitilization) error {
+	result := m.db.Where("BookingId = ?", hospitilization.BookingId).Save(&hospitilization)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
 
 func (m *MSSQL) DeleteBooking(booking *DBBooking) error {
 	result := m.db.Where("BookingId = ?", booking.BookingId).Delete(booking)
