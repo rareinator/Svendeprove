@@ -1,6 +1,7 @@
-package main
+package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -30,13 +31,13 @@ func (ch *corsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ch.router.ServeHTTP(w, r)
 }
 
-func (s *server) handleCors() http.HandlerFunc {
+func (s *Server) HandleCors() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 }
 
-func (s *server) log(next http.HandlerFunc) http.HandlerFunc {
+func (s *Server) Log(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("request received:")
 		fmt.Printf("%v called %v\n\rresource %v\n\r", r.RemoteAddr, r.Method, r.RequestURI)
@@ -49,7 +50,22 @@ func (s *server) log(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {
+func (s *Server) ReturnError(w http.ResponseWriter, statusCode int, Message string) {
+	var errorMessage struct {
+		Code    int
+		Message string
+	}
+
+	w.WriteHeader(statusCode)
+	errorMessage.Code = statusCode
+	errorMessage.Message = Message
+
+	fmt.Printf("ERROR!!!! Code: %v Message: %v\n\r", errorMessage.Code, errorMessage.Message)
+
+	json.NewEncoder(w).Encode(&errorMessage)
+}
+
+func (s *Server) Authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("authenticating")
 		vars := mux.Vars(r)
@@ -59,12 +75,12 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) != 2 {
 			fmt.Println("trying to access with no token")
-			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+			s.ReturnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
 			return
 		}
 		reqToken = splitToken[1]
 		if reqToken == "" {
-			s.returnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
+			s.ReturnError(w, http.StatusNotAcceptable, fmt.Sprintf("No valid token specified, found %v", reqToken))
 			return
 		}
 
@@ -88,7 +104,7 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 
 		token, err := verifier.VerifyAccessToken(reqToken)
 		if err != nil {
-			s.returnError(w, http.StatusNotAcceptable, "Not allowed")
+			s.ReturnError(w, http.StatusNotAcceptable, "Not allowed")
 			fmt.Println("Not allowed:", err)
 			return
 		}
@@ -127,7 +143,7 @@ func (s *server) authenticate(next http.HandlerFunc, config *authenticationConfi
 		// 	}
 
 		if !allowed {
-			s.returnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
+			s.ReturnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
 			return
 		}
 

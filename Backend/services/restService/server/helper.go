@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 )
 
-func (s *server) getDeviceID(r *http.Request) (int32, error) {
+func (s *Server) getDeviceID(r *http.Request) (int32, error) {
 	reqToken := r.URL.Query().Get("Key")
 	if reqToken == "" {
 		return 0, fmt.Errorf("No valid token specified, found %v", reqToken)
@@ -21,7 +21,7 @@ func (s *server) getDeviceID(r *http.Request) (int32, error) {
 		Token: reqToken,
 	}
 
-	response, err := s.authenticationService.ValidateToken(context.Background(), &tokenRequest)
+	response, err := s.AuthenticationService.ValidateToken(context.Background(), &tokenRequest)
 	if err != nil {
 		return 0, err
 	}
@@ -33,12 +33,12 @@ func (s *server) getDeviceID(r *http.Request) (int32, error) {
 	return 1, nil
 }
 
-func (s *server) getUsername(request *http.Request) string {
+func (s *Server) getUsername(request *http.Request) string {
 	// tokenRequest := authentication.TokenRequest{
 	// 	Token: token,
 	// }
 
-	// response, err := s.authenticationService.ValidateToken(context.Background(), &tokenRequest)
+	// response, err := s.AuthenticationService.ValidateToken(context.Background(), &tokenRequest)
 	// if err != nil {
 	// 	return "", err
 	// }
@@ -50,14 +50,14 @@ func (s *server) getUsername(request *http.Request) string {
 	return "mni@hospi.local"
 }
 
-func (s *server) saveFile(base64Data, fileName string) error {
+func (s *Server) saveFile(base64Data, fileName string) error {
 	fmt.Println("Saving file")
 	dec, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
 		return err
 	}
 
-	filePath := fmt.Sprintf("%v/%v", s.staticFileDir, fileName)
+	filePath := fmt.Sprintf("%v/%v", s.StaticFileDir, fileName)
 
 	fmt.Printf("Saving file to %v\n\r", filePath)
 

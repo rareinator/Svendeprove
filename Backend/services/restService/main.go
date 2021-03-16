@@ -10,6 +10,7 @@ import (
 	"github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
+	"github.com/rareinator/Svendeprove/Backend/services/restService/server"
 	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
 	"github.com/tidwall/buntdb"
 	"google.golang.org/grpc"
@@ -25,7 +26,7 @@ func main() {
 func execute() error {
 	godotenv.Load("../../.env")
 
-	srv := newServer()
+	srv := server.NewServer()
 
 	var journalConn *grpc.ClientConn
 	journalConn, err := grpc.Dial(os.Getenv("JOURNAL_SERVICE_ADDR"), grpc.WithInsecure())
@@ -75,16 +76,16 @@ func execute() error {
 	}
 	defer localDB.Close()
 
-	srv.localDB = localDB
+	srv.LocalDB = localDB
 
-	srv.journalService = journal.NewJournalServiceClient(journalConn)
-	srv.authenticationService = authentication.NewAuthenticationServiceClient(authenticationConn)
-	srv.patientService = patient.NewPatientServiceClient(patientConn)
-	srv.bookingService = booking.NewBookingServiceClient(bookingConn)
-	srv.useradminService = useradmin.NewUseradminServiceClient(useradminConn)
-	srv.iotService = iot.NewIotServiceClient(iotConn)
+	srv.JournalService = journal.NewJournalServiceClient(journalConn)
+	srv.AuthenticationService = authentication.NewAuthenticationServiceClient(authenticationConn)
+	srv.PatientService = patient.NewPatientServiceClient(patientConn)
+	srv.BookingService = booking.NewBookingServiceClient(bookingConn)
+	srv.UseradminService = useradmin.NewUseradminServiceClient(useradminConn)
+	srv.IotService = iot.NewIotServiceClient(iotConn)
 
-	srv.staticFileDir = "./static"
+	srv.StaticFileDir = "./static"
 
 	srv.ServeHTTP()
 
