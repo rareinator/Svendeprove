@@ -2,6 +2,7 @@
 using DataAccessLibrary.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -66,6 +67,30 @@ namespace DataAccessLibrary
             List<DateTime> responseTimes = JsonSerializer.Deserialize<List<DateTime>>(responseMessage, options);
 
             return responseTimes;
+        }
+
+        public async Task<List<DepartmentModel>> GetDepartments()
+        {
+            return await _client.GetFromJsonAsync<List<DepartmentModel>>($"/admin/departments");
+        }
+
+        public async Task<List<DepartmentModel>> GetAvailableDepartments(int hospitalId)
+        {
+            List<DepartmentModel> departments = await GetDepartments();
+
+            return departments.Where(x => x.HospitalId == hospitalId).ToList();
+        }
+        
+        public async Task<List<BedModel>> GetBeds()
+        {
+            return await _client.GetFromJsonAsync<List<BedModel>>($"/admin/beds");
+        }
+
+        public async Task<List<BedModel>> GetAvailableBeds(int departmentId)
+        {
+            List<BedModel> beds = await GetBeds();
+
+            return beds.Where(x => x.DepartmentId == departmentId && x.IsAvailable == true).ToList();
         }
     }
 }

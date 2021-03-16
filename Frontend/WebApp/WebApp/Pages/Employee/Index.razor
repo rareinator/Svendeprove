@@ -55,7 +55,16 @@
         </div>
     </TabPage>
     <TabPage Text="Indlæggelser">
+        <div class="d-flex flex-column p-4">
+            @if (selectedPatient != null)
+            {
+                <p><b>Patient:</b> @selectedPatient.Name</p>
+                <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                <button @onclick="() => ShowHospitalizationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Indlæggelse</button>
+            }
 
+            <Hospitalizations OnEditClick="ShowHospitalizationModal" Bookings="bookings" />
+        </div>
     </TabPage>
 </TabControl>
 
@@ -122,6 +131,36 @@
         }
 
         var createJournal = Modal.Show<CreateExamimation>("Opret Undersøgelse", parameters);
+        var result = await createJournal.Result;
+
+
+        if (!result.Cancelled)
+        {
+            BookingModel newBooking = await BookingData.InsertBooking((BookingModel)result.Data);
+            bookings.Add(newBooking);
+        }
+    }
+
+    private async void ShowHospitalizationModal(BookingModel booking)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateHospitalization.SelectedPatient), selectedPatient);
+        if (booking.BookingId != 0)
+        {
+            parameters.Add(nameof(CreateHospitalization.SelectedBooking), booking);
+            parameters.Add(nameof(CreateHospitalization.availableDepartments), await BookingData.GetAvailableDepartments(booking.Hospital.HospitalId));
+            parameters.Add(nameof(CreateHospitalization.availableBeds), await BookingData.GetAvailableBeds(booking.Hospital.HospitalId));
+        }
+        else
+        {
+            parameters.Add(nameof(CreateHospitalization.SelectedBooking),
+                new BookingModel
+                {
+                    Type = BookingType.Hospitalization
+                });
+        }
+
+        var createJournal = Modal.Show<CreateHospitalization>("Opret Indlæggelse", parameters);
         var result = await createJournal.Result;
 
 

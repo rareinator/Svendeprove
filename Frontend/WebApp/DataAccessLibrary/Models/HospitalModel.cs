@@ -14,5 +14,6 @@ namespace DataAccessLibrary.Models
         public string Country { get; set; }
 
         public ICollection<BookingModel> Bookings { get; set; }
+        public ICollection<DepartmentModel> Departments { get; set; }
     }
 }

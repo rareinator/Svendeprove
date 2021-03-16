@@ -1,4 +1,3 @@
-﻿
 ﻿@inject SignOutSessionStateManager SignOutManager
        
         <div class="top-row pl-4 navbar navbar-dark">
@@ -11,7 +10,7 @@
         <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
             <ul class="nav flex-column">
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="">
+                    <NavLink class="nav-link" href="Journals">
                         <span class="oi oi-document" aria-hidden="true"></span> Journaler
                     </NavLink>
                 </li>
@@ -37,10 +36,8 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
-    private void Logout()
+    private async Task Logout()
     {
-        _accountService.Logout();
-        MyNavigationManager.NavigateTo("/", true);
         await SignOutManager.SetSignOutState();
         MyNavigationManager.NavigateTo("authentication/logout");
     }

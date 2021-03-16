@@ -14,39 +14,38 @@
     </div>
     <div class="row mt-5">
         <div class="col">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
+            <table class="table text-center table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 30%">Oprettet Dato</th>
+                        <th style="width: 60%">Intro</th>
+                        <th style="width: 10%">Noter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var journal in journals)
+                    {
                         <tr>
-                            <th>@tablehead1</th>
-                            <th>@tablehead2</th>
-                            <th>@tablehead3</th>
-                            <th>@tablehead4</th>
+                            <td>@journal.CreationTime</td>
+                            <td>@journal.Intro</td>
+                            <td><a href="/journal/@journal.JournalId"><i class="fas fa-notes-medical"></i></a></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 @code{
     string titel = "Dine Journaler";
-    string infotext = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-            "Nunc cursus consectetur justo facilisis maximus. Vivamus metus ligula, malesuada vitae turpis at, efficitur ultrices quam. " +
-            "Mauris consequat lorem at quam sodales, sed interdum augue euismod. Quisque ac augue ac neque lobortis dictum vitae eget magna. " +
-            "Nam mattis dolor facilisis tortor elementum dignissim. Curabitur volutpat mauris at ipsum pellentesque, ut scelerisque neque euismod." +
-            " Nam tincidunt nisi diam. Praesent sodales eros et nibh volutpat finibus. Morbi euismod pharetra dui, in imperdiet neque vehicula a. " +
-            "Etiam porta, turpis et dapibus facilisis, eros metus tincidunt lectus, sed molestie risus velit nec nulla. " +
-            "Nullam viverra risus non leo mattis convallis. Vivamus nec blandit lorem, eget aliquam mauris.";
-    string tablehead1 = "Senest opdateret";
-    string tablehead2 = "Hospital";
-    string tablehead3 = "Afdeling";
-    string tablehead4 = "Diagnose";
+    string infotext = "Her kan du se dine journaler";
+    string tablehead1 = "Oprettet Dato";
+    string tablehead2 = "Intro";
+    string tablehead3 = "Noter";
 
+    private List<JournalModel> journals;
 
+    protected override async Task OnInitializedAsync()
+    {
+    }
 }
