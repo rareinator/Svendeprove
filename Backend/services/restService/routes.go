@@ -365,6 +365,16 @@ func (s *server) routes() {
 				allowIOTDevice:      false,
 			}))).Methods("GET")
 
+	s.router.Handle("/admin/availableBeds",
+		s.log(s.authenticate(
+			s.handleAvailableBeds(),
+			&authenticationConfig{
+				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient:      "",
+				allowRelatedPatient: false,
+				allowIOTDevice:      false,
+			}))).Methods("POST")
+
 	s.router.Handle("/admin/doctors/inHospital/{hospitalID:[0-9]+}",
 		s.log(s.authenticate(
 			s.handleGetDoctorsInHospital(),

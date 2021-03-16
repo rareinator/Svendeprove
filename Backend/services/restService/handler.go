@@ -1321,6 +1321,23 @@ func (s *server) handleBedsGet() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleAvailableBeds() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request useradminService.BedsRequest
+		json.NewDecoder(r.Body).Decode(&request)
+
+		respsone, err := s.useradminService.GetAvailableBeds(context.Background(), &request)
+		if err != nil {
+			s.returnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&respsone.Beds)
+
+	}
+}
+
 func (s *server) handleAuthenticationHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

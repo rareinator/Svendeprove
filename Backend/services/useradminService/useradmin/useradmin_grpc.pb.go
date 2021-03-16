@@ -23,6 +23,7 @@ type UseradminServiceClient interface {
 	GetPatients(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Users, error)
 	GetDepartments(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Departments, error)
 	GetBeds(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Beds, error)
+	GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error)
 	GetHospitals(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Hospitals, error)
 }
 
@@ -79,6 +80,15 @@ func (c *useradminServiceClient) GetBeds(ctx context.Context, in *UAEmpty, opts 
 	return out, nil
 }
 
+func (c *useradminServiceClient) GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error) {
+	out := new(Beds)
+	err := c.cc.Invoke(ctx, "/UseradminService/GetAvailableBeds", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *useradminServiceClient) GetHospitals(ctx context.Context, in *UAEmpty, opts ...grpc.CallOption) (*Hospitals, error) {
 	out := new(Hospitals)
 	err := c.cc.Invoke(ctx, "/UseradminService/GetHospitals", in, out, opts...)
@@ -97,6 +107,7 @@ type UseradminServiceServer interface {
 	GetPatients(context.Context, *UAEmpty) (*Users, error)
 	GetDepartments(context.Context, *UAEmpty) (*Departments, error)
 	GetBeds(context.Context, *UAEmpty) (*Beds, error)
+	GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error)
 	GetHospitals(context.Context, *UAEmpty) (*Hospitals, error)
 	mustEmbedUnimplementedUseradminServiceServer()
 }
@@ -119,6 +130,9 @@ func (UnimplementedUseradminServiceServer) GetDepartments(context.Context, *UAEm
 }
 func (UnimplementedUseradminServiceServer) GetBeds(context.Context, *UAEmpty) (*Beds, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBeds not implemented")
+}
+func (UnimplementedUseradminServiceServer) GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableBeds not implemented")
 }
 func (UnimplementedUseradminServiceServer) GetHospitals(context.Context, *UAEmpty) (*Hospitals, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHospitals not implemented")
@@ -226,6 +240,24 @@ func _UseradminService_GetBeds_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UseradminService_GetAvailableBeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BedsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UseradminServiceServer).GetAvailableBeds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UseradminService/GetAvailableBeds",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UseradminServiceServer).GetAvailableBeds(ctx, req.(*BedsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UseradminService_GetHospitals_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UAEmpty)
 	if err := dec(in); err != nil {
@@ -270,6 +302,10 @@ var UseradminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBeds",
 			Handler:    _UseradminService_GetBeds_Handler,
+		},
+		{
+			MethodName: "GetAvailableBeds",
+			Handler:    _UseradminService_GetAvailableBeds_Handler,
 		},
 		{
 			MethodName: "GetHospitals",

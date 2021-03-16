@@ -172,10 +172,11 @@ func (DBBooking) TableName() string {
 // }
 
 type DBBed struct {
-	BedId        int32  `gorm:"column:BedId,primaryKey"`
-	Name         string `gorm:"column:Name"`
-	DepartmentId int32  `gorm:"column:DepartmentId"`
-	IsAvailable  bool   `gorm:"column:IsAvailable"`
+	BedId        int32        `gorm:"column:BedId;primaryKey"`
+	Name         string       `gorm:"column:Name"`
+	DepartmentId int32        `gorm:"column:DepartmentId"`
+	IsAvailable  bool         `gorm:"column:IsAvailable"`
+	Department   DBDepartment `gorm:"foreignKey:DepartmentId;references:DepartmentId"`
 }
 
 func (DBBed) TableName() string {
@@ -216,6 +217,7 @@ type DBDepartment struct {
 	Description  string     `gorm:"column:Description"`
 	HospitalId   int32      `gorm:"column:HospitalId"`
 	Hospital     DBHospital `gorm:"foreignKey:HospitalId;references:HospitalId"`
+	Beds         []DBBed    `gorm:"foreignKey:DepartmentId"`
 }
 
 func (DBDepartment) TableName() string {

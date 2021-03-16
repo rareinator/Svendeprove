@@ -7,6 +7,11 @@ message UAHealth {
   string Message = 1;
 }
 
+message BedsRequest {
+  string BookedTime = 1;
+  string BookedEnd = 2;
+  int32 HospitalId = 3;
+}
 
 message UserRequest {
   string Username = 1;
@@ -44,6 +49,7 @@ message Bed {
   string Name = 2;
   int32 Departmentid = 3;
   bool isAvailable = 4;
+  Department Department = 5;
 }
 
 message Beds {
@@ -68,6 +74,7 @@ service UseradminService {
   rpc GetPatients(UAEmpty) returns (Users) {}
   rpc GetDepartments(UAEmpty) returns (Departments) {}
   rpc GetBeds(UAEmpty) returns (Beds) {}
+  rpc GetAvailableBeds(BedsRequest) returns (Beds) {}
 
   rpc GetHospitals(UAEmpty) returns (Hospitals) {}
 }

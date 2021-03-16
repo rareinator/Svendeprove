@@ -203,8 +203,25 @@ func (m *MSSQL) GetDepartments() ([]*DBDepartment, error) {
 
 func (m *MSSQL) GetBeds() ([]*DBBed, error) {
 	var beds []*DBBed
-	result := m.db.Find(&beds)
+	result := m.db.Preload("Department").Find(&beds)
 	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return beds, nil
+}
+
+func (m *MSSQL) GetAvailableBeds(startDate, endDate time.Time, id int32) ([]*DBBed, error) {
+	var beds []*DBBed
+	result := m.db.Preload("Department").Joins(
+		"JOIN Department ON Department.DepartmentId = Bed.DepartmentId").Joins(
+		"FULL OUTER JOIN Hospitilization ON Hospitilization.BedId = Bed.BedId").Where(
+		"Department.HospitalId = ?", id).Where(
+		"Hospitilization.HospitilizationId IS NULL OR (Hospitilization.StartedTime NOT BETWEEN ? AND ?)", startDate, endDate).Find(&beds)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return beds, nil
+		}
 		return nil, result.Error
 	}
 
