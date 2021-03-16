@@ -19,19 +19,23 @@
 </div>
 @if (SelectedDocument.Attachments != null)
 {
-<div>
-    @foreach (var attacment in SelectedDocument.Attachments)
-    {
-        <img src="@attacment.Path" alt="Journal Document Photo" class="img-thumbnail img-fluid" />
-        @if (attacment.Prediction != null)
+<div class="d-flex flex-column">
+    <div class="d-flex flex-wrap justify-content-around">
+        @foreach (var attacment in SelectedDocument.Attachments)
         {
-            @((MarkupString)attacment.Prediction.Positive)
-            @((MarkupString)attacment.Prediction.Negative)
+        <div class="d-flex flex-column">
+            <img src="@attacment.Path" alt="Journal Document Photo" class="img-thumbnail img-fluid" />
+            @if (attacment.Prediction != null)
+            {
+                <p>@attacment.Prediction.positive <b>Positive</b></p>
+                <p>@attacment.Prediction.negative <b>Negative</b></p>
+            }
+        </div>
         }
-    }
-    <button type="button" class="btn btn-success" @onclick="() => GetPrediction(SelectedDocument.Attachments)">Knap</button>
+    
+    </div>
+    <button type="button" class="btn btn-success align-self-center" @onclick="() => GetPrediction(SelectedDocument.Attachments)">Knap</button>
 </div>
-
 }
 
 @code {
@@ -87,9 +91,12 @@
         {
             AttachmentModel attachment = SelectedDocument.Attachments.Where(a => a.Path == prediction.Url).FirstOrDefault();
 
-            attachment.Prediction.Positive = prediction.Data.Prediction.Positive;
-
-            attachment.Prediction.Positive = prediction.Data.Prediction.Positive;
+            attachment.Prediction = new Prediction
+            {
+                positive = prediction.Data.prediction.positive,
+                negative = prediction.Data.prediction.negative
+            };
+            StateHasChanged();
         }
     }
 

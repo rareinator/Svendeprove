@@ -7,7 +7,7 @@ namespace DataAccessLibrary
     public interface IJournalData
     {
         // JOURNAL
-        Task<List<JournalModel>> GetJournalsByPatient(int patientId);
+        Task<List<JournalModel>> GetJournalsByPatient(string patient);
         Task<JournalModel> InsertJournal(JournalModel journal);
 
         // JOURNAL DOCUMENTS

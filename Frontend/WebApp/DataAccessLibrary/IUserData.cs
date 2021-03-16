@@ -5,6 +5,6 @@ namespace DataAccessLibrary
 {
     public interface IUserData
     {
-        Task<TokenModel> Login(UserModel user, string scope);
+        Task<TokenModel> Login(UserModelOld user, string scope);
     }
 }

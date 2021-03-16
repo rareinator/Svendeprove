@@ -1,12 +1,6 @@
 ﻿@page "/"
 @using System.IdentityModel.Tokens.Jwt
 
-@if (error)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
 
 
 <div class="h-100 container">
@@ -49,8 +43,8 @@
 @code{
 
     [CascadingParameter(Name = "User")]
-    public UserModel User { get; set; }
-    public PatientModel patient { get; set; }
+    public UserModelOld User { get; set; }
+    public UserModel patient { get; set; }
     bool error = false;
     string errorMessage;
 
@@ -59,7 +53,7 @@
         Console.WriteLine("Login");
         if (clicked)
         {
-            var tokenString = await IUserData.Login(User, "employee");
+            var tokenString = await UserData.Login(User, "employee");
             User.Token = tokenString.AccessToken;
             if (User.Token != "" && User.Token != null)
             {
@@ -93,7 +87,7 @@
         else
         {
 
-            var tokenString = await IUserData.Login(User, "patient");
+            var tokenString = await UserData.Login(User, "patient");
             User.Token = tokenString.AccessToken;
             if (User.Token != "" && User.Token != null)
             {

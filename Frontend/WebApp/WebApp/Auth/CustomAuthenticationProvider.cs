@@ -19,7 +19,7 @@ namespace WebApp.Auth
             return new AuthenticationState(claimsPrincipal);
         }
 
-        public void LoginNotify(UserModel user)
+        public void LoginNotify(UserModelOld user)
         {
             var identity = new ClaimsIdentity(new[]
             {

@@ -19,14 +19,14 @@ namespace DataAccessLibrary
             _client = client;
         }
 
-        public async Task<List<PatientModel>> GetPatients()
+        public async Task<List<UserModel>> GetPatients()
         {
-            return await _client.GetFromJsonAsync<List<PatientModel>>("/patient"); ;
+            return await _client.GetFromJsonAsync<List<UserModel>>("/patient"); ;
         }
 
-        public async Task<PatientModel> GetPatient(int patientId)
+        public async Task<UserModel> GetPatient(int patientId)
         {
-            return await _client.GetFromJsonAsync<PatientModel>($"/patient/{patientId}");
+            return await _client.GetFromJsonAsync<UserModel>($"/patient/{patientId}");
         }
 
 

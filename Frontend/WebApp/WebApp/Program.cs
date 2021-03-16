@@ -23,13 +23,15 @@ namespace WebApp
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://cloud.m9ssen.me:56060") });
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationProvider>();
+
+
             builder.Services.AddScoped<IUserData, UserData>();
             builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddSingleton<IUserUpdateService, UserUpdateService>();
             builder.Services.AddScoped<IPatientData, PatientData>();
-            builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<IJournalData, JournalData>();
+            builder.Services.AddScoped<IBookingData, BookingData>();
 
+            builder.Services.AddAuthorizationCore();
             builder.Services.AddBlazoredModal();
             await builder.Build().RunAsync();
         }

@@ -1,0 +1,203 @@
+﻿<h5>Hospital</h5>
+<div class="form-group">
+    <BlazoredTypeahead SearchMethod="GetHospitalsLocal"
+                       TValue="HospitalModel"
+                       TItem="HospitalModel"
+                       Value="SelectedBooking.Hospital"
+                       ValueChanged="SelectedHospitalChanged"
+                       ValueExpression="@(() => SelectedBooking.Hospital)"
+                       DisableClear="true"
+                       EnableDropDown="true"
+                       placeholder="Søg efter hospitals navn...">
+        <SelectedTemplate>
+            @context.Name - @context.Address
+        </SelectedTemplate>
+        <ResultTemplate>
+            @context.Name - @context.Address
+        </ResultTemplate>
+    </BlazoredTypeahead>
+</div>
+
+<h5>Læge/Sygeplejerske</h5>
+<div class="form-group">
+    <BlazoredTypeahead SearchMethod="GetEmployeesLocal"
+                       ConvertMethod="ConvertEmployee"
+                       TValue="string"
+                       TItem="UserModel"
+                       Value="SelectedBooking.Employee"
+                       ValueChanged="SelectedEmployeeChanged"
+                       ValueExpression="@(() => SelectedBooking.Employee)"
+                       DisableClear="true"
+                       EnableDropDown="true"
+                       placeholder="Søg efter læge/sygeplejerske navn..."
+                       Disabled="@isEmployeeDisabled">
+        <SelectedTemplate Context="userName">
+            @{
+                var selectedEmployee = LoadSelectedEmployee(userName);
+
+                <text>@selectedEmployee?.Name</text>
+            }
+        </SelectedTemplate>
+        <ResultTemplate Context="employee">
+            @employee.Name
+        </ResultTemplate>
+    </BlazoredTypeahead>
+</div>
+
+<h5>Dag</h5>
+<div class="form-group">
+    <input class="form-control" type="date" @bind="selectedDate" disabled="@isDayDisabled" />
+</div>
+
+<h5>Tid</h5>
+<BlazoredTypeahead SearchMethod="GetAvailableTimesLocal"
+                   TValue="DateTime"
+                   TItem="DateTime"
+                   Value="SelectedBooking.BookedTime"
+                   ValueChanged="SelectedStartChanged"
+                   ValueExpression="@(() => SelectedBooking.BookedTime)"
+                   DisableClear="true"
+                   EnableDropDown="true"
+                   placeholder="Søg efter tider..."
+                   Disabled="@isTimesDisabled">
+    <SelectedTemplate>
+        @context.ToShortTimeString()
+    </SelectedTemplate>
+    <ResultTemplate>
+        @context.ToShortTimeString()
+    </ResultTemplate>
+</BlazoredTypeahead>
+
+<h5>Beskrivelse</h5>
+<div class="form-group">
+    <input class="form-control" type="text" @bind="SelectedBooking.Description" />
+</div>
+<br />
+
+<!-- Button to save the user -->
+<button class="btn btn-primary" @onclick="Save">
+    Gem
+</button>&nbsp;
+
+<!-- Only show delete button if not a new record -->
+@if (SelectedBooking.BookingId.ToString() != "0")
+{
+    <!-- Button to delete the Blog -->
+    <button class="btn btn-danger" @onclick="Delete">
+        Slet
+    </button>
+}
+<br />
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [Parameter]
+    public UserModel SelectedPatient { get; set; }
+    [Parameter]
+    public BookingModel SelectedBooking { get; set; }
+    [Parameter]
+    public List<UserModel> availableEmployees { get; set; }
+
+    List<HospitalModel> hospitals;
+
+    bool isEmployeeDisabled = true;
+
+    DateTime _selectedDate = DateTime.Today;
+    DateTime selectedDate
+    {
+        get => _selectedDate;
+        set
+        {
+            _selectedDate = value;
+            GetAvailableTimes(_selectedDate);
+        }
+    }
+    bool isDayDisabled = true;
+
+    List<DateTime> availableTimes;
+    bool isTimesDisabled = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hospitals = await BookingData.GetHospitals();
+        SelectedBooking.Patient = SelectedPatient.UserName;
+
+        if (SelectedBooking.BookingId != 0)
+        {
+            isDayDisabled = false;
+            isEmployeeDisabled = false;
+            isTimesDisabled = false;
+        }
+    }
+
+    private async Task<IEnumerable<HospitalModel>> GetHospitalsLocal(string searchText)
+    {
+        return await Task.FromResult(hospitals.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+
+    private async Task SelectedHospitalChanged(HospitalModel hospital)
+    {
+        SelectedBooking.Hospital = hospital;
+        availableEmployees = await BookingData.GetAvailableEmployees(hospital.HospitalId);
+        isEmployeeDisabled = false;
+    }
+
+    private async Task<IEnumerable<UserModel>> GetEmployeesLocal(string searchText)
+    {
+        return await Task.FromResult(availableEmployees.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+    private string ConvertEmployee(UserModel employee) => employee?.UserName;
+
+    private UserModel LoadSelectedEmployee(string userName) => availableEmployees.FirstOrDefault(p => p.UserName == userName);
+
+    private async Task SelectedEmployeeChanged(string employee)
+    {
+        SelectedBooking.Employee = employee;
+        isDayDisabled = false;
+        isTimesDisabled = false;
+        await GetAvailableTimes(selectedDate);
+    }
+
+    private async Task GetAvailableTimes(DateTime day)
+    {
+        AvailableEmpDto data = new AvailableEmpDto
+        {
+            Day = day,
+            Doctor = SelectedBooking.Employee
+        };
+
+        availableTimes = await BookingData.GetAvailableTimes(data);
+        SelectedBooking.BookedTime = availableTimes.FirstOrDefault();
+        SelectedBooking.BookedEnd = SelectedBooking.BookedTime.AddHours(1);
+    }
+
+    private async Task<IEnumerable<DateTime>> GetAvailableTimesLocal(string searchText)
+    {
+        return await Task.FromResult(availableTimes.Where(x => x.ToString().ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+
+    private async Task SelectedStartChanged(DateTime start)
+    {
+        SelectedBooking.BookedTime = start;
+        SelectedBooking.BookedEnd = start.AddHours(1);
+    }
+
+
+    private async Task Save()
+    {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(SelectedBooking));
+    }
+
+    private async Task Delete()
+    {
+        BookingData.DeleteBooking(SelectedBooking.BookingId);
+        await BlazoredModal.CloseAsync();
+    }
+}

@@ -6,13 +6,13 @@ namespace DataAccessLibrary.Models
 {
     public class UserModel
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Token { get; set; }
-        public string Role { get; set; }
-
-        public string Scope { get; set; }
-        public int UserID { get; set; }
+        public string UserName { get; set; }
+        public string Group { get; set; }
         public string Name { get; set; }
+        public string Address { get; set; }
+        public string City { get; set; }
+        public string PostalCode { get; set; }
+        public string Country { get; set; }
+        public string SocialIdNr { get; set; }
     }
 }

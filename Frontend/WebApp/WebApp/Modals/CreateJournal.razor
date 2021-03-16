@@ -23,13 +23,13 @@
     BlazoredModalInstance BlazoredModal { get; set; }
 
     [Parameter]
-    public PatientModel Patient { get; set; }
+    public UserModel Patient { get; set; }
 
     private JournalModel newJournal = new JournalModel();
 
     private async Task SubmitForm()
     {
-        newJournal.PatientId = Patient.PatientId;
+        newJournal.Patient = Patient.UserName;
         await BlazoredModal.CloseAsync(ModalResult.Ok(newJournal));
     }
 

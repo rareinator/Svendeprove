@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace DataAccessLibrary.Converters
 {
-    public class DateTimeFormatter : JsonConverter<DateTime>
+    public class DateTimeConverter : JsonConverter<DateTime>
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             => DateTime.ParseExact(reader.GetString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);

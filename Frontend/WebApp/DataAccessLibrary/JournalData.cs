@@ -20,9 +20,9 @@ namespace DataAccessLibrary
         }
 
         #region JOURNALS
-        public async Task<List<JournalModel>> GetJournalsByPatient(int patientId)
+        public async Task<List<JournalModel>> GetJournalsByPatient(string patient)
         {
-            return await _client.GetFromJsonAsync<List<JournalModel>>($"/journal/byPatient/{patientId}");
+            return await _client.GetFromJsonAsync<List<JournalModel>>($"/journal/byPatient/{patient}");
         }
 
         public async Task<JournalModel> InsertJournal(JournalModel journal)
