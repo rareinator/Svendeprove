@@ -1,4 +1,5 @@
-﻿
+﻿@inject SignOutSessionStateManager SignOutManager
+       
         <div class="top-row pl-4 navbar navbar-dark">
             <p class="navbar-brand" style="cursor:default">HOSPI Inc.</p>
             <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -37,11 +38,7 @@
 
     private async Task Logout()
     {
-        _accountService.Logout();
-        
-        //string cookieJson = "";
-        //await JSRuntime.InvokeVoidAsync("setCookie", "Data", cookieJson, 0, 0, 0);
-        
-        MyNavigationManager.NavigateTo("/", true);
+        await SignOutManager.SetSignOutState();
+        MyNavigationManager.NavigateTo("authentication/logout");
     }
 }
