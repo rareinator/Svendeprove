@@ -74,7 +74,6 @@
 </div>
 <br />
 
-<!-- Button to save the user -->
 <button class="btn btn-primary" @onclick="Save">
     Gem
 </button>&nbsp;
@@ -82,7 +81,6 @@
 <!-- Only show delete button if not a new record -->
 @if (SelectedBooking.BookingId.ToString() != "0")
 {
-    <!-- Button to delete the Blog -->
     <button class="btn btn-danger" @onclick="Delete">
         Slet
     </button>
@@ -197,7 +195,7 @@
 
     private async Task Delete()
     {
-        BookingData.DeleteBooking(SelectedBooking.BookingId);
+        await BookingData.DeleteBooking(SelectedBooking.BookingId);
         await BlazoredModal.CloseAsync();
     }
 }

@@ -118,7 +118,6 @@
 </div>
 <br />
 
-<!-- Button to save the user -->
 <button class="btn btn-primary" @onclick="Save">
     Gem
 </button>&nbsp;
@@ -126,7 +125,6 @@
 <!-- Only show delete button if not a new record -->
 @if (SelectedDocument.DocumentId.ToString() != "0")
 {
-    <!-- Button to delete the Blog -->
     <button class="btn btn-danger" @onclick="Delete">
         Slet
     </button>

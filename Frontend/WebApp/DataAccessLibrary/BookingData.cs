@@ -31,7 +31,7 @@ namespace DataAccessLibrary
             return await _client.GetFromJsonAsync<List<BookingModel>>($"/booking/byEmployee/{employee}");
         }
 
-        public async void DeleteBooking(int bookingId)
+        public async Task DeleteBooking(int bookingId)
         {
             await _client.DeleteAsync($"/booking/{bookingId}");
         }
@@ -84,28 +84,14 @@ namespace DataAccessLibrary
             return responseTimes;
         }
 
-        public async Task<List<DepartmentModel>> GetDepartments()
+        public async Task<List<BedModel>> GetAvailableBeds(AvailableBedDto data)
         {
-            return await _client.GetFromJsonAsync<List<DepartmentModel>>($"/admin/departments");
-        }
+            var response = await _client.PostAsJsonAsync($"/admin/availableBeds", data);
+            string responseMessage = await response.Content.ReadAsStringAsync();
 
-        public async Task<List<DepartmentModel>> GetAvailableDepartments(int hospitalId)
-        {
-            List<DepartmentModel> departments = await GetDepartments();
+            List<BedModel> responseBeds = JsonSerializer.Deserialize<List<BedModel>>(responseMessage);
 
-            return departments.Where(x => x.HospitalId == hospitalId).ToList();
-        }
-        
-        public async Task<List<BedModel>> GetBeds()
-        {
-            return await _client.GetFromJsonAsync<List<BedModel>>($"/admin/beds");
-        }
-
-        public async Task<List<BedModel>> GetAvailableBeds(int departmentId)
-        {
-            List<BedModel> beds = await GetBeds();
-
-            return beds.Where(x => x.DepartmentId == departmentId && x.IsAvailable == true).ToList();
+            return responseBeds;
         }
     }
 }

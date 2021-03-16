@@ -169,22 +169,23 @@
         }
     }
 
-    private async void ShowHospitalizationModal(BookingModel booking)
+    private async Task ShowHospitalizationModal(BookingModel booking)
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(CreateHospitalization.SelectedPatient), selectedPatient);
+        // Hvis opdatering af eksiterende Booking
         if (booking.BookingId != 0)
         {
             parameters.Add(nameof(CreateHospitalization.SelectedBooking), booking);
-            parameters.Add(nameof(CreateHospitalization.availableDepartments), await BookingData.GetAvailableDepartments(booking.Hospital.HospitalId));
-            parameters.Add(nameof(CreateHospitalization.availableBeds), await BookingData.GetAvailableBeds(booking.Hospital.HospitalId));
         }
+        // Hvis helt ny Booking
         else
         {
             parameters.Add(nameof(CreateHospitalization.SelectedBooking),
                 new BookingModel
                 {
-                    Type = BookingType.Hospitalization
+                    Type = BookingType.Hospitilization,
+                    Approved = true
                 });
         }
 
@@ -194,8 +195,27 @@
 
         if (!result.Cancelled)
         {
-            BookingModel newBooking = await BookingData.InsertBooking((BookingModel)result.Data);
-            bookings.Add(newBooking);
+            BookingModel updatedBooking = (BookingModel)result.Data;
+            // Hvis booking ikke er slettet
+            if (updatedBooking != null)
+            {
+                // Hvis helt ny Booking
+                if (updatedBooking.BookingId == 0)
+                {
+                    BookingModel newBooking = await BookingData.InsertBooking(updatedBooking);
+                    bookings.Add(newBooking);
+                }
+                // Hvis opdatering af Booking
+                else
+                {
+                    await BookingData.UpdateBooking(updatedBooking);
+                }
+            }
+            // Hvis booking er slettet
+            else
+            {
+                bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
+            }
         }
     }
 }

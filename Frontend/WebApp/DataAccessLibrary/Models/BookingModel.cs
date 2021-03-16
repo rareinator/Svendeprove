@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace DataAccessLibrary.Models
 {
-    public enum BookingType { Examination, Hospitalization }
+    public enum BookingType { Examination, Hospitilization }
 
     public class BookingModel
     {

@@ -10,9 +10,5 @@ namespace DataAccessLibrary.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public int HospitalId { get; set; }
-
-        public HospitalModel Hospital { get; set; }
-
-        public ICollection<BedModel> Beds { get; set; }
     }
 }
