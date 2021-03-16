@@ -1,16 +1,11 @@
 using DataAccessLibrary;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
-using WebApp.Auth;
+using System.Net.Http;
 using Blazored.Modal;
+using System;
 
 namespace WebApp
 {
@@ -21,17 +16,35 @@ namespace WebApp
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://cloud.m9ssen.me:56060") });
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationProvider>();
+            builder.Services.AddScoped<CorsRequestAuthorizationMessageHandler>(); 
+            builder.Services
+                .AddHttpClient("BlazorClient.ServerApi", client => client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServerApi:BaseAddress")))
+                .AddHttpMessageHandler<CorsRequestAuthorizationMessageHandler>();
+
+
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("BlazorClient.ServerApi"));
+
+            builder.Services.AddOidcAuthentication(options =>
+            {
+                options.ProviderOptions.Authority = builder.Configuration.GetValue<string>("Okta:Authority");
+                options.ProviderOptions.ClientId = builder.Configuration.GetValue<string>("Okta:ClientId");
+
+                options.ProviderOptions.ResponseType = "code";
+                options.ProviderOptions.DefaultScopes.Add("profile");
+                options.ProviderOptions.DefaultScopes.Add("address");
+                options.ProviderOptions.DefaultScopes.Add("hospi");
+                
+                builder.Configuration.Bind("Okta", options.ProviderOptions);
+            });
+
+            builder.Services.AddApiAuthorization();
 
 
             builder.Services.AddScoped<IUserData, UserData>();
-            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPatientData, PatientData>();
             builder.Services.AddScoped<IJournalData, JournalData>();
             builder.Services.AddScoped<IBookingData, BookingData>();
 
-            builder.Services.AddAuthorizationCore();
             builder.Services.AddBlazoredModal();
             await builder.Build().RunAsync();
         }

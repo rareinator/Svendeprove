@@ -1,4 +1,6 @@
 ﻿
+﻿@inject SignOutSessionStateManager SignOutManager
+       
         <div class="top-row pl-4 navbar navbar-dark">
             <p class="navbar-brand" style="cursor:default">HOSPI Inc.</p>
             <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -39,5 +41,7 @@
     {
         _accountService.Logout();
         MyNavigationManager.NavigateTo("/", true);
+        await SignOutManager.SetSignOutState();
+        MyNavigationManager.NavigateTo("authentication/logout");
     }
 }
