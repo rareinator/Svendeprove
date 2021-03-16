@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Blazored.Modal;
 using System;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace WebApp
 {
@@ -21,7 +23,6 @@ namespace WebApp
                 .AddHttpClient("BlazorClient.ServerApi", client => client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServerApi:BaseAddress")))
                 .AddHttpMessageHandler<CorsRequestAuthorizationMessageHandler>();
 
-
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("BlazorClient.ServerApi"));
 
             builder.Services.AddOidcAuthentication(options =>
@@ -33,9 +34,9 @@ namespace WebApp
                 options.ProviderOptions.DefaultScopes.Add("profile");
                 options.ProviderOptions.DefaultScopes.Add("address");
                 options.ProviderOptions.DefaultScopes.Add("hospi");
-                
-                builder.Configuration.Bind("Okta", options.ProviderOptions);
-            });
+
+                options.UserOptions.RoleClaim = "role";
+            }).AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             builder.Services.AddApiAuthorization();
 
