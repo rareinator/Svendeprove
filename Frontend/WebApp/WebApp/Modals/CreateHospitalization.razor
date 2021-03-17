@@ -75,8 +75,6 @@
 @code {
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; }
-    [CascadingParameter]
-    public IModalService Modal { get; set; }
 
     [Parameter]
     public UserModel SelectedPatient { get; set; }
@@ -140,7 +138,7 @@
     }
 
 
-    private async Task SelectedHospitalChanged(HospitalModel hospital)
+    private void SelectedHospitalChanged(HospitalModel hospital)
     {
         SelectedBooking.Hospital = hospital;
         SelectedStart = DateTime.Now;
@@ -149,7 +147,7 @@
         isBedsDisabled = false;
     }
 
-    private async Task SelectedStartChanged(DateTime value)
+    private void SelectedStartChanged(DateTime value)
     {
         SelectedBooking.BookedTime = value;
     }
@@ -167,7 +165,7 @@
         availableBeds = await BookingData.GetAvailableBeds(dto);
     }
 
-    private async Task SelectedBedChanged(BedModel bed)
+    private void SelectedBedChanged(BedModel bed)
     {
         SelectedBooking.Bed = bed;
     }

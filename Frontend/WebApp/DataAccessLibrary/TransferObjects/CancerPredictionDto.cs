@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccessLibrary.Models
+namespace DataAccessLibrary.TransferObjects
 {
-    public class PredictionModel
+    public class CancerPredictionDto
     {
         public Data Data { get; set; }
         public string Url { get; set; }

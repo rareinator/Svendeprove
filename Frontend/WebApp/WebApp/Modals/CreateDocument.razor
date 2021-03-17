@@ -12,7 +12,7 @@
 <div class="form-group">
     @if (!RichTextEditorModeSummary)
     {
-        <textarea class="form-control" @bind="@SelectedDocument.Summary" rows="2" /> 
+        <textarea class="form-control" @bind="@SelectedDocument.Summary" rows="2" />
     }
     else
     {
@@ -51,7 +51,7 @@
     }
     @if (!RichTextEditorModeSummary)
     {
-        <button type="button" class="btn btn-link" @onclick="RichTextEditorSummary"><h6>[Rich Text Editor]</h6></button> 
+        <button type="button" class="btn btn-link" @onclick="RichTextEditorSummary"><h6>[Rich Text Editor]</h6></button>
     }
     else
     {
@@ -63,7 +63,7 @@
 <div class="form-group">
     @if (!RichTextEditorMode)
     {
-        <textarea class="form-control" @bind="@SelectedDocument.Content" rows="5" /> 
+        <textarea class="form-control" @bind="@SelectedDocument.Content" rows="5" />
     }
     else
     {
@@ -103,7 +103,7 @@
 
     @if (!RichTextEditorMode)
     {
-        <button type="button" class="btn btn-link" @onclick="RichTextEditor"><h6>[Rich Text Editor]</h6></button> 
+        <button type="button" class="btn btn-link" @onclick="RichTextEditor"><h6>[Rich Text Editor]</h6></button>
     }
     else
     {
@@ -131,7 +131,7 @@
 }
 <br />
 
-@code { 
+@code {
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; }
 

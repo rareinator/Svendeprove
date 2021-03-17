@@ -41,7 +41,6 @@ namespace WebApp
             builder.Services.AddApiAuthorization();
 
 
-            builder.Services.AddScoped<IUserData, UserData>();
             builder.Services.AddScoped<IPatientData, PatientData>();
             builder.Services.AddScoped<IJournalData, JournalData>();
             builder.Services.AddScoped<IBookingData, BookingData>();

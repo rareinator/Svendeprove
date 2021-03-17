@@ -18,6 +18,7 @@
 @using WebApp.Modals
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
+@using DataAccessLibrary.TransferObjects
 @using Blazored.Typeahead
 @using Blazored.Modal
 @using Blazored.Modal.Services
@@ -27,7 +28,6 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject HttpClient Http
 
-@inject IUserData UserData
 @inject IPatientData PatientData
 @inject IJournalData JournalData
 @inject IBookingData BookingData
