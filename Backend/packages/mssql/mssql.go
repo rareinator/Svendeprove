@@ -9,6 +9,7 @@ import (
 
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 )
 
@@ -27,7 +28,11 @@ func NewConnection(dsn string) (MSSQL, error) {
 		},
 	)
 
-	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{Logger: newLogger})
+	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{
+		Logger:         newLogger,
+		NamingStrategy: MniNamer{},
+		// NamingStrategy: schema.NamingStrategy{},
+	})
 	if err != nil {
 		return *&MSSQL{}, err
 	}
@@ -265,7 +270,7 @@ func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error 
 
 func (m *MSSQL) GetPatientDiagnoses(username string) ([]*DBPatientDiagnose, error) {
 	var patientDiagnoses []*DBPatientDiagnose
-	result := m.db.Where("Patient = ?", username).Find(&patientDiagnoses)
+	result := m.db.Preload(clause.Associations).Where("Patient = ?", username).Find(&patientDiagnoses)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -311,7 +316,7 @@ func (m *MSSQL) CreatePatientDiagnoseSymptom(patientDiagnoseSymptom *DBPatientDi
 
 func (m *MSSQL) GetPatientDiagnoseSymptoms(patientDiagnoseId int32) ([]*DBPatientDiagnoseSymptom, error) {
 	var patientDiagnoseSymptoms []*DBPatientDiagnoseSymptom
-	result := m.db.Where("PatientDiagnoseId = ?", patientDiagnoseId).Find(&patientDiagnoseSymptoms)
+	result := m.db.Preload("Symptom").Where("PatientDiagnoseId = ?", patientDiagnoseId).Find(&patientDiagnoseSymptoms)
 	if result.Error != nil {
 		return nil, result.Error
 	}

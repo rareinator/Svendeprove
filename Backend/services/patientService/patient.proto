@@ -35,6 +35,8 @@ message PatientDiagnose {
   string Patient = 2;
   int32 DiagnoseId = 3;
   string CreationTime = 4;
+  Diagnose Diagnose = 5;
+  repeated Symptom Symptoms = 6;
 }
 
 message PatientDiagnoses {

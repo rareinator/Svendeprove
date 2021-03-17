@@ -76,32 +76,36 @@ func (DBToken) TableName() string {
 	return "Tokens"
 }
 
-// type DBPatient struct {
-// 	PatientId  int32  `gorm:"column:PatientId;primaryKey"`
-// 	Name       string `gorm:"column:Name"`
-// 	Address    string `gorm:"column:Address"`
-// 	City       string `gorm:"column:City"`
-// 	PostalCode string `gorm:"column:PostalCode"`
-// 	Country    string `gorm:"column:Country"`
-// 	SocialIdNr string `gorm:"column:SocialIdNr"`
-// 	Username   string `gorm:"column:Username"`
-// 	Password   string `gorm:"column:Password"`
-// 	Salt       string `gorm:"column:Salt"`
-// }
+type DBPatientDiagnoseSymptom struct {
+	PatientDiagnoseId int32             `gorm:"column:PatientDiagnoseId"`
+	SymptomId         int32             `gorm:"column:SymptomId"`
+	PatientDiagnose   DBPatientDiagnose `gorm:"foreignKey:PatientDiagnoseId;references:PatientDiagnoseId"`
+	Symptom           DBSymptom         `gorm:"foreignKey:SymptomId;references:SymptomId"`
+}
 
-// func (DBPatient) TableName() string {
-// 	return "Patient"
-// }
+func (DBPatientDiagnoseSymptom) TableName() string {
+	return "PatientDiagnoseSymptom"
+}
+
+func (DBPatientDiagnoseSymptom) JoinTableName() string {
+	return "PatientDiagnoseSymptom"
+}
 
 type DBPatientDiagnose struct {
-	PatientDiagnoseId int32     `gorm:"column:PatientDiagnoseId;primaryKey"`
-	Patient           string    `gorm:"column:Patient"`
-	DiagnoseId        int32     `gorm:"column:DiagnoseId"`
-	CreationTime      time.Time `gorm:"column:CreationTime"`
+	PatientDiagnoseId int32       `gorm:"column:PatientDiagnoseId;primaryKey"`
+	Patient           string      `gorm:"column:Patient"`
+	DiagnoseId        int32       `gorm:"column:DiagnoseId"`
+	CreationTime      time.Time   `gorm:"column:CreationTime"`
+	Diagnose          DBDiagnose  `gorm:"foreignKey:DiagnoseId;references:DiagnoseId"`
+	Symptoms          []DBSymptom `gorm:"many2many:PatientDiagnoseSymptom;foreignKey:PatientDiagnoseId;joinForeignKey:PatientDiagnoseId;"`
 }
 
 func (DBPatientDiagnose) TableName() string {
 	return "PatientDiagnose"
+}
+
+func (DBPatientDiagnose) JoinTableName() string {
+	return "PatientDiagnoseSymptom"
 }
 
 type DBDiagnose struct {
@@ -114,21 +118,17 @@ func (DBDiagnose) TableName() string {
 }
 
 type DBSymptom struct {
-	SymptomId   int32  `gorm:"column:SymptomId;primaryKey"`
-	Description string `gorm:"column:Description"`
+	SymptomId        int32               `gorm:"column:SymptomId;primaryKey"`
+	Description      string              `gorm:"column:Description"`
+	PatientDiagnoses []DBPatientDiagnose `gorm:"many2many:PatientDiagnoseSymptom;foreignKey:SymptomId;joinForeignKey:SymptomId;"`
+}
+
+func (DBSymptom) JoinTableName() string {
+	return "PatientDiagnoseSymptom"
 }
 
 func (DBSymptom) TableName() string {
 	return "Symptom"
-}
-
-type DBPatientDiagnoseSymptom struct {
-	PatientDiagnoseId int32 `gorm:"column:PatientDiagnoseId"`
-	SymptomId         int32 `gorm:"column:SymptomId"`
-}
-
-func (DBPatientDiagnoseSymptom) TableName() string {
-	return "PatientDiagnoseSymptom"
 }
 
 type DBHospital struct {

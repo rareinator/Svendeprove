@@ -234,6 +234,23 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (
 			Patient:           dbPatientDiagnose.Patient,
 			DiagnoseId:        dbPatientDiagnose.DiagnoseId,
 			CreationTime:      dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05"),
+			Diagnose: &Diagnose{
+				DiagnoseId:  dbPatientDiagnose.Diagnose.DiagnoseId,
+				Description: dbPatientDiagnose.Diagnose.Description,
+			},
+			Symptoms: []*Symptom{},
+		}
+
+		dbSymptoms, err := p.DB.GetPatientDiagnoseSymptoms(patientDiagnose.PatientDiagnoseId)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, dbSymptom := range dbSymptoms {
+			patientDiagnose.Symptoms = append(patientDiagnose.Symptoms, &Symptom{
+				SymptomId:   dbSymptom.Symptom.SymptomId,
+				Description: dbSymptom.Symptom.Description,
+			})
 		}
 
 		patientDiagnoses.PatientDiagnoses = append(patientDiagnoses.PatientDiagnoses, &patientDiagnose)
