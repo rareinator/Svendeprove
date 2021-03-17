@@ -8,26 +8,21 @@
     </p>
 
     <div class="m-4 w-25">
-
-        <AuthorizeView Roles="Doctor, Nurse">
-            <Authorized>
-                <BlazoredTypeahead SearchMethod="GetPatientsLocal"
-                                   TValue="UserModel"
-                                   TItem="UserModel"
-                                   Value="selectedPatient"
-                                   ValueChanged="SelectedPatientChanged"
-                                   ValueExpression="@(() => selectedPatient)"
-                                   DisableClear="true"
-                                   placeholder="Søg efter patient navn...">
-                    <SelectedTemplate Context="patient">
-                        @patient.Name - @patient.SocialIdNr
-                    </SelectedTemplate>
-                    <ResultTemplate Context="patient">
-                        @patient.Name @patient.SocialIdNr
-                    </ResultTemplate>
-                </BlazoredTypeahead>
-            </Authorized>
-        </AuthorizeView>
+        <BlazoredTypeahead SearchMethod="GetPatientsLocal"
+                           TValue="UserModel"
+                           TItem="UserModel"
+                           Value="selectedPatient"
+                           ValueChanged="SelectedPatientChanged"
+                           ValueExpression="@(() => selectedPatient)"
+                           DisableClear="true"
+                           placeholder="Søg efter patient navn...">
+            <SelectedTemplate Context="patient">
+                @patient.Name - @patient.SocialIdNr
+            </SelectedTemplate>
+            <ResultTemplate Context="patient">
+                @patient.Name @patient.SocialIdNr
+            </ResultTemplate>
+        </BlazoredTypeahead>
     </div>
 
 </div>
@@ -40,11 +35,7 @@
             {
                 <p><b>Patient:</b> @selectedPatient.Name</p>
                 <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                <AuthorizeView Roles="Doctor, Nurse">
-                    <Authorized>
-                        <button @onclick="ShowJournalModal" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Journal</button>
-                    </Authorized>
-                </AuthorizeView>
+                <button @onclick="ShowJournalModal" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Journal</button>
             }
 
             <Journals journals="journals" />
@@ -56,11 +47,7 @@
             {
                 <p><b>Patient:</b> @selectedPatient.Name</p>
                 <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                <AuthorizeView Roles="Doctor, Nurse">
-                    <Authorized>
-                        <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
-                    </Authorized>
-                </AuthorizeView>
+                <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
             }
 
             <Examinations OnEditClick="ShowExaminationModal" Bookings="bookings" />
@@ -72,11 +59,7 @@
             {
                 <p><b>Patient:</b> @selectedPatient.Name</p>
                 <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                <AuthorizeView Roles="Doctor">
-                    <Authorized>
-                        <button @onclick="() => ShowHospitalizationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Indlæggelse</button>
-                    </Authorized>
-                </AuthorizeView>
+                <button @onclick="() => ShowHospitalizationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Indlæggelse</button>
             }
 
             <Hospitalizations OnEditClick="ShowHospitalizationModal" Bookings="bookings" />
@@ -118,14 +101,6 @@
     protected override async Task OnInitializedAsync()
     {
         patients = await PatientData.GetPatients();
-
-        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authstate.User;
-        if (user.IsInRole("Doctor"))
-        {
-            selectedPatient = await Task.FromResult(patients.FirstOrDefault(x => x.Name.ToLower().Contains(user.Identity.Name)));
-        }
-
     }
 
     private async Task<IEnumerable<UserModel>> GetPatientsLocal(string searchText)
