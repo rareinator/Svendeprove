@@ -201,10 +201,9 @@ func (p *PatientServer) GetSymptoms(ctx context.Context, e *PEmpty) (*Symptoms, 
 
 func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
-		PatientDiagnoseId: patientDiagnose.PatientDiagnoseId,
-		Patient:           patientDiagnose.Patient,
-		DiagnoseId:        patientDiagnose.DiagnoseId,
-		CreationTime:      time.Now(),
+		Patient:      patientDiagnose.Patient,
+		DiagnoseId:   patientDiagnose.DiagnoseId,
+		CreationTime: time.Now(),
 	}
 
 	patientDiagnose.CreationTime = dbPatientDiagnose.CreationTime.Format("02/01/2006 15:04:05")

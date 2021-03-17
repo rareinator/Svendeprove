@@ -28,21 +28,21 @@ func (s *Server) routes() {
 				allowedPatient: "id",
 			}))).Methods("GET")
 
-	s.Router.Handle("/journal/{id:[0-9]+}", //Update journal
-		s.Log(s.Authenticate(
-			s.HandleJournalUpdate(),
-			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient: "",
-			}))).Methods("POST")
+	// s.Router.Handle("/journal/{id:[0-9]+}", //Update journal
+	// 	s.Log(s.Authenticate(
+	// 		s.HandleJournalUpdate(),
+	// 		&authenticationConfig{
+	// 			allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+	// 			allowedPatient: "",
+	// 		}))).Methods("POST")
 
-	s.Router.Handle("/journal/{id:[0-9]+}", // Delete journal
-		s.Log(s.Authenticate(
-			s.HandleJournalDelete(),
-			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor},
-				allowedPatient: "",
-			}))).Methods("DELETE")
+	// s.Router.Handle("/journal/{id:[0-9]+}", // Delete journal
+	// 	s.Log(s.Authenticate(
+	// 		s.HandleJournalDelete(),
+	// 		&authenticationConfig{
+	// 			allowedRoles:   []models.UserRole{models.Doctor},
+	// 			allowedPatient: "",
+	// 		}))).Methods("DELETE")
 
 	s.Router.Handle("/journal/byPatient/{username}", //Get patient journals
 		s.Log(s.Authenticate(
@@ -215,7 +215,7 @@ func (s *Server) routes() {
 				allowRelatedPatient: false,
 			}))).Methods("DELETE")
 
-	s.Router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
+	s.Router.Handle("/patient/{username}/diagnose/{patientDiagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
 		s.Log(s.Authenticate(
 			s.HandlePatientSymptomCreate(),
 			&authenticationConfig{

@@ -27,36 +27,39 @@ func (s *Server) HandlePatientHealth() http.HandlerFunc {
 
 func (s *Server) HandlePatientSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var patient patientService.Patient
-		json.NewDecoder(r.Body).Decode(&patient)
+		//TODO: fix okta
+		// var patient patientService.Patient
+		// json.NewDecoder(r.Body).Decode(&patient)
 
-		response, err := s.PatientService.CreatePatient(context.Background(), &patient)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// response, err := s.PatientService.CreatePatient(context.Background(), &patient)
+		// if err != nil {
+		// 	s.ReturnError(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
+		// w.WriteHeader(http.StatusCreated)
+		// json.NewEncoder(w).Encode(response)
 	}
 }
 
 func (s *Server) HandlePatientRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
 
-		p := patientService.PRequest{
-			Username: vars["username"],
-		}
+		//TODO: fix okta
+		// vars := mux.Vars(r)
 
-		response, err := s.PatientService.GetPatient(context.Background(), &p)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// p := patientService.PRequest{
+		// 	Username: vars["username"],
+		// }
 
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
+		// response, err := s.PatientService.GetPatient(context.Background(), &p)
+		// if err != nil {
+		// 	s.ReturnError(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
+
+		// w.WriteHeader(http.StatusOK)
+		// json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -253,6 +256,15 @@ func (s *Server) HandlePatientSymptomCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var diagnoseSymptom patientService.DiagnoseSymptom
 		json.NewDecoder(r.Body).Decode(&diagnoseSymptom)
+
+		vars := mux.Vars(r)
+		ID, err := strconv.Atoi(vars["patientDiagnoseID"])
+		if err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		diagnoseSymptom.PatientDiagnoseId = int32(ID)
 
 		response, err := s.PatientService.CreateDiagnoseSymptom(context.Background(), &diagnoseSymptom)
 		if err != nil {

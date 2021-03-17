@@ -21,6 +21,8 @@ message Patient {
   string Country = 5;
   string SocialIdNr = 6;
   string Username = 7;
+  string Gender = 8;
+  int32 Age = 9;
 }
 
 message PRequest {

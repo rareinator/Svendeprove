@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/okta/okta-sdk-golang/v2/okta"
@@ -59,6 +60,8 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 		result := make([]*patientService.Patient, 0)
 
 		for _, user := range users {
+			age, _ := strconv.Atoi(fmt.Sprintf("%v", (*user.Profile)["age"]))
+
 			patient := patientService.Patient{
 				Name:       fmt.Sprintf("%v", (*user.Profile)["displayName"]),
 				Address:    fmt.Sprintf("%v", (*user.Profile)["streetAddress"]),
@@ -67,6 +70,8 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 				Country:    fmt.Sprintf("%v", (*user.Profile)["full_country"]),
 				SocialIdNr: fmt.Sprintf("%v", (*user.Profile)["social_id"]),
 				Username:   fmt.Sprintf("%v", (*user.Profile)["login"]),
+				Age:        int32(age),
+				Gender:     fmt.Sprintf("%v", (*user.Profile)["gender"]),
 			}
 
 			result = append(result, &patient)
