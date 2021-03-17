@@ -1,0 +1,311 @@
+syntax = "proto3";
+option go_package = ".;protocol";
+
+
+message Empty {
+
+}
+
+message Health {
+  string Message = 1;
+}
+
+message Status {
+  bool Success = 1;
+}
+
+message Patient {
+  string Name = 1;
+  string Address = 2;
+  string City = 3;
+  string PostalCode = 4;
+  string Country = 5;
+  string SocialIdNr = 6;
+  string Username = 7;
+  string Gender = 8;
+  int32 Age = 9;
+}
+
+message Request {
+  string Username = 1;
+  int32 Id = 2;
+}
+
+message PatientDiagnose {
+  int32 PatientDiagnoseId = 1;
+  string Patient = 2;
+  int32 DiagnoseId = 3;
+  string CreationTime = 4;
+  Diagnose Diagnose = 5;
+  repeated Symptom Symptoms = 6;
+}
+
+message PatientDiagnoses {
+  repeated PatientDiagnose PatientDiagnoses = 1;
+}
+
+message Symptom {
+  int32 SymptomId = 1;
+  string Description = 2;
+}
+
+message Symptoms {
+  repeated Symptom Symptoms = 1;
+}
+
+message Diagnose {
+  int32 DiagnoseId = 1;
+  string Description = 2;
+}
+
+message Diagnoses {
+  repeated Diagnose Diagnoses = 1;
+}
+
+message Patients{
+  repeated Patient Patients = 1;
+}
+
+message DiagnoseSymptom {
+  int32 SymptomId = 1;
+  int32 PatientDiagnoseId = 2;
+  string Description = 3;
+}
+
+message DiagnoseSymptoms {
+  repeated DiagnoseSymptom DiagnoseSymptoms = 1;
+}
+
+message DiagnoseSymptomUpdateRequest {
+  DiagnoseSymptom Old = 1;
+  DiagnoseSymptom New = 2;
+}
+
+
+service PatientService {
+  rpc GetHealth(Empty) returns (Health) {}
+
+  rpc GetDiagnose(Request) returns (Diagnose) {}
+  rpc GetDiagnoses(Empty) returns (Diagnoses) {}
+
+  rpc GetSymptoms(Empty) returns (Symptoms) {}
+  rpc GetSymptom(Request) returns (Symptom) {}
+
+  rpc CreatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
+  rpc GetPatientDiagnoses(Request) returns (PatientDiagnoses) {}
+  rpc GetPatientDiagnose(Request) returns (PatientDiagnose) {}
+  rpc UpdatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
+  rpc DeletePatientDiagnose(Request) returns (Status) {}
+
+  rpc CreateDiagnoseSymptom(DiagnoseSymptom) returns (DiagnoseSymptom) {}
+  rpc GetDiagnoseSymptoms(Request) returns (DiagnoseSymptoms) {}
+  rpc UpdateDiagnoseSymptom(DiagnoseSymptomUpdateRequest) returns (DiagnoseSymptom) {}
+  rpc DeleteDiagnoseSymptom(DiagnoseSymptom) returns (Status) {}
+
+}
+
+message IOTData {
+  string ID = 1;
+  string Name = 2;
+  int32 SensorID = 3;
+  string Data = 4;
+  string Date = 5;
+}
+
+message IOTDatas {
+  repeated IOTData IOTDatas = 1;
+}
+
+message IOTTimeframeRequest {
+  string TimeStart = 1;
+  string TimeEnd = 2;
+}
+
+service IotService {
+  rpc GetHealth(Empty) returns (Health) {}
+
+  rpc UploadData(IOTData) returns (IOTData) {}
+  rpc ReadData(Request) returns (IOTDatas) {}
+  rpc ReadDataInTimeFrame (IOTTimeframeRequest) returns (IOTDatas) {}
+}
+
+message User {
+  string Address = 1;
+  string City = 2;
+  string Country = 3;
+  string Name = 4;
+  string PostalCode = 5;
+  string SocialIdNr = 6;
+  string Username = 7;
+}
+
+message Users {
+  repeated User Users = 1;
+}
+message Hospital {
+  int32 HospitalId = 1;
+  string Name = 2;
+  string Address = 3;
+  string City = 4;
+  string PostalCode = 5;
+  string Country = 6;
+}
+
+message Department {
+  int32 Departmentid = 1;
+  string Name = 2;
+  string Description = 3;
+  int32 HospitalId = 4;
+}
+
+message Bed {
+  int32 BedId = 1;
+  string Name = 2;
+  int32 Departmentid = 3;
+  bool isAvailable = 4;
+  Department Department = 5;
+}
+
+message Booking {
+  int32 BookingId = 1;
+  string BookedTime = 2;
+  string BookedEnd = 3;
+  string Patient = 4;
+  string Employee = 5; 
+  bool Approved = 6;
+  string Description = 7;
+  string Type = 8;
+  Hospital Hospital = 9;
+  Bed Bed = 10;
+}
+
+message Bookings {
+  repeated Booking Bookings = 1;
+}
+
+message BTimeFrameRequest {
+  string Day = 1;
+  string Doctor = 2;
+}
+
+message Strings {
+  repeated string Strings = 1;
+}
+
+
+service BookingService {
+  rpc GetHealth(Empty) returns (Health) {}
+  
+  rpc CreateBooking(Booking) returns (Booking) {}
+  rpc GetBooking(Request) returns (Booking) {}
+  rpc UpdateBooking(Booking) returns (Booking) {}
+  rpc DeleteBooking(Request) returns (Status) {}
+  rpc GetBookingsByPatient(Request) returns (Bookings) {}
+  rpc GetBookingsByEmployee(Request) returns (Bookings) {}
+  rpc GetAvailableTimesForDoctor(BTimeFrameRequest) returns (Strings) {}
+}
+
+message Journal {
+  int32 JournalId = 1;
+  string CreationTime = 2;
+  string Intro = 3;
+  string Patient = 4;
+  string CreatedBy = 5;
+}
+
+message JournalRequest {
+  int32 JournalId = 1;
+}
+
+message PatientRequest {
+  string Patient = 1;
+}
+
+message Journals {
+  repeated Journal journals = 1;
+}
+
+message JournalDocument {
+  int32 DocumentId = 1;
+  string Content = 2;
+  int32 JournalId = 3;
+  string CreatedBy = 4;
+  string Title = 5;
+  string Summary = 6;
+  string CreationTime = 7;
+  repeated Attachment Attachments = 8;
+}
+
+message JournalDocuments {
+  repeated JournalDocument JournalDocuments = 1;
+}
+
+message JournalDocumentRequest {
+  int32 JournalDocumentId = 1;
+}
+
+message Attachment {
+  int32 AttachmentId = 1;
+  string FileName = 2;
+  int32 FileStoreId = 3;
+  int32 DocumentId = 4;
+  int32 FileTypeId = 5;
+  optional string FileType = 6;
+  optional string Path = 7;
+  optional string Content = 8;
+}
+
+service JournalService {
+  rpc GetJournal(JournalRequest) returns (Journal) {}
+  rpc CreateJournal(Journal) returns (Journal) {}
+  rpc DeleteJournal(JournalRequest) returns (Status) {}
+  rpc GetHealth(Empty) returns (Health) {}
+  rpc UpdateJournal(Journal) returns (Journal) {}
+  rpc GetJournalsByPatient(PatientRequest) returns (Journals) {}
+
+  rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
+  rpc UpdateJournalDocument(JournalDocument) returns (JournalDocument) {}
+  rpc GetJournalDocumentsByJournal(JournalRequest) returns (JournalDocuments) {}
+  rpc GetJournalDocument(JournalDocumentRequest) returns (JournalDocument) {}
+  rpc CreateJournalDocument(JournalDocument) returns (JournalDocument) {}
+
+  rpc CreateAttachment(Attachment) returns (Attachment) {}
+}
+
+message BedsRequest {
+  string BookedTime = 1;
+  string BookedEnd = 2;
+  int32 HospitalId = 3;
+}
+
+message UserRequest {
+  string Username = 1;
+}
+
+message Hospitals {
+  repeated Hospital Hospitals = 1;
+}
+
+
+
+message Beds {
+  repeated Bed Beds = 1;
+}
+
+message Departments {
+  repeated Department Departments = 1;
+}
+
+
+
+service UseradminService {
+  rpc GetHealth(Empty) returns (Health) {}
+
+  rpc GetEmployee(UserRequest) returns (User) {}
+  rpc GetPatients(Empty) returns (Users) {}
+  rpc GetDepartments(Empty) returns (Departments) {}
+  rpc GetBeds(Empty) returns (Beds) {}
+  rpc GetAvailableBeds(BedsRequest) returns (Beds) {}
+
+  rpc GetHospitals(Empty) returns (Hospitals) {}
+}

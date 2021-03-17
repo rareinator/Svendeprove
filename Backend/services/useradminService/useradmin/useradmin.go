@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
+	. "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 type UseradminServer struct {
@@ -14,13 +15,13 @@ type UseradminServer struct {
 	ListenAddress string
 }
 
-func (u *UseradminServer) GetHealth(ctx context.Context, e *UAEmpty) (*UAHealth, error) {
-	return &UAHealth{Message: fmt.Sprintf("Useradmin service is up and running on: %v 🚀", u.ListenAddress)}, nil
+func (u *UseradminServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
+	return &Health{Message: fmt.Sprintf("Useradmin service is up and running on: %v 🚀", u.ListenAddress)}, nil
 }
 
-func (u *UseradminServer) GetUser(ctx context.Context, er *UserRequest) (*UAUser, error) {
-	//TODO: Clean???
-	result := UAUser{
+func (u *UseradminServer) GetUser(ctx context.Context, er *UserRequest) (*User, error) {
+	//TODO: Okta fix
+	result := User{
 		Name:     "Morten Nissen",
 		Username: er.Username,
 	}
@@ -28,9 +29,9 @@ func (u *UseradminServer) GetUser(ctx context.Context, er *UserRequest) (*UAUser
 	return &result, nil
 }
 
-func (u *UseradminServer) GetHospitals(ctx context.Context, e *UAEmpty) (*Hospitals, error) {
+func (u *UseradminServer) GetHospitals(ctx context.Context, e *Empty) (*Hospitals, error) {
 	hospitals := Hospitals{
-		Hospitals: make([]*UAHospital, 0),
+		Hospitals: make([]*Hospital, 0),
 	}
 
 	dbHospitals, err := u.DB.GetHospitals()
@@ -39,7 +40,7 @@ func (u *UseradminServer) GetHospitals(ctx context.Context, e *UAEmpty) (*Hospit
 	}
 
 	for _, dbHospital := range dbHospitals {
-		hospital := UAHospital{
+		hospital := Hospital{
 			HospitalId: dbHospital.HospitalId,
 			Name:       dbHospital.Name,
 			Address:    dbHospital.Address,
@@ -54,7 +55,7 @@ func (u *UseradminServer) GetHospitals(ctx context.Context, e *UAEmpty) (*Hospit
 	return &hospitals, nil
 }
 
-func (u *UseradminServer) GetDepartments(ctx context.Context, e *UAEmpty) (*Departments, error) {
+func (u *UseradminServer) GetDepartments(ctx context.Context, e *Empty) (*Departments, error) {
 	departments := Departments{
 		Departments: make([]*Department, 0),
 	}
@@ -78,7 +79,7 @@ func (u *UseradminServer) GetDepartments(ctx context.Context, e *UAEmpty) (*Depa
 	return &departments, nil
 }
 
-func (u *UseradminServer) GetBeds(ctx context.Context, e *UAEmpty) (*Beds, error) {
+func (u *UseradminServer) GetBeds(ctx context.Context, e *Empty) (*Beds, error) {
 	beds := Beds{
 		Beds: make([]*Bed, 0),
 	}

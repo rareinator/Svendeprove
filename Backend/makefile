@@ -14,7 +14,6 @@ envProd:
 build:
 	docker build -t svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest . -f restservice.dockerfile
 	docker build -t svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin . -f adminService.dockerfile
-	docker build -t svendeprovedocker.azurecr.io/svendeprove/svendeprove-authentication . -f authenticationService.dockerfile
 	docker build -t svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot . -f iotService.dockerfile
 	docker build -t svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking . -f bookingService.dockerfile
 	docker build -t svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient . -f patientService.dockerfile
@@ -23,7 +22,6 @@ build:
 push:
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin
-	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-authentication
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient
@@ -33,7 +31,6 @@ push:
 download:
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-authentication
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient
@@ -42,7 +39,6 @@ download:
 pull:
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-authentication
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient
@@ -51,7 +47,6 @@ pull:
 stop:
 	sudo docker stop svendeprove-rest
 	sudo docker stop svendeprove-admin
-	sudo docker stop svendeprove-authentication
 	sudo docker stop svendeprove-iot
 	sudo docker stop svendeprove-booking
 	sudo docker stop svendeprove-patient
@@ -60,7 +55,6 @@ stop:
 remove:
 	sudo docker rm svendeprove-rest
 	sudo docker rm svendeprove-admin
-	sudo docker rm svendeprove-authentication
 	sudo docker rm svendeprove-iot
 	sudo docker rm svendeprove-booking
 	sudo docker rm svendeprove-patient
@@ -69,7 +63,6 @@ remove:
 run:
 	sudo docker run -d --name svendeprove-rest -p 8080:8080 svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
 	sudo docker run -d --name svendeprove-admin -p 9004:9004 svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin
-	sudo docker run -d --name svendeprove-authentication -p 9000:9000 svendeprovedocker.azurecr.io/svendeprove/svendeprove-authentication
 	sudo docker run -d --name svendeprove-iot -p 9005:9005 svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot
 	sudo docker run -d --name svendeprove-booking -p 9002:9002 svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking
 	sudo docker run -d --name svendeprove-patient -p 9003:9003 svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient
@@ -78,7 +71,6 @@ run:
 network:
 	sudo docker network connect school svendeprove-rest
 	sudo docker network connect school svendeprove-admin
-	sudo docker network connect school svendeprove-authentication
 	sudo docker network connect school svendeprove-iot
 	sudo docker network connect school svendeprove-booking
 	sudo docker network connect school svendeprove-patient
@@ -86,9 +78,16 @@ network:
 
 restart:
 	sudo docker restart svendeprove-admin
-	sudo docker restart svendeprove-authentication
 	sudo docker restart svendeprove-iot
 	sudo docker restart svendeprove-booking
 	sudo docker restart svendeprove-patient
 	sudo docker restart svendeprove-journal
 	sudo docker restart svendeprove-rest
+
+local:
+	go build services/restService/main.go
+	go build services/useradminService/main.go
+	go build services/patientService/main.go
+	go build services/journalService/main.go
+	go build services/iotService/main.go
+	go build services/useradminService/main.go

@@ -7,6 +7,7 @@ import (
 
 	"github.com/rareinator/Svendeprove/Backend/packages/models"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
+	. "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 type BookingServer struct {
@@ -15,8 +16,8 @@ type BookingServer struct {
 	ListenAddress string
 }
 
-func (b *BookingServer) GetHealth(ctx context.Context, e *BEmpty) (*BHealth, error) {
-	return &BHealth{Message: fmt.Sprintf("Booking service is up and running on: %v 🚀", b.ListenAddress)}, nil
+func (b *BookingServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
+	return &Health{Message: fmt.Sprintf("Booking service is up and running on: %v 🚀", b.ListenAddress)}, nil
 }
 
 func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*Booking, error) {
@@ -76,7 +77,7 @@ func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*B
 	return booking, nil
 }
 
-func (b *BookingServer) GetBooking(ctx context.Context, br *BRequest) (*Booking, error) {
+func (b *BookingServer) GetBooking(ctx context.Context, br *Request) (*Booking, error) {
 	dbBooking, err := b.DB.GetBooking(br.Id)
 	if err != nil {
 		return nil, err
@@ -184,7 +185,7 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 	return booking, nil
 }
 
-func (b *BookingServer) DeleteBooking(ctx context.Context, br *BRequest) (*BStatus, error) {
+func (b *BookingServer) DeleteBooking(ctx context.Context, br Request) (*Status, error) {
 	dbBooking := mssql.DBBooking{
 		BookingId: br.Id,
 	}
@@ -198,13 +199,13 @@ func (b *BookingServer) DeleteBooking(ctx context.Context, br *BRequest) (*BStat
 	}
 
 	if err := b.DB.DeleteBooking(&dbBooking); err != nil {
-		return &BStatus{Success: false}, err
+		return &Status{Success: false}, err
 	}
 
-	return &BStatus{Success: true}, nil
+	return &Status{Success: true}, nil
 }
 
-func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) (*Bookings, error) {
+func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *Request) (*Bookings, error) {
 	bookings := Bookings{
 		Bookings: make([]*Booking, 0),
 	}
@@ -252,7 +253,7 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) 
 		} else {
 			booking.Type = string(models.Hospitilization)
 			booking.Description = hospitilization.Description
-			booking.Bed = &BBed{
+			booking.Bed = &Bed{
 				BedId:        hospitilization.Bed.BedId,
 				Name:         hospitilization.Bed.Name,
 				Departmentid: hospitilization.Bed.DepartmentId,
@@ -266,7 +267,7 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) 
 	return &bookings, nil
 }
 
-func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *BRequest) (*Bookings, error) {
+func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *Request) (*Bookings, error) {
 	bookings := Bookings{
 		Bookings: make([]*Booking, 0),
 	}
@@ -315,7 +316,7 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *BRequest)
 		} else {
 			booking.Type = string(models.Hospitilization)
 			booking.Description = hospitilization.Description
-			booking.Bed = &BBed{
+			booking.Bed = &Bed{
 				BedId:        hospitilization.Bed.BedId,
 				Name:         hospitilization.Bed.Name,
 				Departmentid: hospitilization.Bed.DepartmentId,

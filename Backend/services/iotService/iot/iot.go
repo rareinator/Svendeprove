@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mongo"
+	. "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 type IotServer struct {
@@ -14,8 +15,8 @@ type IotServer struct {
 	DB            *mongo.MongoDB
 }
 
-func (i *IotServer) GetHealth(ctx context.Context, e *IOTEmpty) (*IOTHealth, error) {
-	return &IOTHealth{Message: fmt.Sprintf("IOT service is up and running on: %v 🚀", i.ListenAddress)}, nil
+func (i *IotServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
+	return &Health{Message: fmt.Sprintf("IOT service is up and running on: %v 🚀", i.ListenAddress)}, nil
 }
 
 func (i *IotServer) UploadData(ctx context.Context, input *IOTData) (*IOTData, error) {
@@ -39,8 +40,8 @@ func (i *IotServer) UploadData(ctx context.Context, input *IOTData) (*IOTData, e
 
 }
 
-func (i *IotServer) ReadData(ctx context.Context, request *IOTRequest) (*IOTDatas, error) {
-	datas, err := i.DB.ReadData(context.Background(), request.ID)
+func (i *IotServer) ReadData(ctx context.Context, request *Request) (*IOTDatas, error) {
+	datas, err := i.DB.ReadData(context.Background(), request.Id)
 	if err != nil {
 		return nil, err
 	}

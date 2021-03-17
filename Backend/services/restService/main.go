@@ -5,13 +5,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
-	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
-	"github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
-	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
-	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
+	"github.com/rareinator/Svendeprove/Backend/packages/protocol"
 	"github.com/rareinator/Svendeprove/Backend/services/restService/server"
-	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
 	"github.com/tidwall/buntdb"
 	"google.golang.org/grpc"
 )
@@ -34,13 +29,6 @@ func execute() error {
 		return err
 	}
 	defer journalConn.Close()
-
-	var authenticationConn *grpc.ClientConn
-	authenticationConn, err = grpc.Dial(os.Getenv("AUTHENTICATION_REMOTE_ADDR"), grpc.WithInsecure())
-	if err != nil {
-		return err
-	}
-	defer authenticationConn.Close()
 
 	var patientConn *grpc.ClientConn
 	patientConn, err = grpc.Dial(os.Getenv("PATIENT_REMOTE_ADDR"), grpc.WithInsecure())
@@ -78,12 +66,11 @@ func execute() error {
 
 	srv.LocalDB = localDB
 
-	srv.JournalService = journal.NewJournalServiceClient(journalConn)
-	srv.AuthenticationService = authentication.NewAuthenticationServiceClient(authenticationConn)
-	srv.PatientService = patient.NewPatientServiceClient(patientConn)
-	srv.BookingService = booking.NewBookingServiceClient(bookingConn)
-	srv.UseradminService = useradmin.NewUseradminServiceClient(useradminConn)
-	srv.IotService = iot.NewIotServiceClient(iotConn)
+	srv.JournalService = protocol.NewJournalServiceClient(journalConn)
+	srv.PatientService = protocol.NewPatientServiceClient(patientConn)
+	srv.BookingService = protocol.NewBookingServiceClient(bookingConn)
+	srv.UseradminService = protocol.NewUseradminServiceClient(useradminConn)
+	srv.IotService = protocol.NewIotServiceClient(iotConn)
 
 	srv.StaticFileDir = "./static"
 

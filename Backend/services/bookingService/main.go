@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
+	"github.com/rareinator/Svendeprove/Backend/packages/protocol"
 	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
 	"google.golang.org/grpc"
 )
@@ -42,7 +43,7 @@ func execute() error {
 
 	grpcServer := grpc.NewServer()
 
-	booking.RegisterBookingServiceServer(grpcServer, &ps)
+	protocol.RegisterBookingServiceServer(grpcServer, &ps)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)

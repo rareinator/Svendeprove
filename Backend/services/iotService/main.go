@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/rareinator/Svendeprove/Backend/packages/mongo"
+	"github.com/rareinator/Svendeprove/Backend/packages/protocol"
 	"github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
 	"google.golang.org/grpc"
 )
@@ -42,7 +43,7 @@ func execute() error {
 
 	grpcServer := grpc.NewServer()
 
-	iot.RegisterIotServiceServer(grpcServer, &is)
+	protocol.RegisterIotServiceServer(grpcServer, &is)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("IOT_SERVICE_ADDR"), err)

@@ -7,12 +7,12 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
+	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 func (s *Server) HandlePatientHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		p := &patientService.PEmpty{}
+		p := &protocol.Empty{}
 
 		response, err := s.PatientService.GetHealth(context.Background(), p)
 		if err != nil {
@@ -25,44 +25,6 @@ func (s *Server) HandlePatientHealth() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientSave() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		//TODO: fix okta
-		// var patient patientService.Patient
-		// json.NewDecoder(r.Body).Decode(&patient)
-
-		// response, err := s.PatientService.CreatePatient(context.Background(), &patient)
-		// if err != nil {
-		// 	s.ReturnError(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-
-		// w.WriteHeader(http.StatusCreated)
-		// json.NewEncoder(w).Encode(response)
-	}
-}
-
-func (s *Server) HandlePatientRead() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		//TODO: fix okta
-		// vars := mux.Vars(r)
-
-		// p := patientService.PRequest{
-		// 	Username: vars["username"],
-		// }
-
-		// response, err := s.PatientService.GetPatient(context.Background(), &p)
-		// if err != nil {
-		// 	s.ReturnError(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-
-		// w.WriteHeader(http.StatusOK)
-		// json.NewEncoder(w).Encode(response)
-	}
-}
-
 type doctor struct {
 	Username string `json:"Username"`
 	Name     string `json:"Name"`
@@ -72,7 +34,7 @@ type doctor struct {
 func (s *Server) HandleDiagnoseGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		p := patientService.PRequest{
+		p := protocol.Request{
 			Username: vars["username"],
 		}
 
@@ -89,7 +51,7 @@ func (s *Server) HandleDiagnoseGet() http.HandlerFunc {
 
 func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		response, err := s.PatientService.GetDiagnoses(context.Background(), &patientService.PEmpty{})
+		response, err := s.PatientService.GetDiagnoses(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -97,7 +59,7 @@ func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		if len(response.Diagnoses) == 0 {
-			response.Diagnoses = make([]*patientService.Diagnose, 0)
+			response.Diagnoses = make([]*protocol.Diagnose, 0)
 		}
 		json.NewEncoder(w).Encode(response.Diagnoses)
 	}
@@ -107,7 +69,7 @@ func (s *Server) HandleSymptomGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		p := patientService.PRequest{
+		p := protocol.Request{
 			Username: vars["username"],
 		}
 
@@ -124,7 +86,7 @@ func (s *Server) HandleSymptomGet() http.HandlerFunc {
 
 func (s *Server) HandleSymptomsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		response, err := s.PatientService.GetSymptoms(context.Background(), &patientService.PEmpty{})
+		response, err := s.PatientService.GetSymptoms(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -132,7 +94,7 @@ func (s *Server) HandleSymptomsGet() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		if len(response.Symptoms) == 0 {
-			response.Symptoms = make([]*patientService.Symptom, 0)
+			response.Symptoms = make([]*protocol.Symptom, 0)
 		}
 		json.NewEncoder(w).Encode(response.Symptoms)
 
@@ -142,7 +104,7 @@ func (s *Server) HandleSymptomsGet() http.HandlerFunc {
 func (s *Server) HandlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		var patientDiagnose patientService.PatientDiagnose
+		var patientDiagnose protocol.PatientDiagnose
 		json.NewDecoder(r.Body).Decode(&patientDiagnose)
 		patientDiagnose.Patient = vars["username"]
 
@@ -161,7 +123,7 @@ func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		pr := patientService.PRequest{
+		pr := protocol.Request{
 			Username: vars["username"],
 		}
 
@@ -173,7 +135,7 @@ func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		if len(response.PatientDiagnoses) == 0 {
-			response.PatientDiagnoses = make([]*patientService.PatientDiagnose, 0)
+			response.PatientDiagnoses = make([]*protocol.PatientDiagnose, 0)
 		}
 		json.NewEncoder(w).Encode(response.PatientDiagnoses)
 	}
@@ -188,7 +150,7 @@ func (s *Server) HandlePatientDiagnoseGet() http.HandlerFunc {
 			return
 		}
 
-		pr := patientService.PRequest{
+		pr := protocol.Request{
 			Id: int32(id),
 		}
 
@@ -212,7 +174,7 @@ func (s *Server) HandlePatientDiagnoseUpdate() http.HandlerFunc {
 			return
 		}
 
-		var patientDiagnose patientService.PatientDiagnose
+		var patientDiagnose protocol.PatientDiagnose
 		json.NewDecoder(r.Body).Decode(&patientDiagnose)
 
 		patientDiagnose.PatientDiagnoseId = int32(ID)
@@ -237,7 +199,7 @@ func (s *Server) HandlePatientDiagnoseDelete() http.HandlerFunc {
 			return
 		}
 
-		response, err := s.PatientService.DeletePatientDiagnose(context.Background(), &patientService.PRequest{Id: int32(ID)})
+		response, err := s.PatientService.DeletePatientDiagnose(context.Background(), &protocol.Request{Id: int32(ID)})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -254,7 +216,7 @@ func (s *Server) HandlePatientDiagnoseDelete() http.HandlerFunc {
 
 func (s *Server) HandlePatientSymptomCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var diagnoseSymptom patientService.DiagnoseSymptom
+		var diagnoseSymptom protocol.DiagnoseSymptom
 		json.NewDecoder(r.Body).Decode(&diagnoseSymptom)
 
 		vars := mux.Vars(r)
@@ -286,7 +248,7 @@ func (s *Server) HandlePatientSymptomsGet() http.HandlerFunc {
 			return
 		}
 
-		pr := patientService.PRequest{
+		pr := protocol.Request{
 			Id: int32(id),
 		}
 
@@ -298,7 +260,7 @@ func (s *Server) HandlePatientSymptomsGet() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		if len(response.DiagnoseSymptoms) == 0 {
-			response.DiagnoseSymptoms = make([]*patientService.DiagnoseSymptom, 0)
+			response.DiagnoseSymptoms = make([]*protocol.DiagnoseSymptom, 0)
 		}
 		json.NewEncoder(w).Encode(response.DiagnoseSymptoms)
 	}
@@ -319,15 +281,15 @@ func (s *Server) HandlePatientSymptomUpdate() http.HandlerFunc {
 			return
 		}
 
-		var newDiagnoseSymptom patientService.DiagnoseSymptom
+		var newDiagnoseSymptom protocol.DiagnoseSymptom
 		json.NewDecoder(r.Body).Decode(&newDiagnoseSymptom)
 
-		oldDiagnoseSymptom := patientService.DiagnoseSymptom{
+		oldDiagnoseSymptom := protocol.DiagnoseSymptom{
 			SymptomId:         int32(ID),
 			PatientDiagnoseId: int32(diagnoseID),
 		}
 
-		dsur := patientService.DiagnoseSymptomUpdateRequest{
+		dsur := protocol.DiagnoseSymptomUpdateRequest{
 			Old: &oldDiagnoseSymptom,
 			New: &newDiagnoseSymptom,
 		}
@@ -358,7 +320,7 @@ func (s *Server) HandlePatientSymptomDelete() http.HandlerFunc {
 			return
 		}
 
-		ds := patientService.DiagnoseSymptom{
+		ds := protocol.DiagnoseSymptom{
 			SymptomId:         int32(ID),
 			PatientDiagnoseId: int32(diagnoseID),
 		}

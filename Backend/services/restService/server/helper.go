@@ -1,34 +1,14 @@
 package server
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
 	"path"
-
-	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
 )
 
 func (s *Server) getDeviceID(r *http.Request) (int32, error) {
-	reqToken := r.URL.Query().Get("Key")
-	if reqToken == "" {
-		return 0, fmt.Errorf("No valid token specified, found %v", reqToken)
-	}
-
-	tokenRequest := authentication.TokenRequest{
-		Token: reqToken,
-	}
-
-	response, err := s.AuthenticationService.ValidateToken(context.Background(), &tokenRequest)
-	if err != nil {
-		return 0, err
-	}
-
-	if !response.Valid {
-		return 0, fmt.Errorf("Could not find the token")
-	}
 
 	return 1, nil
 }

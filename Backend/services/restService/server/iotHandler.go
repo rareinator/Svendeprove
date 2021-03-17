@@ -7,12 +7,12 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	iotService "github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
+	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 func (s *Server) HandleIOTHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		i := iotService.IOTEmpty{}
+		i := protocol.Empty{}
 
 		response, err := s.IotService.GetHealth(context.Background(), &i)
 		if err != nil {
@@ -37,7 +37,7 @@ func (s *Server) HandleIOTUpload() http.HandlerFunc {
 
 		//TODO: fix
 
-		iotData := iotService.IOTData{
+		iotData := protocol.IOTData{
 			Name:     username,
 			SensorID: deviceID,
 			Data:     data,
@@ -63,8 +63,8 @@ func (s *Server) HandleIOTReadData() http.HandlerFunc {
 			return
 		}
 
-		request := iotService.IOTRequest{
-			ID: int32(deviceID),
+		request := protocol.Request{
+			Id: int32(deviceID),
 		}
 
 		response, err := s.IotService.ReadData(context.Background(), &request)
@@ -81,7 +81,7 @@ func (s *Server) HandleIOTReadData() http.HandlerFunc {
 
 func (s *Server) HandleIOTReadDataInTimeframe() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var request iotService.IOTTimeframeRequest
+		var request protocol.IOTTimeframeRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			s.ReturnError(w, http.StatusBadRequest, err.Error())
 			return

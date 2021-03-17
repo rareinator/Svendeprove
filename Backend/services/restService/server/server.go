@@ -6,25 +6,19 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/rareinator/Svendeprove/Backend/services/authenticationService/authentication"
-	"github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
-	"github.com/rareinator/Svendeprove/Backend/services/iotService/iot"
-	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
-	"github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
-	"github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
+	"github.com/rareinator/Svendeprove/Backend/packages/protocol"
 	"github.com/tidwall/buntdb"
 )
 
 type Server struct {
-	Router                *mux.Router
-	LocalDB               *buntdb.DB
-	StaticFileDir         string
-	JournalService        journal.JournalServiceClient
-	AuthenticationService authentication.AuthenticationServiceClient
-	PatientService        patient.PatientServiceClient
-	BookingService        booking.BookingServiceClient
-	UseradminService      useradmin.UseradminServiceClient
-	IotService            iot.IotServiceClient
+	Router           *mux.Router
+	LocalDB          *buntdb.DB
+	StaticFileDir    string
+	JournalService   protocol.JournalServiceClient
+	PatientService   protocol.PatientServiceClient
+	BookingService   protocol.BookingServiceClient
+	UseradminService protocol.UseradminServiceClient
+	IotService       protocol.IotServiceClient
 }
 
 func NewServer() *Server {

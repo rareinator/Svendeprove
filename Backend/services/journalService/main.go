@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
+	"github.com/rareinator/Svendeprove/Backend/packages/protocol"
 	"github.com/rareinator/Svendeprove/Backend/services/journalService/journal"
 	"google.golang.org/grpc"
 )
@@ -41,7 +42,7 @@ func execute() error {
 
 	grpcServer := grpc.NewServer()
 
-	journal.RegisterJournalServiceServer(grpcServer, &js)
+	protocol.RegisterJournalServiceServer(grpcServer, &js)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)

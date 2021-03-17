@@ -11,8 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/okta/okta-sdk-golang/v2/okta"
 	"github.com/okta/okta-sdk-golang/v2/okta/query"
-	patientService "github.com/rareinator/Svendeprove/Backend/services/patientService/patient"
-	useradminService "github.com/rareinator/Svendeprove/Backend/services/useradminService/useradmin"
+	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
@@ -57,12 +56,12 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 			return
 		}
 
-		result := make([]*patientService.Patient, 0)
+		result := make([]*protocol.Patient, 0)
 
 		for _, user := range users {
 			age, _ := strconv.Atoi(fmt.Sprintf("%v", (*user.Profile)["age"]))
 
-			patient := patientService.Patient{
+			patient := protocol.Patient{
 				Name:       fmt.Sprintf("%v", (*user.Profile)["displayName"]),
 				Address:    fmt.Sprintf("%v", (*user.Profile)["streetAddress"]),
 				City:       fmt.Sprintf("%v", (*user.Profile)["city"]),
@@ -85,7 +84,7 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 
 func (s *Server) HandleUseradminHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u := useradminService.UAEmpty{}
+		u := protocol.Empty{}
 
 		response, err := s.UseradminService.GetHealth(context.Background(), &u)
 		if err != nil {
@@ -102,7 +101,7 @@ func (s *Server) HandleUseradminGetEmployee() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		er := useradminService.UserRequest{
+		er := protocol.UserRequest{
 			Username: vars["username"],
 		}
 
@@ -120,7 +119,7 @@ func (s *Server) HandleUseradminGetEmployee() http.HandlerFunc {
 func (s *Server) HandleHospitalsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		response, err := s.UseradminService.GetHospitals(context.Background(), &useradminService.UAEmpty{})
+		response, err := s.UseradminService.GetHospitals(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -134,7 +133,7 @@ func (s *Server) HandleHospitalsGet() http.HandlerFunc {
 func (s *Server) HandleDepartmentsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		response, err := s.UseradminService.GetDepartments(context.Background(), &useradminService.UAEmpty{})
+		response, err := s.UseradminService.GetDepartments(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -148,7 +147,7 @@ func (s *Server) HandleDepartmentsGet() http.HandlerFunc {
 func (s *Server) HandleBedsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		response, err := s.UseradminService.GetBeds(context.Background(), &useradminService.UAEmpty{})
+		response, err := s.UseradminService.GetBeds(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -161,7 +160,7 @@ func (s *Server) HandleBedsGet() http.HandlerFunc {
 
 func (s *Server) HandleAvailableBeds() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var request useradminService.BedsRequest
+		var request protocol.BedsRequest
 		json.NewDecoder(r.Body).Decode(&request)
 
 		respsone, err := s.UseradminService.GetAvailableBeds(context.Background(), &request)

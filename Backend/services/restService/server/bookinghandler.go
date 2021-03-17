@@ -7,12 +7,12 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	bookingService "github.com/rareinator/Svendeprove/Backend/services/bookingService/booking"
+	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 func (s *Server) HandleBookingHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		b := bookingService.BEmpty{}
+		b := protocol.Empty{}
 
 		response, err := s.BookingService.GetHealth(context.Background(), &b)
 		if err != nil {
@@ -27,7 +27,7 @@ func (s *Server) HandleBookingHealth() http.HandlerFunc {
 
 func (s *Server) HandleBookingCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var booking bookingService.Booking
+		var booking protocol.Booking
 		json.NewDecoder(r.Body).Decode(&booking)
 
 		booking.Employee = s.getUsername(r)
@@ -52,7 +52,7 @@ func (s *Server) HandleBookingGet() http.HandlerFunc {
 			return
 		}
 
-		b := bookingService.BRequest{
+		b := protocol.Request{
 			Id: int32(ID),
 		}
 
@@ -76,7 +76,7 @@ func (s *Server) HandleBookingUpdate() http.HandlerFunc {
 			return
 		}
 
-		var booking bookingService.Booking
+		var booking protocol.Booking
 		json.NewDecoder(r.Body).Decode(&booking)
 
 		booking.BookingId = int32(bookingID)
@@ -101,7 +101,7 @@ func (s *Server) HandleBookingDelete() http.HandlerFunc {
 			return
 		}
 
-		br := bookingService.BRequest{
+		br := protocol.Request{
 			Id: int32(bookingID),
 		}
 
@@ -123,7 +123,7 @@ func (s *Server) HandleBookingDelete() http.HandlerFunc {
 func (s *Server) HandleBookingsByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		br := bookingService.BRequest{
+		br := protocol.Request{
 			Username: vars["username"],
 		}
 
@@ -135,7 +135,7 @@ func (s *Server) HandleBookingsByPatient() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		if len(response.Bookings) == 0 {
-			response.Bookings = make([]*bookingService.Booking, 0)
+			response.Bookings = make([]*protocol.Booking, 0)
 		}
 		json.NewEncoder(w).Encode(response.Bookings)
 	}
@@ -144,7 +144,7 @@ func (s *Server) HandleBookingsByPatient() http.HandlerFunc {
 func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		br := bookingService.BRequest{
+		br := protocol.Request{
 			Username: vars["username"],
 		}
 
@@ -156,7 +156,7 @@ func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		if len(response.Bookings) == 0 {
-			response.Bookings = make([]*bookingService.Booking, 0)
+			response.Bookings = make([]*protocol.Booking, 0)
 		}
 		json.NewEncoder(w).Encode(response.Bookings)
 	}
@@ -164,7 +164,7 @@ func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
 
 func (s *Server) HandleAvailableTimesForDoctor() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var request bookingService.BTimeFrameRequest
+		var request protocol.BTimeFrameRequest
 
 		json.NewDecoder(r.Body).Decode(&request)
 

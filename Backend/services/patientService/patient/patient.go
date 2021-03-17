@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/rareinator/Svendeprove/Backend/packages/mssql"
+	. "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
 type PatientServer struct {
@@ -14,90 +15,11 @@ type PatientServer struct {
 	ListenAddress string
 }
 
-func (p *PatientServer) GetHealth(ctx context.Context, e *PEmpty) (*PHealth, error) {
-	return &PHealth{Message: fmt.Sprintf("Patient service is up and running on: %v 🚀", p.ListenAddress)}, nil
+func (p *PatientServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
+	return &Health{Message: fmt.Sprintf("Patient service is up and running on: %v 🚀", p.ListenAddress)}, nil
 }
 
-func (p *PatientServer) CreatePatient(ctx context.Context, patient *Patient) (*Patient, error) {
-	//TODO: oauth fix
-	// dbPatient := mssql.DBPatient{
-	// 	Name:       patient.Name,
-	// 	Address:    patient.Address,
-	// 	City:       patient.City,
-	// 	PostalCode: patient.PostalCode,
-	// 	Country:    patient.Country,
-	// 	SocialIdNr: patient.SocialIdNr,
-	// 	Username:   patient.Username,
-	// 	Password:   "",
-	// 	Salt:       "",
-	// }
-
-	// if err := p.DB.CreatePatient(&dbPatient); err != nil {
-	// 	return nil, err
-	// }
-
-	// patient.PatientId = dbPatient.PatientId
-
-	return patient, nil
-}
-
-func (p *PatientServer) GetPatient(ctx context.Context, pr *PRequest) (*Patient, error) {
-	// dbPatient, err := p.DB.GetPatient(pr.Id)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// result := Patient{
-	// 	Name:       dbPatient.Name,
-	// 	Address:    dbPatient.Address,
-	// 	City:       dbPatient.City,
-	// 	PostalCode: dbPatient.PostalCode,
-	// 	Country:    dbPatient.Country,
-	// 	SocialIdNr: dbPatient.SocialIdNr,
-	// 	Username:   dbPatient.Username,
-	// }
-	//TODO: oauth fix
-	return nil, nil
-}
-
-func (p *PatientServer) UpdatePatient(ctx context.Context, patient *Patient) (*Patient, error) {
-	// dbPatient := mssql.DBPatient{
-	// 	PatientId:  patient.PatientId,
-	// 	Name:       patient.Name,
-	// 	Address:    patient.Address,
-	// 	City:       patient.City,
-	// 	PostalCode: patient.PostalCode,
-	// 	Country:    patient.Country,
-	// 	SocialIdNr: patient.SocialIdNr,
-	// 	Username:   patient.Username,
-	// }
-
-	// if err := p.DB.UpdatePatient(&dbPatient); err != nil {
-	// 	return nil, err
-	// }
-
-	//TODO: oauth fix
-
-	return patient, nil
-}
-
-func (p *PatientServer) DeletePatient(ctx context.Context, pr *PRequest) (*PStatus, error) {
-	// dbPatient := mssql.DBPatient{
-	// 	PatientId: pr.Id,
-	// }
-
-	// if err := p.DB.DeletePatient(&dbPatient); err != nil {
-	// 	return &PStatus{
-	// 		Success: false,
-	// 	}, err
-	// }
-
-	// return &PStatus{Success: true}, nil
-	//TODO: oauth fix
-	return nil, nil
-}
-
-func (p *PatientServer) GetDiagnose(ctx context.Context, pr *PRequest) (*Diagnose, error) {
+func (p *PatientServer) GetDiagnose(ctx context.Context, pr *Request) (*Diagnose, error) {
 	dbDiagnose, err := p.DB.GetDiagnose(pr.Id)
 	if err != nil {
 		return nil, err
@@ -111,7 +33,7 @@ func (p *PatientServer) GetDiagnose(ctx context.Context, pr *PRequest) (*Diagnos
 	return &result, nil
 }
 
-func (p *PatientServer) GetDiagnoses(ctx context.Context, e *PEmpty) (*Diagnoses, error) {
+func (p *PatientServer) GetDiagnoses(ctx context.Context, e *Empty) (*Diagnoses, error) {
 	diagnoses := Diagnoses{
 		Diagnoses: make([]*Diagnose, 0),
 	}
@@ -133,7 +55,7 @@ func (p *PatientServer) GetDiagnoses(ctx context.Context, e *PEmpty) (*Diagnoses
 	return &diagnoses, nil
 }
 
-func (p *PatientServer) GetSymptom(ctx context.Context, pr *PRequest) (*Symptom, error) {
+func (p *PatientServer) GetSymptom(ctx context.Context, pr *Request) (*Symptom, error) {
 	dbSymptom, err := p.DB.GetSymptom(pr.Id)
 	if err != nil {
 		return nil, err
@@ -147,7 +69,7 @@ func (p *PatientServer) GetSymptom(ctx context.Context, pr *PRequest) (*Symptom,
 	return &symptom, nil
 }
 
-func (p *PatientServer) GetPatients(ctx context.Context, e *PEmpty) (*Patients, error) {
+func (p *PatientServer) GetPatients(ctx context.Context, e *Empty) (*Patients, error) {
 	// patients := Patients{
 	// 	Patients: make([]*Patient, 0),
 	// }
@@ -177,7 +99,7 @@ func (p *PatientServer) GetPatients(ctx context.Context, e *PEmpty) (*Patients, 
 	return nil, nil
 }
 
-func (p *PatientServer) GetSymptoms(ctx context.Context, e *PEmpty) (*Symptoms, error) {
+func (p *PatientServer) GetSymptoms(ctx context.Context, e *Empty) (*Symptoms, error) {
 	symptoms := Symptoms{
 		Symptoms: make([]*Symptom, 0),
 	}
@@ -218,7 +140,7 @@ func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagno
 
 }
 
-func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (*PatientDiagnoses, error) {
+func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *Request) (*PatientDiagnoses, error) {
 	patientDiagnoses := PatientDiagnoses{
 		PatientDiagnoses: make([]*PatientDiagnose, 0),
 	}
@@ -260,7 +182,7 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *PRequest) (
 
 }
 
-func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *PRequest) (*PatientDiagnose, error) {
+func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *Request) (*PatientDiagnose, error) {
 	dbPatientDiagnose, err := p.DB.GetPatientDiagnose(pr.Id)
 	if err != nil {
 		return nil, err
@@ -290,16 +212,16 @@ func (p *PatientServer) UpdatePatientDiagnose(ctx context.Context, pd *PatientDi
 	return pd, nil
 }
 
-func (p *PatientServer) DeletePatientDiagnose(ctx context.Context, pr *PRequest) (*PStatus, error) {
+func (p *PatientServer) DeletePatientDiagnose(ctx context.Context, pr *Request) (*Status, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		PatientDiagnoseId: pr.Id,
 	}
 
 	if err := p.DB.DeletePatientDiagnose(&dbPatientDiagnose); err != nil {
-		return &PStatus{Success: false}, err
+		return &Status{Success: false}, err
 	}
 
-	return &PStatus{Success: true}, nil
+	return &Status{Success: true}, nil
 }
 
 func (p *PatientServer) CreateDiagnoseSymptom(ctx context.Context, diagnoseSymptom *DiagnoseSymptom) (*DiagnoseSymptom, error) {
@@ -315,7 +237,7 @@ func (p *PatientServer) CreateDiagnoseSymptom(ctx context.Context, diagnoseSympt
 	return diagnoseSymptom, nil
 }
 
-func (p *PatientServer) GetDiagnoseSymptoms(ctx context.Context, pr *PRequest) (*DiagnoseSymptoms, error) {
+func (p *PatientServer) GetDiagnoseSymptoms(ctx context.Context, pr *Request) (*DiagnoseSymptoms, error) {
 	diagnoseSymptoms := DiagnoseSymptoms{
 		DiagnoseSymptoms: make([]*DiagnoseSymptom, 0),
 	}
@@ -362,15 +284,15 @@ func (p *PatientServer) UpdateDiagnoseSymptom(ctx context.Context, dsur *Diagnos
 	return dsur.New, nil
 }
 
-func (p *PatientServer) DeleteDiagnoseSymptom(ctx context.Context, diagnoseSymptom *DiagnoseSymptom) (*PStatus, error) {
+func (p *PatientServer) DeleteDiagnoseSymptom(ctx context.Context, diagnoseSymptom *DiagnoseSymptom) (*Status, error) {
 	dbDiagnoseSymptom := mssql.DBPatientDiagnoseSymptom{
 		PatientDiagnoseId: diagnoseSymptom.PatientDiagnoseId,
 		SymptomId:         diagnoseSymptom.SymptomId,
 	}
 
 	if err := p.DB.DeletePatientDiagnoseSymptom(&dbDiagnoseSymptom); err != nil {
-		return &PStatus{Success: false}, err
+		return &Status{Success: false}, err
 	}
 
-	return &PStatus{Success: true}, nil
+	return &Status{Success: true}, nil
 }
