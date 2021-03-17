@@ -65,6 +65,7 @@ func (b *BookingServer) CreateBooking(ctx context.Context, booking *Booking) (*B
 			StartedTime: bookedTime,
 			EndedTime:   bookedEnd,
 			BookingId:   booking.BookingId,
+			BedId:       booking.Bed.BedId,
 		}
 
 		if err := b.DB.CreateHospitilization(&hospitilization); err != nil {
@@ -172,6 +173,7 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 			StartedTime: bookedTime,
 			EndedTime:   bookedEnd,
 			BookingId:   booking.BookingId,
+			BedId:       booking.Bed.BedId,
 		}
 
 		if err := b.DB.UpdateHospitilization(&hospitilization); err != nil {
@@ -213,41 +215,13 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) 
 	}
 
 	for _, dbBooking := range dbBookings {
-
-		var bookingType string
-		var description string
-
-		hospitilization, err := b.DB.GetHospitilizationByBookingId(dbBooking.BookingId)
-		if err != nil {
-			return nil, err
-		}
-
-		if true {
-			examination, err := b.DB.GetExaminationByBookingId(dbBooking.BookingId)
-			if err != nil {
-				return nil, err
-			}
-
-			if examination == nil {
-				return nil, fmt.Errorf("Could not find either hospitilization or examination data")
-			} else {
-				bookingType = string(models.Examination)
-				description = examination.Description
-			}
-		} else {
-			bookingType = string(models.Hospitilization)
-			description = hospitilization.Description
-		}
-
 		booking := Booking{
-			BookingId:   dbBooking.BookingId,
-			BookedTime:  dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
-			BookedEnd:   dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
-			Patient:     dbBooking.Patient,
-			Employee:    dbBooking.Employee,
-			Approved:    dbBooking.Approved,
-			Type:        bookingType,
-			Description: description,
+			BookingId:  dbBooking.BookingId,
+			BookedTime: dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
+			BookedEnd:  dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
+			Patient:    dbBooking.Patient,
+			Employee:   dbBooking.Employee,
+			Approved:   dbBooking.Approved,
 			Hospital: &Hospital{
 				HospitalId: dbBooking.Hospital.HospitalId,
 				Name:       dbBooking.Hospital.Name,
@@ -256,6 +230,34 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *BRequest) 
 				PostalCode: dbBooking.Hospital.PostalCode,
 				Country:    dbBooking.Hospital.Country,
 			},
+		}
+
+		hospitilization, err := b.DB.GetHospitilizationByBookingId(dbBooking.BookingId)
+		if err != nil {
+			return nil, err
+		}
+
+		if hospitilization == nil {
+			examination, err := b.DB.GetExaminationByBookingId(dbBooking.BookingId)
+			if err != nil {
+				return nil, err
+			}
+
+			if examination == nil {
+				return nil, fmt.Errorf("Could not find either hospitilization or examination data")
+			} else {
+				booking.Type = string(models.Examination)
+				booking.Description = examination.Description
+			}
+		} else {
+			booking.Type = string(models.Hospitilization)
+			booking.Description = hospitilization.Description
+			booking.Bed = &BBed{
+				BedId:        hospitilization.Bed.BedId,
+				Name:         hospitilization.Bed.Name,
+				Departmentid: hospitilization.Bed.DepartmentId,
+				IsAvailable:  hospitilization.Bed.IsAvailable,
+			}
 		}
 
 		bookings.Bookings = append(bookings.Bookings, &booking)
@@ -276,40 +278,13 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *BRequest)
 
 	for _, dbBooking := range dbBookings {
 
-		var bookingType string
-		var description string
-
-		hospitilization, err := b.DB.GetHospitilizationByBookingId(dbBooking.BookingId)
-		if err != nil {
-			return nil, err
-		}
-
-		if true {
-			examination, err := b.DB.GetExaminationByBookingId(dbBooking.BookingId)
-			if err != nil {
-				return nil, err
-			}
-
-			if examination == nil {
-				return nil, fmt.Errorf("Could not find either hospitilization or examination data")
-			} else {
-				bookingType = string(models.Examination)
-				description = examination.Description
-			}
-		} else {
-			bookingType = string(models.Hospitilization)
-			description = hospitilization.Description
-		}
-
 		booking := Booking{
-			BookingId:   dbBooking.BookingId,
-			BookedTime:  dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
-			BookedEnd:   dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
-			Patient:     dbBooking.Patient,
-			Employee:    dbBooking.Employee,
-			Approved:    dbBooking.Approved,
-			Type:        bookingType,
-			Description: description,
+			BookingId:  dbBooking.BookingId,
+			BookedTime: dbBooking.Bookedtime.Format("02/01/2006 15:04:05"),
+			BookedEnd:  dbBooking.BookedEnd.Format("02/01/2006 15:04:05"),
+			Patient:    dbBooking.Patient,
+			Employee:   dbBooking.Employee,
+			Approved:   dbBooking.Approved,
 			Hospital: &Hospital{
 				HospitalId: dbBooking.Hospital.HospitalId,
 				Name:       dbBooking.Hospital.Name,
@@ -318,6 +293,34 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *BRequest)
 				PostalCode: dbBooking.Hospital.PostalCode,
 				Country:    dbBooking.Hospital.Country,
 			},
+		}
+
+		hospitilization, err := b.DB.GetHospitilizationByBookingId(dbBooking.BookingId)
+		if err != nil {
+			return nil, err
+		}
+
+		if hospitilization == nil {
+			examination, err := b.DB.GetExaminationByBookingId(dbBooking.BookingId)
+			if err != nil {
+				return nil, err
+			}
+
+			if examination == nil {
+				return nil, fmt.Errorf("Could not find either hospitilization or examination data, for booking: %v", dbBooking.BookingId)
+			} else {
+				booking.Type = string(models.Examination)
+				booking.Description = examination.Description
+			}
+		} else {
+			booking.Type = string(models.Hospitilization)
+			booking.Description = hospitilization.Description
+			booking.Bed = &BBed{
+				BedId:        hospitilization.Bed.BedId,
+				Name:         hospitilization.Bed.Name,
+				Departmentid: hospitilization.Bed.DepartmentId,
+				IsAvailable:  hospitilization.Bed.IsAvailable,
+			}
 		}
 
 		bookings.Bookings = append(bookings.Bookings, &booking)

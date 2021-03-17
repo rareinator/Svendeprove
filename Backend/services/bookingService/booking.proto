@@ -41,6 +41,21 @@ message Hospital {
   string Country = 6;
 }
 
+message BDepartment {
+  int32 Departmentid = 1;
+  string Name = 2;
+  string Description = 3;
+  int32 HospitalId = 4;
+}
+
+message BBed {
+  int32 BedId = 1;
+  string Name = 2;
+  int32 Departmentid = 3;
+  bool isAvailable = 4;
+  BDepartment Department = 5;
+}
+
 message Booking {
   int32 BookingId = 1;
   string BookedTime = 2;
@@ -51,6 +66,7 @@ message Booking {
   string Description = 7;
   string Type = 8;
   Hospital Hospital = 9;
+  BBed Bed = 10;
 }
 
 message Bookings {

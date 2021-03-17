@@ -426,7 +426,7 @@ func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
 
 func (m *MSSQL) GetHospitilizationByBookingId(id int32) (*DBHospitilization, error) {
 	var hospitilization DBHospitilization
-	result := m.db.Where("BookingId = ?", id).First(&hospitilization)
+	result := m.db.Preload("Bed").Where("BookingId = ?", id).First(&hospitilization)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -441,6 +441,9 @@ func (m *MSSQL) GetExaminationByBookingId(id int32) (*DBExamination, error) {
 	var examination DBExamination
 	result := m.db.Where("BookingId = ?", id).First(&examination)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, result.Error
 	}
 
@@ -507,6 +510,9 @@ func (m *MSSQL) GetBookingsByPatient(username string) ([]*DBBooking, error) {
 	var bookings []*DBBooking
 	result := m.db.Preload("Hospital").Where("Patient = ?", username).Find(&bookings)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, result.Error
 	}
 
@@ -517,6 +523,9 @@ func (m *MSSQL) GetBookingsByEmployee(username string) ([]*DBBooking, error) {
 	var bookings []*DBBooking
 	result := m.db.Preload("Hospital").Where("Employee = ?", username).Find(&bookings)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, result.Error
 	}
 
