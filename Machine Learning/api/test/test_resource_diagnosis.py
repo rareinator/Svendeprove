@@ -21,8 +21,8 @@ def test_diagnosis_get_all(client):
     data = response.json
     assert len(data) == 1347
 
-def test_get_diagnosis_by_symptom(client):
-    response = client.get("/diagnosis?symptoms=swell,pain")
+def test_diagnosis_by_symptom_post(client):
+    response = client.post("/diagnosis", data=dict(age=25, gender='m', symptoms=['swell']))
     data = response.json
     assert len(data) > 0
 

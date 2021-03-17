@@ -10,7 +10,7 @@ from common.ml import PredictionService
 IMG_SIZE = 96
 Prediction = PredictionService("scan")
 
-class Scan(Resource):
+class ScanResource(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
