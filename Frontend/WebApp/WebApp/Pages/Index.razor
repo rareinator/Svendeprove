@@ -65,6 +65,24 @@
             <Hospitalizations OnEditClick="ShowHospitalizationModal" Bookings="bookings" />
         </div>
     </TabPage>
+    <AuthorizeView Roles="Doctor">
+        <Authorized>
+            <TabPage Text="Diagnoser">
+                <div class="d-flex flex-column p-4">
+                    @if (selectedPatient != null)
+                    {
+                        <p><b>Patient:</b> @selectedPatient.Name</p>
+                        <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                        <button @onclick="() => ShowDiagnoseModal(new PatientDiagnoseModel { PatientDiagnoseId = 0 })" 
+                                class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Diagnose</button>
+                    }
+
+                    <Diagnoses Diagnosis="diagnosis" />
+                </div>
+            </TabPage>
+        </Authorized>
+    </AuthorizeView>
+    
 </TabControl>
 
 @code {
@@ -78,6 +96,7 @@
 
     private List<JournalModel> journals;
     private List<BookingModel> bookings;
+    private List<PatientDiagnoseModel> diagnosis;
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,6 +114,7 @@
         selectedPatient = patient;
         journals = await JournalData.GetJournalsByPatient(patient.UserName);
         bookings = await BookingData.GetBookingsByPatient(patient.UserName);
+        diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserName);
     }
 
     private async Task ShowJournalModal()
@@ -216,6 +236,38 @@
             {
                 bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
             }
+        }
+    }
+
+    private async Task ShowDiagnoseModal(PatientDiagnoseModel patientDiagnose)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateDiagnose.Patient), selectedPatient);
+        // Hvis opdatering af eksiterende Diagnose
+        if (patientDiagnose.PatientDiagnoseId != 0)
+        {
+            parameters.Add(nameof(CreateDiagnose.SelectedPatientDiagnose), patientDiagnose);
+        }
+        // Hvis helt ny Diagnose
+        else
+        {
+            parameters.Add(nameof(CreateDiagnose.SelectedPatientDiagnose),
+                new PatientDiagnoseModel
+                {
+                    Diagnose = new DiagnoseModel(),
+                    Symptoms = new List<SymptomModel>(),
+                    Patient = selectedPatient.UserName
+                });
+        }
+
+        var createDiagnose = Modal.Show<CreateDiagnose>("Opret Diagnose", parameters);
+        var result = await createDiagnose.Result;
+
+
+        if (!result.Cancelled)
+        {
+            PatientDiagnoseModel newPatientDiagnose = await PatientData.InsertPatientDiagnose((PatientDiagnoseModel)result.Data);
+            diagnosis.Add(newPatientDiagnose);
         }
     }
 }

@@ -90,8 +90,6 @@
 @code {
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; }
-    [CascadingParameter]
-    public IModalService Modal { get; set; }
 
     [Parameter]
     public UserModel SelectedPatient { get; set; }
@@ -181,7 +179,7 @@
     }
 
 
-    private async Task SelectedStartChanged(DateTime start)
+    private void SelectedStartChanged(DateTime start)
     {
         SelectedBooking.BookedTime = start;
         SelectedBooking.BookedEnd = start.AddHours(1);

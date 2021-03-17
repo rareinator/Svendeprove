@@ -1,0 +1,44 @@
+﻿@if (Diagnosis == null)
+{
+    <p><em>Venligst vælg en patient!</em></p>
+}
+else if (Diagnosis.Count == 0)
+{
+    <p><em>Ingen undersøgelse at vise!</em></p>
+}
+else
+{
+    <table class="table text-center table-hover">
+        <thead>
+            <tr>
+                <th>Oprettet</th>
+                <th>Diagnose</th>
+                <th>Symptomer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var diagnose in Diagnosis)
+            {
+                <tr>
+                    <td>@diagnose.CreationTime</td>
+                    <td>@diagnose.Diagnose.Description</td>
+                    <td>
+                        @if (diagnose.Symptoms != null)
+                        {
+                            <ul>
+                                @foreach (var symptom in diagnose.Symptoms)
+                                {
+                                    <li>@symptom.Description</li>
+                                }
+                            </ul>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Parameter]
+    public List<PatientDiagnoseModel> Diagnosis { get; set; }
+}

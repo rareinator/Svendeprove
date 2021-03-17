@@ -85,7 +85,7 @@
             paths.Add(attachment.Path);
         }
 
-        List<PredictionModel> predictions = await JournalData.GetPredictions(paths);
+        List<CancerPredictionDto> predictions = await JournalData.GetPredictions(paths);
 
         foreach (var prediction in predictions)
         {

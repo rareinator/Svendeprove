@@ -1,4 +1,5 @@
 ﻿using DataAccessLibrary.Models;
+using DataAccessLibrary.TransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,6 @@ namespace DataAccessLibrary
             JournalModel responseJournal = JsonSerializer.Deserialize<JournalModel>(responseMessage);
 
             return responseJournal;
-            
         }
         #endregion
 
@@ -69,12 +69,12 @@ namespace DataAccessLibrary
             return responseDocument;
         }
 
-        public async Task<List<PredictionModel>> GetPredictions(List<string> images)
+        public async Task<List<CancerPredictionDto>> GetPredictions(List<string> images)
         {
             var response = await _client.PostAsJsonAsync($"journal/ml", images);
             string responseMessage = await response.Content.ReadAsStringAsync();
 
-            List<PredictionModel> predictions = JsonSerializer.Deserialize<List<PredictionModel>>(responseMessage);
+            List<CancerPredictionDto> predictions = JsonSerializer.Deserialize<List<CancerPredictionDto>>(responseMessage);
 
             return predictions;
         }

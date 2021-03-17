@@ -1,4 +1,5 @@
 ﻿using DataAccessLibrary.Models;
+using DataAccessLibrary.TransferObjects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace DataAccessLibrary
         // JOURNAL DOCUMENTS
         Task<List<JournalDocumentModel>> GetJournalDocuments(int journalId);
         Task<JournalDocumentModel> GetJournalDocument(int documentId);
-        Task<List<PredictionModel>> GetPredictions(List<string> images);
+        Task<List<CancerPredictionDto>> GetPredictions(List<string> images);
         Task<JournalDocumentModel> InsertJournalDocument(JournalDocumentModel document);
         Task<JournalDocumentModel> UpdateJournalDocument(JournalDocumentModel document);
         void DeleteJournalDocument(int documentId);
