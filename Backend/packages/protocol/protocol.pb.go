@@ -157,6 +157,7 @@ func (x *Status) GetSuccess() bool {
 	return false
 }
 
+// swagger:model
 type Patient struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -323,6 +324,7 @@ func (x *Request) GetId() int32 {
 	return 0
 }
 
+// swagger:model
 type PatientDiagnose struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -457,6 +459,7 @@ func (x *PatientDiagnoses) GetPatientDiagnoses() []*PatientDiagnose {
 	return nil
 }
 
+// swagger:model
 type Symptom struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -559,6 +562,7 @@ func (x *Symptoms) GetSymptoms() []*Symptom {
 	return nil
 }
 
+// swagger:model
 type Diagnose struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -708,6 +712,7 @@ func (x *Patients) GetPatients() []*Patient {
 	return nil
 }
 
+// swagger:model
 type DiagnoseSymptom struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1054,6 +1059,7 @@ func (x *IOTTimeframeRequest) GetTimeEnd() string {
 	return ""
 }
 
+// swagger:model
 type User struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1196,6 +1202,7 @@ func (x *Users) GetUsers() []*User {
 	return nil
 }
 
+// swagger:model
 type Hospital struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1283,6 +1290,7 @@ func (x *Hospital) GetCountry() string {
 	return ""
 }
 
+// swagger:model
 type Department struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1354,6 +1362,7 @@ func (x *Department) GetHospitalId() int32 {
 	return 0
 }
 
+// swagger:model
 type Bed struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1433,6 +1442,7 @@ func (x *Bed) GetDepartment() *Department {
 	return nil
 }
 
+//swagger:model
 type Booking struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1701,6 +1711,7 @@ func (x *Strings) GetStrings() []string {
 	return nil
 }
 
+//swagger:model
 type Journal struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1921,6 +1932,7 @@ func (x *Journals) GetJournals() []*Journal {
 	return nil
 }
 
+//swagger:model
 type JournalDocument struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2118,6 +2130,7 @@ func (x *JournalDocumentRequest) GetJournalDocumentId() int32 {
 	return 0
 }
 
+//swagger:model
 type Attachment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

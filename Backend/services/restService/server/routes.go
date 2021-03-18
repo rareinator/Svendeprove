@@ -34,6 +34,20 @@ func (s *Server) routes() {
 				allowedPatient: "",
 			}))).Methods("POST")
 
+	// swagger:operation GET /journal journal Reads journal
+	// ---
+	// summary: Læser en ny journal
+	// description: Creates a new journal with the the values from the request body, returns the same body with the JournalId filled out
+	// parameters:
+	// - name: journal
+	//   description: journal to add to the list of journals
+	//   in: body
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/Journal"
+	// responses:
+	//   "200":
+	//     "$ref": "#/definitions/Journal"
 	s.Router.Handle("/journal/{id:[0-9]+}", //Read journal
 		s.Log(s.Authenticate(
 			s.HandleJournalRead(),
@@ -63,7 +77,7 @@ func (s *Server) routes() {
 			s.HandleJournalByPatient(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient: "id",
+				allowedPatient: "username",
 			}))).Methods("GET")
 
 	s.Router.Handle("/journal/document/{id:[0-9]+}", //Delete journal documents

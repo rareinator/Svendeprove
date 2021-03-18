@@ -110,7 +110,7 @@ func (s *Server) Authenticate(next http.HandlerFunc, config *authenticationConfi
 		}
 
 		role := token.Claims["role"]
-		username := token.Claims["username"]
+		username := token.Claims["sub"]
 
 		allowed := false
 
