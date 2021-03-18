@@ -116,7 +116,7 @@
         hospitals = await BookingData.GetHospitals();
 
 
-        SelectedBooking.Patient = SelectedPatient.UserName;
+        SelectedBooking.Patient = SelectedPatient.UserId;
 
         if (SelectedBooking.BookingId != 0)
         {

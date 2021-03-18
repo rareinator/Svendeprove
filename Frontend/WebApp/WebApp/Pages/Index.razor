@@ -135,6 +135,7 @@
         {
             selectedPatient = new UserModel();
             selectedPatient.UserName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
+            selectedPatient.UserId = user.Claims.Where(c => c.Type == "sub").FirstOrDefault().Value;
             selectedPatient.Name = user.Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
             selectedPatient.SocialIdNr = user.Claims.Where(c => c.Type == "social_id").FirstOrDefault().Value;
             await SelectedPatientChanged(selectedPatient);
@@ -155,15 +156,15 @@
     private async Task SelectedPatientChanged(UserModel patient)
     {
         selectedPatient = patient;
-        journals = await JournalData.GetJournalsByPatient(patient.UserName);
-        bookings = await BookingData.GetBookingsByPatient(patient.UserName);
+        journals = await JournalData.GetJournalsByPatient(patient.UserId);
+        bookings = await BookingData.GetBookingsByPatient(patient.UserId);
 
 
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
         if (user.IsInRole("Patients"))
         {
-            diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserName);
+            diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserId);
         }
     }
 
@@ -234,7 +235,7 @@
             }
             else
             {
-                bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
+                bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
             }
         }
     }
@@ -284,7 +285,7 @@
             // Hvis booking er slettet
             else
             {
-                bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
+                bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
             }
         }
     }
@@ -306,7 +307,7 @@
                 {
                     Diagnose = new DiagnoseModel(),
                     Symptoms = new List<SymptomModel>(),
-                    Patient = selectedPatient.UserName
+                    Patient = selectedPatient.UserId
                 });
         }
 
