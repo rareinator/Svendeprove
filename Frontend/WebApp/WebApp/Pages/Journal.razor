@@ -1,14 +1,17 @@
 ﻿@page "/journal/{JournalId:int}"
-
 <button type="button" class="btn btn-primary" @onclick="Back">Back</button>&nbsp;
 @* IF AROUND THIS CHECK IF NURSE OR DOCTOR ROLE *@
-<button type="button" class="btn btn-primary" @onclick="NewJournalDocument">Opret</button>
+<AuthorizeView Roles="Doctor, Nurse">
+    <Authorized>
+        <button type="button" class="btn btn-primary" @onclick="NewJournalDocument">Opret</button>
+    </Authorized>
+</AuthorizeView>
 <br />
 <br />
 @* /////////////////////////////// *@
 @if (journalDocuments.Count == 0)
 {
-    <h2>No items returned</h2>
+    <h2>Ingen dokumenter at vise!</h2>
 }
 else
 {
@@ -43,10 +46,11 @@ else
     private async Task NewJournalDocument()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(CreateDocument.SelectedDocument), 
-            new JournalDocumentModel { 
-                CreationTime = DateTime.Now, 
-                JournalId = JournalId, 
+        parameters.Add(nameof(CreateDocument.SelectedDocument),
+            new JournalDocumentModel
+            {
+                CreationTime = DateTime.Now,
+                JournalId = JournalId,
                 Attachments = new List<AttachmentModel>()
             });
 

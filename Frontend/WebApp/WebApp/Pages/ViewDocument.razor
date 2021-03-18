@@ -3,7 +3,11 @@
 <h4>
     <button type="button" class="btn btn-primary" @onclick="Back">Back</button>&nbsp;
     @* AUTHORIZATION HERE *@
-    <button type="button" class="btn btn-secondary" @onclick="EditDocument">Ret</button>
+    <AuthorizeView Roles="Doctor, Nurse">
+        <Authorized>
+            <button type="button" class="btn btn-secondary" @onclick="EditDocument">Ret</button>
+        </Authorized>
+    </AuthorizeView>
     @* ///////////////// *@
 </h4>
 <br />
