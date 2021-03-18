@@ -16,6 +16,9 @@ import (
 
 func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		requestedHospitalId := vars["hospitalIDs"]
+
 		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl(os.Getenv("OKTA_URL")), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
@@ -27,14 +30,18 @@ func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 		result := make([]*doctor, 0)
 
 		for _, user := range users {
-			doctor := doctor{
-				Name:     fmt.Sprintf("%v %v", (*user.Profile)["firstName"], (*user.Profile)["lastName"]),
-				Username: fmt.Sprintf("%v", (*user.Profile)["login"]),
-				Type:     fmt.Sprintf("%v", (*user.Profile)["userType"]),
-				UserId:   user.Id,
-			}
+			hospitalID := fmt.Sprintf("%v", (*user.Profile)["hospital_id"])
 
-			result = append(result, &doctor)
+			if hospitalID == requestedHospitalId {
+				doctor := doctor{
+					Name:     fmt.Sprintf("%v %v", (*user.Profile)["firstName"], (*user.Profile)["lastName"]),
+					Username: fmt.Sprintf("%v", (*user.Profile)["login"]),
+					Type:     fmt.Sprintf("%v", (*user.Profile)["userType"]),
+					UserId:   user.Id,
+				}
+
+				result = append(result, &doctor)
+			}
 
 		}
 
@@ -57,12 +64,12 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 			return
 		}
 
-		result := make([]*protocol.Patient, 0)
+		result := make([]*protocol.User, 0)
 
 		for _, user := range users {
 			age, _ := strconv.Atoi(fmt.Sprintf("%v", (*user.Profile)["age"]))
 
-			patient := protocol.Patient{
+			patient := protocol.User{
 				Name:       fmt.Sprintf("%v", (*user.Profile)["displayName"]),
 				Address:    fmt.Sprintf("%v", (*user.Profile)["streetAddress"]),
 				City:       fmt.Sprintf("%v", (*user.Profile)["city"]),
@@ -104,7 +111,7 @@ func (s *Server) HandleUseradminGetEmployee() http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		er := protocol.UserRequest{
-			Username: vars["username"],
+			UserId: vars["userId"],
 		}
 
 		response, err := s.UseradminService.GetEmployee(context.Background(), &er)

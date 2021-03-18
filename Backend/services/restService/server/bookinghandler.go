@@ -122,7 +122,7 @@ func (s *Server) HandleBookingsByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		br := protocol.Request{
-			Username: vars["username"],
+			UserId: vars["userId"],
 		}
 
 		response, err := s.BookingService.GetBookingsByPatient(context.Background(), &br)
@@ -143,7 +143,7 @@ func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		br := protocol.Request{
-			Username: vars["username"],
+			UserId: vars["userId"],
 		}
 
 		response, err := s.BookingService.GetBookingsByEmployee(context.Background(), &br)
@@ -162,7 +162,7 @@ func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
 
 func (s *Server) HandleAvailableTimesForDoctor() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var request protocol.BTimeFrameRequest
+		var request protocol.TimeFrameRequest
 
 		json.NewDecoder(r.Body).Decode(&request)
 

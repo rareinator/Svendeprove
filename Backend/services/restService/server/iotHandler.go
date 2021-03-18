@@ -28,16 +28,12 @@ func (s *Server) HandleIOTHealth() http.HandlerFunc {
 func (s *Server) HandleIOTUpload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data := r.URL.Query().Get("Data")
-		deviceID, err := s.getDeviceID(r)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		username := s.getUserId(r)
+		sensorId, _ := strconv.Atoi(r.URL.Query().Get("SensorId"))
+		name := r.URL.Query().Get("Name")
 
 		iotData := protocol.IOTData{
-			Name:     username,
-			SensorID: deviceID,
+			Name:     name,
+			SensorID: int32(sensorId),
 			Data:     data,
 		}
 

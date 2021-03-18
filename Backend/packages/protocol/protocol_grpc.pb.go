@@ -773,7 +773,7 @@ type BookingServiceClient interface {
 	DeleteBooking(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Status, error)
 	GetBookingsByPatient(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Bookings, error)
 	GetBookingsByEmployee(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Bookings, error)
-	GetAvailableTimesForDoctor(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Strings, error)
+	GetAvailableTimesForDoctor(ctx context.Context, in *TimeFrameRequest, opts ...grpc.CallOption) (*Strings, error)
 }
 
 type bookingServiceClient struct {
@@ -847,7 +847,7 @@ func (c *bookingServiceClient) GetBookingsByEmployee(ctx context.Context, in *Re
 	return out, nil
 }
 
-func (c *bookingServiceClient) GetAvailableTimesForDoctor(ctx context.Context, in *BTimeFrameRequest, opts ...grpc.CallOption) (*Strings, error) {
+func (c *bookingServiceClient) GetAvailableTimesForDoctor(ctx context.Context, in *TimeFrameRequest, opts ...grpc.CallOption) (*Strings, error) {
 	out := new(Strings)
 	err := c.cc.Invoke(ctx, "/BookingService/GetAvailableTimesForDoctor", in, out, opts...)
 	if err != nil {
@@ -867,7 +867,7 @@ type BookingServiceServer interface {
 	DeleteBooking(context.Context, *Request) (*Status, error)
 	GetBookingsByPatient(context.Context, *Request) (*Bookings, error)
 	GetBookingsByEmployee(context.Context, *Request) (*Bookings, error)
-	GetAvailableTimesForDoctor(context.Context, *BTimeFrameRequest) (*Strings, error)
+	GetAvailableTimesForDoctor(context.Context, *TimeFrameRequest) (*Strings, error)
 	mustEmbedUnimplementedBookingServiceServer()
 }
 
@@ -896,7 +896,7 @@ func (UnimplementedBookingServiceServer) GetBookingsByPatient(context.Context, *
 func (UnimplementedBookingServiceServer) GetBookingsByEmployee(context.Context, *Request) (*Bookings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBookingsByEmployee not implemented")
 }
-func (UnimplementedBookingServiceServer) GetAvailableTimesForDoctor(context.Context, *BTimeFrameRequest) (*Strings, error) {
+func (UnimplementedBookingServiceServer) GetAvailableTimesForDoctor(context.Context, *TimeFrameRequest) (*Strings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableTimesForDoctor not implemented")
 }
 func (UnimplementedBookingServiceServer) mustEmbedUnimplementedBookingServiceServer() {}
@@ -1039,7 +1039,7 @@ func _BookingService_GetBookingsByEmployee_Handler(srv interface{}, ctx context.
 }
 
 func _BookingService_GetAvailableTimesForDoctor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BTimeFrameRequest)
+	in := new(TimeFrameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1051,7 +1051,7 @@ func _BookingService_GetAvailableTimesForDoctor_Handler(srv interface{}, ctx con
 		FullMethod: "/BookingService/GetAvailableTimesForDoctor",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).GetAvailableTimesForDoctor(ctx, req.(*BTimeFrameRequest))
+		return srv.(BookingServiceServer).GetAvailableTimesForDoctor(ctx, req.(*TimeFrameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1109,7 +1109,7 @@ type JournalServiceClient interface {
 	DeleteJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Status, error)
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
 	UpdateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error)
-	GetJournalsByPatient(ctx context.Context, in *PatientRequest, opts ...grpc.CallOption) (*Journals, error)
+	GetJournalsByPatient(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*Journals, error)
 	DeleteJournalDocument(ctx context.Context, in *JournalDocumentRequest, opts ...grpc.CallOption) (*Status, error)
 	UpdateJournalDocument(ctx context.Context, in *JournalDocument, opts ...grpc.CallOption) (*JournalDocument, error)
 	GetJournalDocumentsByJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*JournalDocuments, error)
@@ -1171,7 +1171,7 @@ func (c *journalServiceClient) UpdateJournal(ctx context.Context, in *Journal, o
 	return out, nil
 }
 
-func (c *journalServiceClient) GetJournalsByPatient(ctx context.Context, in *PatientRequest, opts ...grpc.CallOption) (*Journals, error) {
+func (c *journalServiceClient) GetJournalsByPatient(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*Journals, error) {
 	out := new(Journals)
 	err := c.cc.Invoke(ctx, "/JournalService/GetJournalsByPatient", in, out, opts...)
 	if err != nil {
@@ -1243,7 +1243,7 @@ type JournalServiceServer interface {
 	DeleteJournal(context.Context, *JournalRequest) (*Status, error)
 	GetHealth(context.Context, *Empty) (*Health, error)
 	UpdateJournal(context.Context, *Journal) (*Journal, error)
-	GetJournalsByPatient(context.Context, *PatientRequest) (*Journals, error)
+	GetJournalsByPatient(context.Context, *UserRequest) (*Journals, error)
 	DeleteJournalDocument(context.Context, *JournalDocumentRequest) (*Status, error)
 	UpdateJournalDocument(context.Context, *JournalDocument) (*JournalDocument, error)
 	GetJournalDocumentsByJournal(context.Context, *JournalRequest) (*JournalDocuments, error)
@@ -1272,7 +1272,7 @@ func (UnimplementedJournalServiceServer) GetHealth(context.Context, *Empty) (*He
 func (UnimplementedJournalServiceServer) UpdateJournal(context.Context, *Journal) (*Journal, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateJournal not implemented")
 }
-func (UnimplementedJournalServiceServer) GetJournalsByPatient(context.Context, *PatientRequest) (*Journals, error) {
+func (UnimplementedJournalServiceServer) GetJournalsByPatient(context.Context, *UserRequest) (*Journals, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJournalsByPatient not implemented")
 }
 func (UnimplementedJournalServiceServer) DeleteJournalDocument(context.Context, *JournalDocumentRequest) (*Status, error) {
@@ -1397,7 +1397,7 @@ func _JournalService_UpdateJournal_Handler(srv interface{}, ctx context.Context,
 }
 
 func _JournalService_GetJournalsByPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatientRequest)
+	in := new(UserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1409,7 +1409,7 @@ func _JournalService_GetJournalsByPatient_Handler(srv interface{}, ctx context.C
 		FullMethod: "/JournalService/GetJournalsByPatient",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JournalServiceServer).GetJournalsByPatient(ctx, req.(*PatientRequest))
+		return srv.(JournalServiceServer).GetJournalsByPatient(ctx, req.(*UserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -129,11 +129,11 @@ func (s *Server) HandleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		pr := &protocol.PatientRequest{
-			Patient: vars["username"],
+		pr := protocol.UserRequest{
+			UserId: vars["userId"],
 		}
 
-		response, err := s.JournalService.GetJournalsByPatient(context.Background(), pr)
+		response, err := s.JournalService.GetJournalsByPatient(context.Background(), &pr)
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting in contact with the journal service %v", err))
 			return

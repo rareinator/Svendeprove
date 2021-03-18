@@ -11,11 +11,6 @@ import (
 	jwtverifier "github.com/okta/okta-jwt-verifier-golang"
 )
 
-func (s *Server) getDeviceID(r *http.Request) (int32, error) {
-
-	return 1, nil
-}
-
 func (s *Server) getUserId(request *http.Request) string {
 	var reqToken string
 	reqToken = request.Header.Get("Authorization")

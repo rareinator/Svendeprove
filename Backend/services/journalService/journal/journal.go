@@ -36,11 +36,11 @@ func (j *JournalServer) GetHealth(ctx context.Context, e *Empty) (*Health, error
 	return &Health{Message: fmt.Sprintf("Journal service is up and running on: %v 🚀", j.ListenAddress)}, nil
 }
 
-func (j *JournalServer) GetJournalsByPatient(ctx context.Context, pr *PatientRequest) (*Journals, error) {
+func (j *JournalServer) GetJournalsByPatient(ctx context.Context, ur *UserRequest) (*Journals, error) {
 	journals := &Journals{}
 	journals.Journals = make([]*Journal, 0)
 
-	dbJournals, err := j.DB.GetJournalsByPatient(pr.Patient)
+	dbJournals, err := j.DB.GetJournalsByPatient(ur.UserId)
 	if err != nil {
 		return nil, err
 	}

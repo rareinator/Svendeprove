@@ -22,8 +22,8 @@ func (u *UseradminServer) GetHealth(ctx context.Context, e *Empty) (*Health, err
 func (u *UseradminServer) GetUser(ctx context.Context, er *UserRequest) (*User, error) {
 	//TODO: Okta fix
 	result := User{
-		Name:     "Morten Nissen",
-		Username: er.Username,
+		Name:   "Morten Nissen",
+		UserId: er.UserId,
 	}
 
 	return &result, nil

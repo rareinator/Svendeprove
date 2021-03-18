@@ -36,7 +36,7 @@ func (s *Server) HandleDiagnoseGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		p := protocol.Request{
-			Username: vars["username"],
+			UserId: vars["userId"],
 		}
 
 		response, err := s.PatientService.GetDiagnose(context.Background(), &p)
@@ -71,7 +71,7 @@ func (s *Server) HandleSymptomGet() http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		p := protocol.Request{
-			Username: vars["username"],
+			UserId: vars["userId"],
 		}
 
 		response, err := s.PatientService.GetSymptom(context.Background(), &p)
@@ -107,7 +107,7 @@ func (s *Server) HandlePatientDiagnoseSave() http.HandlerFunc {
 		vars := mux.Vars(r)
 		var patientDiagnose protocol.PatientDiagnose
 		json.NewDecoder(r.Body).Decode(&patientDiagnose)
-		patientDiagnose.Patient = vars["username"]
+		patientDiagnose.Patient = vars["userId"]
 
 		response, err := s.PatientService.CreatePatientDiagnose(context.Background(), &patientDiagnose)
 		if err != nil {
@@ -125,7 +125,7 @@ func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		pr := protocol.Request{
-			Username: vars["username"],
+			UserId: vars["userId"],
 		}
 
 		response, err := s.PatientService.GetPatientDiagnoses(context.Background(), &pr)

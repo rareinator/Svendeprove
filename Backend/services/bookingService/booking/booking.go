@@ -210,7 +210,7 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *Request) (
 		Bookings: make([]*Booking, 0),
 	}
 
-	dbBookings, err := b.DB.GetBookingsByPatient(br.Username)
+	dbBookings, err := b.DB.GetBookingsByPatient(br.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -272,7 +272,7 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *Request) 
 		Bookings: make([]*Booking, 0),
 	}
 
-	dbBookings, err := b.DB.GetBookingsByEmployee(br.Username)
+	dbBookings, err := b.DB.GetBookingsByEmployee(br.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -330,7 +330,7 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *Request) 
 	return &bookings, nil
 }
 
-func (b *BookingServer) GetAvailableTimesForDoctor(ctx context.Context, request *BTimeFrameRequest) (*Strings, error) {
+func (b *BookingServer) GetAvailableTimesForDoctor(ctx context.Context, request *TimeFrameRequest) (*Strings, error) {
 	parsedTime, err := time.Parse("02/01/2006 15:04:05", request.Day)
 	if err != nil {
 		return nil, err

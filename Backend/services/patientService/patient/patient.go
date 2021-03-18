@@ -69,36 +69,6 @@ func (p *PatientServer) GetSymptom(ctx context.Context, pr *Request) (*Symptom, 
 	return &symptom, nil
 }
 
-func (p *PatientServer) GetPatients(ctx context.Context, e *Empty) (*Patients, error) {
-	// patients := Patients{
-	// 	Patients: make([]*Patient, 0),
-	// }
-
-	// dbPatients, err := p.DB.GetPatients()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// for _, dbPatient := range dbPatients {
-	// 	patient := Patient{
-	// 		PatientId:  dbPatient.PatientId,
-	// 		Name:       dbPatient.Name,
-	// 		Address:    dbPatient.Address,
-	// 		City:       dbPatient.City,
-	// 		PostalCode: dbPatient.PostalCode,
-	// 		Country:    dbPatient.Country,
-	// 		SocialIdNr: dbPatient.SocialIdNr,
-	// 		Username:   dbPatient.Username,
-	// 	}
-
-	// 	patients.Patients = append(patients.Patients, &patient)
-	// }
-
-	// return &patients, nil
-	//TODO: oauth fix
-	return nil, nil
-}
-
 func (p *PatientServer) GetSymptoms(ctx context.Context, e *Empty) (*Symptoms, error) {
 	symptoms := Symptoms{
 		Symptoms: make([]*Symptom, 0),
@@ -145,7 +115,7 @@ func (p *PatientServer) GetPatientDiagnoses(ctx context.Context, pr *Request) (*
 		PatientDiagnoses: make([]*PatientDiagnose, 0),
 	}
 
-	dbPatientDiagnoses, err := p.DB.GetPatientDiagnoses(pr.Username)
+	dbPatientDiagnoses, err := p.DB.GetPatientDiagnoses(pr.UserId)
 	if err != nil {
 		return nil, err
 	}

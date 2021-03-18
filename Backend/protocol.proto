@@ -14,21 +14,25 @@ message Status {
   bool Success = 1;
 }
 
-message Patient {
-  string Name = 1;
-  string Address = 2;
-  string City = 3;
-  string PostalCode = 4;
-  string Country = 5;
+message User {
+  string Address = 1;
+  string City = 2;
+  string Country = 3;
+  string Name = 4;
+  string PostalCode = 5;
   string SocialIdNr = 6;
   string Username = 7;
-  string Gender = 8;
-  int32 Age = 9;
-  string UserId = 10;
+  string UserId = 8;
+  string Gender = 9;
+  int32 Age = 10;
+}
+
+message Users {
+  repeated User Users = 1;
 }
 
 message Request {
-  string Username = 1;
+  string UserId = 1;
   int32 Id = 2;
 }
 
@@ -63,9 +67,7 @@ message Diagnoses {
   repeated Diagnose Diagnoses = 1;
 }
 
-message Patients{
-  repeated Patient Patients = 1;
-}
+
 
 message DiagnoseSymptom {
   int32 SymptomId = 1;
@@ -130,19 +132,6 @@ service IotService {
   rpc ReadDataInTimeFrame (IOTTimeframeRequest) returns (IOTDatas) {}
 }
 
-message User {
-  string Address = 1;
-  string City = 2;
-  string Country = 3;
-  string Name = 4;
-  string PostalCode = 5;
-  string SocialIdNr = 6;
-  string Username = 7;
-}
-
-message Users {
-  repeated User Users = 1;
-}
 message Hospital {
   int32 HospitalId = 1;
   string Name = 2;
@@ -184,7 +173,7 @@ message Bookings {
   repeated Booking Bookings = 1;
 }
 
-message BTimeFrameRequest {
+message TimeFrameRequest {
   string Day = 1;
   string Doctor = 2;
 }
@@ -203,7 +192,7 @@ service BookingService {
   rpc DeleteBooking(Request) returns (Status) {}
   rpc GetBookingsByPatient(Request) returns (Bookings) {}
   rpc GetBookingsByEmployee(Request) returns (Bookings) {}
-  rpc GetAvailableTimesForDoctor(BTimeFrameRequest) returns (Strings) {}
+  rpc GetAvailableTimesForDoctor(TimeFrameRequest) returns (Strings) {}
 }
 
 message Journal {
@@ -216,10 +205,6 @@ message Journal {
 
 message JournalRequest {
   int32 JournalId = 1;
-}
-
-message PatientRequest {
-  string Patient = 1;
 }
 
 message Journals {
@@ -262,7 +247,7 @@ service JournalService {
   rpc DeleteJournal(JournalRequest) returns (Status) {}
   rpc GetHealth(Empty) returns (Health) {}
   rpc UpdateJournal(Journal) returns (Journal) {}
-  rpc GetJournalsByPatient(PatientRequest) returns (Journals) {}
+  rpc GetJournalsByPatient(UserRequest) returns (Journals) {}
 
   rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
   rpc UpdateJournalDocument(JournalDocument) returns (JournalDocument) {}
@@ -280,7 +265,7 @@ message BedsRequest {
 }
 
 message UserRequest {
-  string Username = 1;
+  string UserId = 1;
 }
 
 message Hospitals {

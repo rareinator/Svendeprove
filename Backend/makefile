@@ -81,3 +81,11 @@ local:
 	go build services/journalService/main.go
 	go build services/iotService/main.go
 	go build services/useradminService/main.go
+
+clean:
+	rm -rf services/restService/restService
+	rm -rf services/useradminService/useradminService
+	rm -rf services/patientService/patientService
+	rm -rf services/journalService/journalService
+	rm -rf services/iotService/iotService
+	rm -rf services/useradminService/useradminService
