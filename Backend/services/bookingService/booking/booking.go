@@ -185,7 +185,7 @@ func (b *BookingServer) UpdateBooking(ctx context.Context, booking *Booking) (*B
 	return booking, nil
 }
 
-func (b *BookingServer) DeleteBooking(ctx context.Context, br Request) (*Status, error) {
+func (b *BookingServer) DeleteBooking(ctx context.Context, br *Request) (*Status, error) {
 	dbBooking := mssql.DBBooking{
 		BookingId: br.Id,
 	}

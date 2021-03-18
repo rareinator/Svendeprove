@@ -257,7 +257,7 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleBookingCreate(),
 			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office, models.Patient},
 				allowedPatient: "",
 			}))).Methods("POST")
 

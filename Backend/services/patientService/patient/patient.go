@@ -124,7 +124,7 @@ func (p *PatientServer) GetSymptoms(ctx context.Context, e *Empty) (*Symptoms, e
 func (p *PatientServer) CreatePatientDiagnose(ctx context.Context, patientDiagnose *PatientDiagnose) (*PatientDiagnose, error) {
 	dbPatientDiagnose := mssql.DBPatientDiagnose{
 		Patient:      patientDiagnose.Patient,
-		DiagnoseId:   patientDiagnose.DiagnoseId,
+		DiagnoseId:   patientDiagnose.Diagnose.DiagnoseId,
 		CreationTime: time.Now(),
 	}
 

@@ -4,18 +4,11 @@
 
 * [x] Health /health GET
 
-### Authentication
-* [x] Health /authentication/health GET
-* [x] PatientLogin /authentication/patient/login POST
-* [x] EmployeeLogin /authentication/employee/login POST
-
 ### Journal
 * [x] Health /journal/health GET
 * [x] CreateJournal /journal POST
 * [x] ReadJournal /journal/{id:[0-9]+} GET
-* [x] UpdateJournal /journal/{id:[0-9]+} POST
-* [x] DeleteJournal /journal/{id:[0-9]+} DELETE
-* [x] JournalByPatient /journal/byPatient/{id:[0-9]+} GET
+* [x] JournalByPatient /journal/byPatient/{username} GET
 * [x] UploadJournalDocumentsToML /journal/ml POST
 * [x] UploadSymptomstoML /journal/symptoms POST
 
@@ -30,9 +23,7 @@
 
 #### General
 * [x] Health /patient/health GET
-* [x] CreatePatient /patient POST
 * [x] GetPatients /patient GET
-* [x] GetPatient /patient/{id:[0-9]+} GET
 * [X] UpdatePatient /patient/{id:[0-9]+} POST
 * [x] DeletePatient /patient/{id:[0-9]+} DELETE
 
@@ -64,16 +55,18 @@
 * [x] DeleteBooking /booking/{id:[0-9]+} DELETE
 * [x] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET
 * [x] GetBookingsByEmployee /booking/byEmployee/{id:[0-9]+]} GET
-* [ ] GetAvailableDoctorsInTimeframe /booking/availableEmployee POST
+* [x] GetAvailableTimesForDoctor /booking/availableTimesForDoctor POST
 
-### User administration
-* [x] GetEmployee /useradmin/{id:[0-9]+} GET
+### Administration
+* [x] GetUser /admin/{id:[0-9]+} GET
 * [x] GetHospitals /admin/hospitals GET
 * [x] GetDepartments /admin/departments GET
 * [x] GetBeds /admin/beds GET
+* [x] GetAvailableBeds /admin/availableBeds POST
+* [x] GetDoctorsInHospital /admin/doctors/inHospital/{hospitalId:[0-9]+} GET
 
 
 ### IOT
-* [x] UploadData /iot/uploadData POST
-* [x] ReadData /iot/{id:[0-9]+} GET
-* [x] ReadDataInTimeFrame /iot?TimeStart=02/01/2006 15:04:05&TimeEnd=02/01/2006 15:04:05 GET (Sidenote the time should be url encoded so 02%2F01%2F2006%2015%3A04%3A05) 
+* [x] UploadData /iot/uploadData?Key=sdfgasfa&Date=22 POST
+* [x] ReadData /iot/{deviceID:[0-9]+} GET
+* [x] ReadDataInTimeFrame /iot/readDataInTimeframe POST
