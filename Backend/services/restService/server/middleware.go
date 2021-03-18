@@ -109,14 +109,14 @@ func (s *Server) Authenticate(next http.HandlerFunc, config *authenticationConfi
 		}
 
 		role := token.Claims["role"]
-		username := token.Claims["sub"]
+		userId := token.Claims["uid"]
 
 		allowed := false
 
 		if config.allowedPatient != "" {
 			patient := vars[config.allowedPatient]
 
-			if patient == username {
+			if patient == userId {
 				allowed = true
 			}
 		}

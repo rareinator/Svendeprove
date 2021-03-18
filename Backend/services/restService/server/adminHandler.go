@@ -31,6 +31,7 @@ func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 				Name:     fmt.Sprintf("%v %v", (*user.Profile)["firstName"], (*user.Profile)["lastName"]),
 				Username: fmt.Sprintf("%v", (*user.Profile)["login"]),
 				Type:     fmt.Sprintf("%v", (*user.Profile)["userType"]),
+				UserId:   user.Id,
 			}
 
 			result = append(result, &doctor)
@@ -71,6 +72,7 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 				Username:   fmt.Sprintf("%v", (*user.Profile)["login"]),
 				Age:        int32(age),
 				Gender:     fmt.Sprintf("%v", (*user.Profile)["gender"]),
+				UserId:     user.Id,
 			}
 
 			result = append(result, &patient)

@@ -33,9 +33,7 @@ func (s *Server) HandleIOTUpload() http.HandlerFunc {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		username := s.getUsername(r)
-
-		//TODO: fix
+		username := s.getUserId(r)
 
 		iotData := protocol.IOTData{
 			Name:     username,

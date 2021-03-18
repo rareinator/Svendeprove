@@ -29,6 +29,7 @@ type doctor struct {
 	Username string `json:"Username"`
 	Name     string `json:"Name"`
 	Type     string `json:"Type"`
+	UserId   string `json:"UserId"`
 }
 
 func (s *Server) HandleDiagnoseGet() http.HandlerFunc {

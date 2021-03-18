@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
+
+	jwtverifier "github.com/okta/okta-jwt-verifier-golang"
 )
 
 func (s *Server) getDeviceID(r *http.Request) (int32, error) {
@@ -13,21 +16,27 @@ func (s *Server) getDeviceID(r *http.Request) (int32, error) {
 	return 1, nil
 }
 
-func (s *Server) getUsername(request *http.Request) string {
-	// tokenRequest := authentication.TokenRequest{
-	// 	Token: token,
-	// }
+func (s *Server) getUserId(request *http.Request) string {
+	var reqToken string
+	reqToken = request.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer ")
+	reqToken = splitToken[1]
 
-	// response, err := s.AuthenticationService.ValidateToken(context.Background(), &tokenRequest)
-	// if err != nil {
-	// 	return "", err
-	// }
+	toValidate := map[string]string{}
+	toValidate["aud"] = os.Getenv("OKTA_AUTH_ENDPOINT")
+	toValidate["cid"] = os.Getenv("OKTA_CLIENT_ID")
 
-	// if !response.Valid {
-	// 	return "", fmt.Errorf("Could not find the token")
-	// }
+	jwt := jwtverifier.JwtVerifier{
+		Issuer:           fmt.Sprintf("%v/oauth2/default", os.Getenv("OKTA_URL")),
+		ClaimsToValidate: toValidate,
+	}
 
-	return "mni@hospi.local"
+	verifier := jwt.New()
+
+	token, _ := verifier.VerifyAccessToken(reqToken)
+
+	return fmt.Sprintf("%v", token.Claims["uid"])
+
 }
 
 func (s *Server) saveFile(base64Data, fileName string) error {

@@ -37,7 +37,7 @@ func (s *Server) HandleJournalSave() http.HandlerFunc {
 		var journal protocol.Journal
 		json.NewDecoder(r.Body).Decode(&journal)
 
-		employee := s.getUsername(r)
+		employee := s.getUserId(r)
 
 		journal.CreatedBy = employee
 
@@ -205,7 +205,7 @@ func (s *Server) HandleJournalDocumentSave() http.HandlerFunc {
 		var journalDocument protocol.JournalDocument
 		json.NewDecoder(r.Body).Decode(&journalDocument)
 
-		journalDocument.CreatedBy = s.getUsername(r)
+		journalDocument.CreatedBy = s.getUserId(r)
 
 		response, err := s.JournalService.CreateJournalDocument(context.Background(), &journalDocument)
 		if err != nil {

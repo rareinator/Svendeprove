@@ -24,8 +24,6 @@
 #### General
 * [x] Health /patient/health GET
 * [x] GetPatients /patient GET
-* [X] UpdatePatient /patient/{id:[0-9]+} POST
-* [x] DeletePatient /patient/{id:[0-9]+} DELETE
 
 #### Diagnose
 * [x] GetDiagnose /diagnose/{id:[0-9]+} GET
@@ -70,3 +68,54 @@
 * [x] UploadData /iot/uploadData?Key=sdfgasfa&Date=22 POST
 * [x] ReadData /iot/{deviceID:[0-9]+} GET
 * [x] ReadDataInTimeFrame /iot/readDataInTimeframe POST
+
+
+# to document
+* [x] CreateJournal /journal POST doctor
+* [x] JournalByPatient /journal/byPatient/{username} GET doctor, nurse, patient
+* [x] UploadJournalDocumentsToML /journal/ml POST doctor, nurse
+* [x] UploadSymptomstoML /journal/symptoms POST doctor, nurse, office
+
+* [x] CreateJournalDocument /journal/document POST  doctor, nurse
+* [x] ReadJournalDocument /journal/document/{id:[0-9]+} GET doctor, nurse, patient
+* [x] UpdateJournalDocument /journal/document/{id:[0-9]+} POST doctor, nurse
+* [x] DeleteJournalDocument /journal/document/{id:[0-9]+} DELETE doctor, nurse
+* [x] JournalDocumentsByJournal /journal/document/byJournal/{id:[0-9]+} GET doctor, nurse, patient
+
+* [x] GetPatients /patient GET doctor, nurse, office
+* [x] CreatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose POST doctor
+* [x] GetPatientDiagnoses /patient/{patientID:[0-9]+}/diagnose GET doctor nurse, patient
+* [ ] DeletePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} DELETE doctor
+* [ ] CreatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom POST doctor
+
+* [ ] CreateBooking /booking POST all
+* [ ] DeleteBooking /booking/{id:[0-9]+} DELETE doctor, nurse, office
+* [ ] GetBookingsByPatient /booking/byPatient/{id:[0-9]+} GET doctor, nurse, office, patient
+* [ ] GetBookingsByEmployee /booking/byEmployee/{id:[0-9]+]} GET all
+* [ ] GetAvailableTimesForDoctor /booking/availableTimesForDoctor POST all
+
+* [ ] GetUser /admin/{id:[0-9]+} GET doctor, nurse, office, patient
+* [ ] GetHospitals /admin/hospitals GET all
+* [ ] GetAvailableBeds /admin/availableBeds POST all
+* [ ] GetDoctorsInHospital /admin/doctors/inHospital/{hospitalId:[0-9]+} GET all
+
+* [ ] GetDiagnoses /diagnose GET all
+* [ ] GetSymptoms /symptom GET all
+
+* [ ] UploadData /iot/uploadData?Key=sdfgasfa&Date=22 POST
+* [ ] ReadData /iot/{deviceID:[0-9]+} GET
+* [ ] ReadDataInTimeFrame /iot/readDataInTimeframe POST
+
+# to delete
+* [ ] GetBeds /admin/beds GET
+* [ ] GetDepartments /admin/departments GET
+* [ ] ReadBooking /booking/{id:[0-9]+} GET
+* [ ] UpdateBooking /booking/{id:[0-9]+} POST
+* [ ] ReadJournal /journal/{id:[0-9]+} GET
+* [ ] GetDiagnose /diagnose/{id:[0-9]+} GET
+* [ ] GetSymptom /symptom/{id:[0-9]+} GET
+* [ ] GetPatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} GET
+* [ ] UpdatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} POST
+* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom GET
+* [ ] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
+* [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE

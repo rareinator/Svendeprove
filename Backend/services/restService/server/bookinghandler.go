@@ -30,8 +30,6 @@ func (s *Server) HandleBookingCreate() http.HandlerFunc {
 		var booking protocol.Booking
 		json.NewDecoder(r.Body).Decode(&booking)
 
-		booking.Employee = s.getUsername(r)
-
 		response, err := s.BookingService.CreateBooking(context.Background(), &booking)
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
@@ -175,6 +173,10 @@ func (s *Server) HandleAvailableTimesForDoctor() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		if len(response.Strings) == 0 {
+			response.Strings = make([]string, 0)
+		}
 		json.NewEncoder(w).Encode(&response.Strings)
+
 	}
 }

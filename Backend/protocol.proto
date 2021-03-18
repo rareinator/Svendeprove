@@ -24,6 +24,7 @@ message Patient {
   string Username = 7;
   string Gender = 8;
   int32 Age = 9;
+  string UserId = 10;
 }
 
 message Request {
