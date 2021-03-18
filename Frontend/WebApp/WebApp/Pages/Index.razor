@@ -2,10 +2,22 @@
 
 <div class="d-flex justify-content-center align-items-center flex-column">
     <h1>Oversigt</h1>
-    <p>
-        Her kan du se journaler, Undersøgelser og Indlæggelser for en patient. <br />
-        Samt oprette nye journaler, Undersøgelser og Indlæggelser.
-    </p>
+
+    <AuthorizeView Roles="Doctor, Nurse">
+        <Authorized>
+            <p>
+                Her kan du se Journaler, Undersøgelser og Indlæggelser for en patient. <br />
+                Samt oprette nye Journaler, Undersøgelser og Indlæggelser.
+            </p>
+        </Authorized>
+    </AuthorizeView>
+    <AuthorizeView Roles="Patient">
+        <Authorized>
+            <p>
+                Her kan du se dine Journaler, Undersøgelser og Indlæggelser, samt anmode om Undersøgelser
+            </p>
+        </Authorized>
+    </AuthorizeView>
 
     <div class="m-4 w-25">
 
@@ -90,8 +102,10 @@
                     {
                         <p><b>Patient:</b> @selectedPatient.Name</p>
                         <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                        <button @onclick="() => ShowDiagnoseModal(new PatientDiagnoseModel { PatientDiagnoseId = 0 })" 
-                                class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Diagnose</button>
+                        <button @onclick="() => ShowDiagnoseModal(new PatientDiagnoseModel { PatientDiagnoseId = 0 })"
+                                class="btn btn-primary align-self-end mb-2 mr-4">
+                            Opret ny Diagnose
+                        </button>
                     }
 
                     <Diagnoses Diagnosis="diagnosis" />
@@ -99,7 +113,7 @@
             </TabPage>
         </Authorized>
     </AuthorizeView>
-    
+
 </TabControl>
 
 @code {
@@ -115,17 +129,24 @@
     private List<BookingModel> bookings;
     private List<PatientDiagnoseModel> diagnosis;
 
+    private string testString;
+
     protected override async Task OnInitializedAsync()
     {
-        patients = await PatientData.GetPatients();
-
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
-        if (user.IsInRole("Doctor"))
+        var userRole = user.Claims.Where(c => c.Type == "user_role").FirstOrDefault();
+        if (userRole.Value == "Patient")
         {
-            selectedPatient = await Task.FromResult(patients.FirstOrDefault(x => x.Name.ToLower().Contains(user.Identity.Name)));
+            selectedPatient = new UserModel();
+            selectedPatient.UserName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
+            await SelectedPatientChanged(selectedPatient);
         }
+        else
+        {
 
+            patients = await PatientData.GetPatients();
+        }
     }
 
     private async Task<IEnumerable<UserModel>> GetPatientsLocal(string searchText)
