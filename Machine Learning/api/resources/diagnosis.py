@@ -32,6 +32,11 @@ class DiagnosisResource(Resource):
         
         symptoms = parser['symptoms']
         symptoms = [s.id for s in symptoms for s in data.parse_symptom_name(s)]
+        if not symptoms:
+            return {
+                'code': 404,
+                'message': 'Symptoms could not be found'
+            }, 404
 
         diagnosis = [{'name': diag.name,
                       'symptoms': [sym.name for sym in diag.symptoms],
@@ -45,7 +50,9 @@ class DiagnosisResource(Resource):
 
         if not diagnosis:
             return {'code': 404,
-                    'message': "Not found"}, 404
+                    'message': "No diagnosis found"}, 404
+                    
+        diagnosis = sorted(diagnosis, key=lambda x: x['hits'], reverse=True)
 
         return {'code': 200,
-                'diagnosis': sorted(diagnosis, key=lambda x: x['hits'], reverse=True)}, 200
+                'diagnosis': diagnosis[:3] if len(diagnosis) > 3 else diagnosis}, 200
