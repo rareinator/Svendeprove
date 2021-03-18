@@ -13,10 +13,9 @@ import (
 )
 
 type authenticationConfig struct {
-	allowedRoles        []models.UserRole
-	allowedPatient      string
-	allowRelatedPatient bool
-	allowIOTDevice      bool
+	allowedRoles   []models.UserRole
+	allowedPatient string
+	allowIOTDevice bool
 }
 type corsHandler struct {
 	router *mux.Router

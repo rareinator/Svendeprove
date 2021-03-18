@@ -52,8 +52,8 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleJournalRead(),
 			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Office, models.Doctor, models.Nurse},
-				allowedPatient: "id",
+				allowedRoles:   []models.UserRole{models.Office, models.Doctor, models.Nurse, models.Patient},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	// s.Router.Handle("/journal/{id:[0-9]+}", //Update journal
@@ -108,9 +108,8 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleJournalDocumentByJournal(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: true,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office, models.Patient},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/journal/document/{id:[0-9]+}", //Get journal document
@@ -125,17 +124,15 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleJournalMLUpload(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Office, models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Office, models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/journal/symptoms", //Upload symptoms to ML
 		s.Log(s.Authenticate(s.HandleJournalUploadSymptoms(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	// Patient methods
@@ -145,126 +142,112 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandlePatientsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/diagnose/{id:[0-9]+}", //GetDiagnose
 		s.Log(s.Authenticate(
 			s.HandleDiagnoseGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/diagnose", //GetDiagnoses
 		s.Log(s.Authenticate(
 			s.HandleDiagnosesGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/symptom/{id:[0-9]+}", //GetSymptom
 		s.Log(s.Authenticate(
 			s.HandleSymptomGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/symptom", //GetSymptoms
 		s.Log(s.Authenticate(
 			s.HandleSymptomsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/patient/{username}/diagnose", //CreatePatientDiagnose
 		s.Log(s.Authenticate(
 			s.HandlePatientDiagnoseSave(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/patient/{username}/diagnose", //GetDiagnoses
 		s.Log(s.Authenticate(
 			s.HandlePatientDiagnosesGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "patientID",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "username",
 			}))).Methods("GET")
 
 	s.Router.Handle("/patient/{username}/diagnose/{id:[0-9]+}", //GetDiagnose
 		s.Log(s.Authenticate(
 			s.HandlePatientDiagnoseGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "patientID",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "username",
 			}))).Methods("GET")
 
 	s.Router.Handle("/patient/{username}/diagnose/{id:[0-9]+}", //UpdateDiagnose
 		s.Log(s.Authenticate(
 			s.HandlePatientDiagnoseUpdate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/patient/{username}/diagnose/{id:[0-9]+}",
 		s.Log(s.Authenticate(
 			s.HandlePatientDiagnoseDelete(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor},
+				allowedPatient: "",
 			}))).Methods("DELETE")
 
 	s.Router.Handle("/patient/{username}/diagnose/{patientDiagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
 		s.Log(s.Authenticate(
 			s.HandlePatientSymptomCreate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom", //GetPatientSymptoms
 		s.Log(s.Authenticate(
 			s.HandlePatientSymptomsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "patientID",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "username",
 			}))).Methods("GET")
 
 	s.Router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //UpdatePatientSymptom
 		s.Log(s.Authenticate(
 			s.HandlePatientSymptomUpdate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/patient/{username}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //DeletePatientSymptom
 		s.Log(s.Authenticate(
 			s.HandlePatientSymptomDelete(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
+				allowedPatient: "",
 			}))).Methods("DELETE")
 
 	//Booking methods
@@ -274,65 +257,58 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleBookingCreate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/booking/{id:[0-9]+}", //GetBooking
 		s.Log(s.Authenticate(
 			s.HandleBookingGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "",
 			}))).Methods("GET")
 
 	s.Router.Handle("/booking/{id:[0-9]+}", //UpdateBooking
 		s.Log(s.Authenticate(
 			s.HandleBookingUpdate(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/booking/{id:[0-9]+}", //Deletebooking
 		s.Log(s.Authenticate(
 			s.HandleBookingDelete(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "",
 			}))).Methods("DELETE")
 
 	s.Router.Handle("/booking/byPatient/{username}", //GetBookingsByPatient
 		s.Log(s.Authenticate(
 			s.HandleBookingsByPatient(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Nurse, models.Office},
-				allowedPatient:      "id",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "username",
 			}))).Methods("GET")
 
 	s.Router.Handle("/booking/byEmployee/{username}", //GetBookingsByEmployee
 		s.Log(s.Authenticate(
 			s.HandleBookingsByEmployee(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("GET")
 
 	s.Router.Handle("/booking/availableTimesForDoctor",
 		s.Log(s.Authenticate(
 			s.HandleAvailableTimesForDoctor(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("POST")
 
 	// Useradmin methods
@@ -342,59 +318,53 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleUseradminGetEmployee(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
-				allowedPatient:      "username",
-				allowRelatedPatient: false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
+				allowedPatient: "username",
 			}))).Methods("GET")
 
 	s.Router.Handle("/admin/hospitals", //GetHospitals
 		s.Log(s.Authenticate(
 			s.HandleHospitalsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("GET")
 
 	s.Router.Handle("/admin/departments",
 		s.Log(s.Authenticate(
 			s.HandleDepartmentsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("GET")
 
 	s.Router.Handle("/admin/beds",
 		s.Log(s.Authenticate(
 			s.HandleBedsGet(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("GET")
 
 	s.Router.Handle("/admin/availableBeds",
 		s.Log(s.Authenticate(
 			s.HandleAvailableBeds(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("POST")
 
 	s.Router.Handle("/admin/doctors/inHospital/{hospitalID:[0-9]+}",
 		s.Log(s.Authenticate(
 			s.HandleGetDoctorsInHospital(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("GET")
 
 	// IOT Methods
@@ -404,30 +374,27 @@ func (s *Server) routes() {
 		s.Log(s.Authenticate(
 			s.HandleIOTUpload(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      true,
+				allowedRoles:   []models.UserRole{},
+				allowedPatient: "",
+				allowIOTDevice: true,
 			}))).Queries("Key", "", "Data", "").Methods("POST")
 
 	s.Router.Handle("/iot/{deviceID:[0-9]+}",
 		s.Log(s.Authenticate(
 			s.HandleIOTReadData(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("GET")
 
 	s.Router.Handle("/iot/readDataInTimeframe",
 		s.Log(s.Authenticate(
 			s.HandleIOTReadDataInTimeframe(),
 			&authenticationConfig{
-				allowedRoles:        []models.UserRole{models.Doctor, models.Office, models.Nurse},
-				allowedPatient:      "",
-				allowRelatedPatient: false,
-				allowIOTDevice:      false,
+				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
+				allowedPatient: "",
+				allowIOTDevice: false,
 			}))).Methods("POST")
 
 }

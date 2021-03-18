@@ -2,7 +2,6 @@ deploy: envProd build push envDev
 
 update: pull stop remove run network restart
 
-
 envDev:
 	rm -rf .env
 	cp .envDev .env
@@ -26,15 +25,6 @@ push:
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient
 	docker push svendeprovedocker.azurecr.io/svendeprove/svendeprove-journal
-	
-
-download:
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-patient
-	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-journal
 
 pull:
 	sudo docker pull svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
