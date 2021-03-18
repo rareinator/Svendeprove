@@ -11,14 +11,13 @@
             </p>
         </Authorized>
     </AuthorizeView>
-    <AuthorizeView Roles="Patient">
+    <AuthorizeView Roles="Patients">
         <Authorized>
             <p>
-                Her kan du se dine Journaler, Undersøgelser og Indlæggelser, samt anmode om Undersøgelser
+                Her kan du se dine Journaler, Undersøgelser og Indlæggelser, samt anmode om Undersøgelser.
             </p>
         </Authorized>
     </AuthorizeView>
-
     <div class="m-4 w-25">
 
         <AuthorizeView Roles="Doctor, Nurse">
@@ -41,8 +40,9 @@
             </Authorized>
         </AuthorizeView>
     </div>
-
 </div>
+
+
 
 <TabControl>
     <TabPage Text="Journaler">
@@ -68,11 +68,7 @@
             {
                 <p><b>Patient:</b> @selectedPatient.Name</p>
                 <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                <AuthorizeView Roles="Doctor, Nurse">
-                    <Authorized>
                         <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
-                    </Authorized>
-                </AuthorizeView>
             }
 
             <Examinations OnEditClick="ShowExaminationModal" Bookings="bookings" />
@@ -135,11 +131,12 @@
     {
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
-        var userRole = user.Claims.Where(c => c.Type == "user_role").FirstOrDefault();
-        if (userRole.Value == "Patient")
+        if (user.IsInRole("Patients"))
         {
             selectedPatient = new UserModel();
             selectedPatient.UserName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
+            selectedPatient.Name = user.Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
+            selectedPatient.SocialIdNr = user.Claims.Where(c => c.Type == "social_id").FirstOrDefault().Value;
             await SelectedPatientChanged(selectedPatient);
         }
         else
@@ -151,7 +148,7 @@
 
     private async Task<IEnumerable<UserModel>> GetPatientsLocal(string searchText)
     {
-        return await Task.FromResult(patients.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
+        return await Task.FromResult(patients.Where(x => x.Name.ToLower().Contains(searchText.ToLower()) || x.SocialIdNr.Contains(searchText)).ToList());
     }
 
 
@@ -160,7 +157,14 @@
         selectedPatient = patient;
         journals = await JournalData.GetJournalsByPatient(patient.UserName);
         bookings = await BookingData.GetBookingsByPatient(patient.UserName);
-        diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserName);
+
+
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        if (user.IsInRole("Patients"))
+        {
+            diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserName);
+        }
     }
 
     private async Task ShowJournalModal()

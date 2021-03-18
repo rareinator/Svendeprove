@@ -11,7 +11,11 @@ else
     <table class="table text-center table-hover">
         <thead>
             <tr>
-                <th>#</th>
+                <AuthorizeView Roles="Doctor, Nurse">
+                    <Authorized>
+                        <th>#</th>
+                    </Authorized>
+                </AuthorizeView>
                 <th>Start</th>
                 <th>Slut</th>
                 <th>Hospital</th>
@@ -27,7 +31,11 @@ else
                     @if (booking.Approved)
                     {
                         <tr>
-                            <td><button class="btn btn-primary" @onclick="@(() => OnEditClick.InvokeAsync(booking))">Edit</button></td>
+                            <AuthorizeView Roles="Doctor, Nurse">
+                                <Authorized>
+                                    <td><button class="btn btn-primary" @onclick="@(() => OnEditClick.InvokeAsync(booking))">Edit</button></td>
+                                </Authorized>
+                            </AuthorizeView>
                             <td>@booking.BookedTime</td>
                             <td>@booking.BookedEnd</td>
                             <td>@booking.Hospital.Name</td>
