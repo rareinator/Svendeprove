@@ -189,7 +189,7 @@ func (j *JournalServer) CreateJournalDocument(ctx context.Context, jd *JournalDo
 			if err := j.DB.CreateAttachment(&dbAttachment); err != nil {
 				return nil, err
 			}
-			path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", store.Path, attachment.FileName, *attachment.FileType)
+			path := fmt.Sprintf("https://school.m9ssen.me/static%v/%v.%v", store.Path, attachment.FileName, *attachment.FileType)
 			fmt.Printf("path: %v\n\r", path)
 			attachment.Path = &path
 		}
@@ -246,7 +246,7 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 					FileType:     new(string),
 					Path:         new(string),
 				}
-				path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", attachment.FileStore.Path, attachment.FileName, attachment.FileType.Name)
+				path := fmt.Sprintf("https://school.m9ssen.me/static%v/%v.%v", attachment.FileStore.Path, attachment.FileName, attachment.FileType.Name)
 				fmt.Printf("path: %v\n\r", path)
 				resultAttachment.Path = &path
 				resultAttachment.FileType = &attachment.FileType.Name
@@ -290,7 +290,7 @@ func (j *JournalServer) GetJournalDocument(ctx context.Context, jdr *JournalDocu
 				FileType:     new(string),
 				Path:         new(string),
 			}
-			path := fmt.Sprintf("http://cloud.m9ssen.me:56060/static%v/%v.%v", attachment.FileStore.Path, attachment.FileName, attachment.FileType.Name)
+			path := fmt.Sprintf("https://school.m9ssen.me/static%v/%v.%v", attachment.FileStore.Path, attachment.FileName, attachment.FileType.Name)
 			fmt.Printf("path: %v\n\r", path)
 			resultAttachment.Path = &path
 			resultAttachment.FileType = &attachment.FileType.Name

@@ -51,7 +51,7 @@ remove:
 	sudo docker rm svendeprove-journal
 
 run:
-	sudo docker run -d --name svendeprove-rest -p 8080:8080 svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
+	sudo docker run -d --name svendeprove-rest -p 8080:8080 -v /Volumes/static:/app/services/restService/static svendeprovedocker.azurecr.io/svendeprove/svendeprove-rest
 	sudo docker run -d --name svendeprove-admin -p 9004:9004 svendeprovedocker.azurecr.io/svendeprove/svendeprove-admin
 	sudo docker run -d --name svendeprove-iot -p 9005:9005 svendeprovedocker.azurecr.io/svendeprove/svendeprove-iot
 	sudo docker run -d --name svendeprove-booking -p 9002:9002 svendeprovedocker.azurecr.io/svendeprove/svendeprove-booking

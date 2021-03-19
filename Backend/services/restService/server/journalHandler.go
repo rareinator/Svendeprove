@@ -216,7 +216,7 @@ func (s *Server) HandleJournalDocumentSave() http.HandlerFunc {
 		if len(response.Attachments) > 0 {
 			fmt.Println("there were some journal attachments")
 			for _, attachment := range response.Attachments {
-				filePath := strings.ReplaceAll(*attachment.Path, "http://cloud.m9ssen.me:56060/static/", "")
+				filePath := strings.ReplaceAll(*attachment.Path, "https://school.m9ssen.me/static/", "")
 				err := s.saveFile(*attachment.Content, filePath)
 				fmt.Printf("saving file %v\n\r", filePath)
 				if err != nil {
@@ -331,7 +331,7 @@ func (s *Server) HandleJournalMLUpload() http.HandlerFunc {
 
 		for _, attachment := range Attachments {
 			fmt.Println(attachment)
-			filePath := strings.ReplaceAll(attachment, "http://cloud.m9ssen.me:56060/", "./")
+			filePath := strings.ReplaceAll(attachment, "https://school.m9ssen.me/", "./")
 			img, err := os.Open(filePath)
 			if err != nil {
 				s.ReturnError(w, http.StatusInternalServerError, err.Error())

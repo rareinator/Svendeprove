@@ -377,7 +377,7 @@ func (s *Server) routes() {
 				allowedRoles:   []models.UserRole{},
 				allowedPatient: "",
 				allowIOTDevice: true,
-			}))).Queries("Key", "CGrtgtzxC0x5Ea6M", "SensorId", "", "Name", "", "Data", "").Methods("POST")
+			}))).Queries("Key", "CGrtgtzxC0x5Ea6M", "SensorId", "", "Name", "", "Data", "").Methods("GET")
 
 	s.Router.Handle("/iot/{deviceID:[0-9]+}",
 		s.Log(s.Authenticate(
