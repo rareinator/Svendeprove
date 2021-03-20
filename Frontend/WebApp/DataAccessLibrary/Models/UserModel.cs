@@ -16,5 +16,6 @@ namespace DataAccessLibrary.Models
         public string PostalCode { get; set; }
         public string Country { get; set; }
         public string SocialIdNr { get; set; }
+        public string UserId {get;set;}
     }
 }

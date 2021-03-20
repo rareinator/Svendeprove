@@ -1,7 +1,63 @@
-﻿
-<div class="form-group">
-    <input class="form-control" type="date" @bind="SelectedDocument.CreationTime" />
-</div>
+﻿﻿<div class="modal-height">
+    <div class="form-group">
+        <input class="form-control" type="date" @bind="SelectedDocument.CreationTime" />
+    </div>
+
+    <h5>Title</h5>
+    <div class="form-group">
+        <input class="form-control" type="text" @bind="SelectedDocument.Title" />
+    </div>
+
+    <h5>Summary</h5>
+    <div class="form-group">
+        @if (!RichTextEditorModeSummary)
+        {
+            <textarea class="form-control" @bind="@SelectedDocument.Summary" rows="2" />
+        }
+        else
+        {
+            <BlazoredTextEditor @ref="@QuillHtmlSummary">
+                <ToolbarContent>
+                    <select class="ql-header">
+                        <option selected=""></option>
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                    </select>
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <select class="ql-color"></select>
+                        <select class="ql-background"></select>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-link"></button>
+                    </span>
+                </ToolbarContent>
+                <EditorContent>
+                    @((MarkupString)SelectedDocument.Summary)
+                </EditorContent>
+            </BlazoredTextEditor>
+        }
+        @if (!RichTextEditorModeSummary)
+        {
+            <button type="button" class="btn btn-link" @onclick="RichTextEditorSummary"><h6>[Rich Text Editor]</h6></button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-link" @onclick="RawHTMLEditorSummary"><h6>[Raw HTML Editor]</h6></button>
+        }
+    </div>
 
 <h5>Overskrift</h5>
 <div class="form-group">
@@ -100,19 +156,87 @@
             </EditorContent>
         </BlazoredTextEditor>
     }
+    <h5>Content</h5>
+    <div class="form-group mh-100">
+        @if (!RichTextEditorMode)
+        {
+            <textarea class="form-control" @bind="@SelectedDocument.Content" rows="5" />
+        }
+        else
+        {
+            <BlazoredTextEditor @ref="@QuillHtml">
+                <ToolbarContent>
+                    <select class="ql-header">
+                        <option selected=""></option>
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                    </select>
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <select class="ql-color"></select>
+                        <select class="ql-background"></select>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-link"></button>
+                    </span>
+                </ToolbarContent>
+                <EditorContent>
+                    @((MarkupString)SelectedDocument.Content)
+                </EditorContent>
+            </BlazoredTextEditor>
+        }
 
     @if (!RichTextEditorMode)
     {
         <button type="button" class="btn btn-link" @onclick="RichTextEditor"><h6>[Rich Text Editor]</h6></button>
     }
     else
+        @if (!RichTextEditorMode)
+        {
+            <button type="button" class="btn btn-link" @onclick="RichTextEditor"><h6>[Rich Text Editor]</h6></button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-link" @onclick="RawHTMLEditor"><h6>[Raw HTML Editor]</h6></button>
+        }
+    </div>
+
+    <h5>Attachments</h5>
+    <div class="form-group">
+
+        <InputFile OnChange="@InputFileChanged" multiple />
+    </div>
+    <br />
+
+    <button class="btn btn-primary" @onclick="Save">
+        Gem
+    </button>&nbsp;
+
+    <!-- Only show delete button if not a new record -->
+    @if (SelectedDocument.DocumentId.ToString() != "0")
     {
         <button type="button" class="btn btn-link" @onclick="RawHTMLEditor"><h6>[Raw HTML Editor]</h6></button>
+        <button class="btn btn-danger" @onclick="Delete">
+            Slet
+        </button>
     }
 </div>
 
 <h5>Attachments</h5>
 <div class="form-group">
+    <br />
 
     <InputFile OnChange="@InputFileChanged" multiple />
 </div>
