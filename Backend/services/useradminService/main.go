@@ -32,8 +32,6 @@ func execute() error {
 		return err
 	}
 
-	fmt.Println(os.Getenv("MSSQL_URI"))
-
 	sql, err := mssql.NewConnection(os.Getenv("MSSQL_URI"))
 	if err != nil {
 		return err
@@ -48,7 +46,7 @@ func execute() error {
 	protocol.RegisterUseradminServiceServer(grpcServer, &ps)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
+		return fmt.Errorf("faild to start gRPC server over addr: %v err: %w", os.Getenv("MSSQL_URI"), err)
 	}
 
 	return nil

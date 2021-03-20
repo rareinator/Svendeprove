@@ -19,20 +19,6 @@ func (p *PatientServer) GetHealth(ctx context.Context, e *Empty) (*Health, error
 	return &Health{Message: fmt.Sprintf("Patient service is up and running on: %v 🚀", p.ListenAddress)}, nil
 }
 
-func (p *PatientServer) GetDiagnose(ctx context.Context, pr *Request) (*Diagnose, error) {
-	dbDiagnose, err := p.DB.GetDiagnose(pr.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	result := Diagnose{
-		DiagnoseId:  dbDiagnose.DiagnoseId,
-		Description: dbDiagnose.Description,
-	}
-
-	return &result, nil
-}
-
 func (p *PatientServer) GetDiagnoses(ctx context.Context, e *Empty) (*Diagnoses, error) {
 	diagnoses := Diagnoses{
 		Diagnoses: make([]*Diagnose, 0),
@@ -166,20 +152,6 @@ func (p *PatientServer) GetPatientDiagnose(ctx context.Context, pr *Request) (*P
 	}
 
 	return &patientDiagnose, nil
-}
-
-func (p *PatientServer) UpdatePatientDiagnose(ctx context.Context, pd *PatientDiagnose) (*PatientDiagnose, error) {
-	dbPatientDiagnose := mssql.DBPatientDiagnose{
-		PatientDiagnoseId: pd.PatientDiagnoseId,
-		Patient:           pd.Patient,
-		DiagnoseId:        pd.DiagnoseId,
-	}
-
-	if err := p.DB.UpdatePatientDiagnose(&dbPatientDiagnose); err != nil {
-		return nil, err
-	}
-
-	return pd, nil
 }
 
 func (p *PatientServer) DeletePatientDiagnose(ctx context.Context, pr *Request) (*Status, error) {

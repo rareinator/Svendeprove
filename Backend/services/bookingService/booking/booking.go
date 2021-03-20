@@ -98,7 +98,7 @@ func (b *BookingServer) GetBooking(ctx context.Context, br *Request) (*Booking, 
 		}
 
 		if examination == nil {
-			return nil, fmt.Errorf("Could not find either hospitilization or examination data")
+			return nil, fmt.Errorf("could not find either hospitilization or examination data")
 		} else {
 			bookingType = "0"
 			description = examination.Description
@@ -245,7 +245,7 @@ func (b *BookingServer) GetBookingsByPatient(ctx context.Context, br *Request) (
 			}
 
 			if examination == nil {
-				return nil, fmt.Errorf("Could not find either hospitilization or examination data")
+				return nil, fmt.Errorf("could not find either hospitilization or examination data")
 			} else {
 				booking.Type = string(models.Examination)
 				booking.Description = examination.Description
@@ -308,7 +308,7 @@ func (b *BookingServer) GetBookingsByEmployee(ctx context.Context, br *Request) 
 			}
 
 			if examination == nil {
-				return nil, fmt.Errorf("Could not find either hospitilization or examination data, for booking: %v", dbBooking.BookingId)
+				return nil, fmt.Errorf("could not find either hospitilization or examination data, for booking: %v", dbBooking.BookingId)
 			} else {
 				booking.Type = string(models.Examination)
 				booking.Description = examination.Description

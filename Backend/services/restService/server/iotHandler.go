@@ -10,7 +10,7 @@ import (
 	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
-func (s *Server) HandleIOTHealth() http.HandlerFunc {
+func (s *Server) handleIOTHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		i := protocol.Empty{}
 
@@ -28,7 +28,7 @@ func (s *Server) HandleIOTHealth() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleIOTUpload() http.HandlerFunc {
+func (s *Server) handleIOTUpload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data := r.URL.Query().Get("Data")
 		sensorId, _ := strconv.Atoi(r.URL.Query().Get("SensorId"))
@@ -54,7 +54,7 @@ func (s *Server) HandleIOTUpload() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleIOTReadData() http.HandlerFunc {
+func (s *Server) handleIOTReadData() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		deviceID, err := strconv.Atoi(vars["deviceID"])
@@ -81,7 +81,7 @@ func (s *Server) HandleIOTReadData() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleIOTReadDataInTimeframe() http.HandlerFunc {
+func (s *Server) handleIOTReadDataInTimeframe() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request protocol.IOTTimeframeRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

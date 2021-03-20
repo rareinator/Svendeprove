@@ -10,7 +10,7 @@ import (
 	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
-func (s *Server) HandleBookingHealth() http.HandlerFunc {
+func (s *Server) handleBookingHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response, err := s.BookingService.GetHealth(context.Background(), &protocol.Empty{})
 		if err != nil {
@@ -26,7 +26,7 @@ func (s *Server) HandleBookingHealth() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleBookingCreate() http.HandlerFunc {
+func (s *Server) handleBookingCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var booking protocol.Booking
 		if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
@@ -48,7 +48,7 @@ func (s *Server) HandleBookingCreate() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleBookingDelete() http.HandlerFunc {
+func (s *Server) handleBookingDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		bookingID, err := strconv.Atoi(vars["id"])
@@ -76,7 +76,7 @@ func (s *Server) HandleBookingDelete() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleBookingsByPatient() http.HandlerFunc {
+func (s *Server) handleBookingsByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		br := protocol.Request{
@@ -100,7 +100,7 @@ func (s *Server) HandleBookingsByPatient() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
+func (s *Server) handleBookingsByEmployee() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		br := protocol.Request{
@@ -124,7 +124,7 @@ func (s *Server) HandleBookingsByEmployee() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleAvailableTimesForDoctor() http.HandlerFunc {
+func (s *Server) handleAvailableTimesForDoctor() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request protocol.TimeFrameRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

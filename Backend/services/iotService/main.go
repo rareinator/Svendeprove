@@ -46,7 +46,7 @@ func execute() error {
 	protocol.RegisterIotServiceServer(grpcServer, &is)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("faild to start gRPC server over addr: %v err: %v", os.Getenv("IOT_SERVICE_ADDR"), err)
+		return fmt.Errorf("faild to start gRPC server over addr: %v err: %w", os.Getenv("IOT_SERVICE_ADDR"), err)
 	}
 
 	return nil

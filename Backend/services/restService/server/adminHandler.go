@@ -14,7 +14,7 @@ import (
 	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
-func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
+func (s *Server) handleGetDoctorsInHospital() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		requestedHospitalId := vars["hospitalID"]
@@ -57,7 +57,7 @@ func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientsGet() http.HandlerFunc {
+func (s *Server) handlePatientsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl(os.Getenv("OKTA_URL")), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
@@ -101,7 +101,7 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleUseradminHealth() http.HandlerFunc {
+func (s *Server) handleUseradminHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u := protocol.Empty{}
 
@@ -119,29 +119,7 @@ func (s *Server) HandleUseradminHealth() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleUseradminGetEmployee() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		er := protocol.UserRequest{
-			UserId: vars["userId"],
-		}
-
-		response, err := s.UseradminService.GetEmployee(context.Background(), &er)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		if err := json.NewEncoder(w).Encode(response); err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
-func (s *Server) HandleHospitalsGet() http.HandlerFunc {
+func (s *Server) handleHospitalsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		response, err := s.UseradminService.GetHospitals(context.Background(), &protocol.Empty{})
@@ -158,7 +136,7 @@ func (s *Server) HandleHospitalsGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleAvailableBeds() http.HandlerFunc {
+func (s *Server) handleAvailableBeds() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request protocol.BedsRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

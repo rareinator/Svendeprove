@@ -19,16 +19,6 @@ func (u *UseradminServer) GetHealth(ctx context.Context, e *Empty) (*Health, err
 	return &Health{Message: fmt.Sprintf("Useradmin service is up and running on: %v 🚀", u.ListenAddress)}, nil
 }
 
-func (u *UseradminServer) GetUser(ctx context.Context, er *UserRequest) (*User, error) {
-	//TODO: Okta fix
-	result := User{
-		Name:   "Morten Nissen",
-		UserId: er.UserId,
-	}
-
-	return &result, nil
-}
-
 func (u *UseradminServer) GetHospitals(ctx context.Context, e *Empty) (*Hospitals, error) {
 	hospitals := Hospitals{
 		Hospitals: make([]*Hospital, 0),
@@ -53,54 +43,6 @@ func (u *UseradminServer) GetHospitals(ctx context.Context, e *Empty) (*Hospital
 	}
 
 	return &hospitals, nil
-}
-
-func (u *UseradminServer) GetDepartments(ctx context.Context, e *Empty) (*Departments, error) {
-	departments := Departments{
-		Departments: make([]*Department, 0),
-	}
-
-	dbDepartments, err := u.DB.GetDepartments()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, dbDepartment := range dbDepartments {
-		department := Department{
-			Departmentid: dbDepartment.DepartmentId,
-			Name:         dbDepartment.Name,
-			Description:  dbDepartment.Description,
-			HospitalId:   dbDepartment.HospitalId,
-		}
-
-		departments.Departments = append(departments.Departments, &department)
-	}
-
-	return &departments, nil
-}
-
-func (u *UseradminServer) GetBeds(ctx context.Context, e *Empty) (*Beds, error) {
-	beds := Beds{
-		Beds: make([]*Bed, 0),
-	}
-
-	dbBeds, err := u.DB.GetBeds()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, dbBed := range dbBeds {
-		Bed := Bed{
-			BedId:        dbBed.BedId,
-			Name:         dbBed.Name,
-			Departmentid: dbBed.DepartmentId,
-			IsAvailable:  dbBed.IsAvailable,
-		}
-
-		beds.Beds = append(beds.Beds, &Bed)
-	}
-
-	return &beds, nil
 }
 
 func (u *UseradminServer) GetAvailableBeds(ctx context.Context, r *BedsRequest) (*Beds, error) {

@@ -48,7 +48,7 @@ func execute() error {
 	protocol.RegisterPatientServiceServer(grpcServer, &ps)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("failed to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
+		return fmt.Errorf("failed to start gRPC server over addr: %v err: %w", os.Getenv("MSSQL_URI"), err)
 	}
 
 	return nil

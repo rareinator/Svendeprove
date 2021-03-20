@@ -236,19 +236,19 @@ message Attachment {
 }
 
 service JournalService {
+  rpc GetHealth(Empty) returns (Health) {}
+
   rpc CreateJournal(Journal) returns (Journal) {}
   rpc DeleteJournal(JournalRequest) returns (Status) {}
-  rpc GetHealth(Empty) returns (Health) {}
   rpc UpdateJournal(Journal) returns (Journal) {}
   rpc GetJournalsByPatient(UserRequest) returns (Journals) {}
 
-  rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
+  
+  rpc CreateJournalDocument(JournalDocument) returns (JournalDocument) {}
   rpc UpdateJournalDocument(JournalDocument) returns (JournalDocument) {}
+  rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
   rpc GetJournalDocumentsByJournal(JournalRequest) returns (JournalDocuments) {}
   rpc GetJournalDocument(JournalDocumentRequest) returns (JournalDocument) {}
-  rpc CreateJournalDocument(JournalDocument) returns (JournalDocument) {}
-
-  rpc CreateAttachment(Attachment) returns (Attachment) {}
 }
 
 message BedsRequest {
@@ -279,8 +279,7 @@ message Departments {
 
 service UseradminService {
   rpc GetHealth(Empty) returns (Health) {}
-
-  rpc GetEmployee(UserRequest) returns (User) {}
+  
   rpc GetPatients(Empty) returns (Users) {}
   rpc GetAvailableBeds(BedsRequest) returns (Beds) {}
 

@@ -87,10 +87,6 @@ func (DBPatientDiagnoseSymptom) TableName() string {
 	return "PatientDiagnoseSymptom"
 }
 
-func (DBPatientDiagnoseSymptom) JoinTableName() string {
-	return "PatientDiagnoseSymptom"
-}
-
 type DBPatientDiagnose struct {
 	PatientDiagnoseId int32       `gorm:"column:PatientDiagnoseId;primaryKey"`
 	Patient           string      `gorm:"column:Patient"`
@@ -102,10 +98,6 @@ type DBPatientDiagnose struct {
 
 func (DBPatientDiagnose) TableName() string {
 	return "PatientDiagnose"
-}
-
-func (DBPatientDiagnose) JoinTableName() string {
-	return "PatientDiagnoseSymptom"
 }
 
 type DBDiagnose struct {
@@ -121,10 +113,6 @@ type DBSymptom struct {
 	SymptomId        int32               `gorm:"column:SymptomId;primaryKey"`
 	Description      string              `gorm:"column:Description"`
 	PatientDiagnoses []DBPatientDiagnose `gorm:"many2many:PatientDiagnoseSymptom;foreignKey:SymptomId;joinForeignKey:SymptomId;"`
-}
-
-func (DBSymptom) JoinTableName() string {
-	return "PatientDiagnoseSymptom"
 }
 
 func (DBSymptom) TableName() string {

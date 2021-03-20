@@ -42,30 +42,6 @@ func NewConnection(dsn string) (*MSSQL, error) {
 	return &mssql, nil
 }
 
-func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
-	var token DBToken
-
-	result := m.db.First(&token, "Token = ?", tokenID)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	if token.Token != tokenID {
-		return nil, fmt.Errorf("Could not find a token with ID: %v", tokenID)
-	}
-
-	return &token, nil
-}
-
-func (m *MSSQL) InsertToken(token *DBToken) error {
-	result := m.db.Omit("IssuedAt", "ValidUntil").Create(token)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
-}
-
 func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {
 	var journal DBJournal
 
@@ -165,16 +141,16 @@ func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument,
 	return &journalDocument, nil
 }
 
-func (m *MSSQL) GetDiagnose(id int32) (*DBDiagnose, error) {
-	var diagnose DBDiagnose
+// func (m *MSSQL) GetDiagnose(id int32) (*DBDiagnose, error) {
+// 	var diagnose DBDiagnose
 
-	result := m.db.First(&diagnose, id)
-	if result.Error != nil {
-		return nil, result.Error
-	}
+// 	result := m.db.First(&diagnose, id)
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
 
-	return &diagnose, nil
-}
+// 	return &diagnose, nil
+// }
 
 func (m *MSSQL) GetDiagnoses() ([]*DBDiagnose, error) {
 	var diagnoses []*DBDiagnose
@@ -196,28 +172,6 @@ func (m *MSSQL) GetHospitals() ([]*DBHospital, error) {
 	}
 
 	return hospitals, nil
-}
-
-func (m *MSSQL) GetDepartments() ([]*DBDepartment, error) {
-	var departments []*DBDepartment
-
-	result := m.db.Find(&departments)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return departments, nil
-}
-
-func (m *MSSQL) GetBeds() ([]*DBBed, error) {
-	var beds []*DBBed
-
-	result := m.db.Preload("Department").Find(&beds)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return beds, nil
 }
 
 func (m *MSSQL) GetAvailableBeds(startDate, endDate time.Time, id int32) ([]*DBBed, error) {
@@ -335,8 +289,8 @@ func (m *MSSQL) GetPatientDiagnoseSymptoms(patientDiagnoseId int32) ([]*DBPatien
 	return patientDiagnoseSymptoms, nil
 }
 
-func (m *MSSQL) UpdatePatientDiagnoseSymptom(old *DBPatientDiagnoseSymptom, new *DBPatientDiagnoseSymptom) error {
-	result := m.db.Where("PatientdiagnoseId = ? AND SymptomId = ?", old.PatientDiagnoseId, old.SymptomId).Save(&new)
+func (m *MSSQL) UpdatePatientDiagnoseSymptom(oldPatientDiagnoseSymptom *DBPatientDiagnoseSymptom, newPatientDiagnoseSymptom *DBPatientDiagnoseSymptom) error {
+	result := m.db.Where("PatientdiagnoseId = ? AND SymptomId = ?", oldPatientDiagnoseSymptom.PatientDiagnoseId, oldPatientDiagnoseSymptom.SymptomId).Save(&newPatientDiagnoseSymptom)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -552,8 +506,8 @@ func (m *MSSQL) GetBookingsByEmployee(username string) ([]*DBBooking, error) {
 }
 
 func (m *MSSQL) GetBookedTimesForDoctor(day time.Time, doctor string) ([]time.Time, error) {
-	var bookings []*DBBooking
-	var response []time.Time
+	bookings := make([]*DBBooking, 0)
+	response := make([]time.Time, 0)
 
 	result := m.db.Where("BookedTime BETWEEN ? AND ?", day, day.Add(time.Hour*24)).Find(&bookings)
 	if result.Error != nil {

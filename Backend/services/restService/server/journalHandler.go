@@ -18,7 +18,7 @@ import (
 	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
-func (s *Server) HandleJournalHealth() http.HandlerFunc {
+func (s *Server) handleJournalHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		j := protocol.Empty{}
 
@@ -35,7 +35,7 @@ func (s *Server) HandleJournalHealth() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalSave() http.HandlerFunc {
+func (s *Server) handleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var journal protocol.Journal
 		if err := json.NewDecoder(r.Body).Decode(&journal); err != nil {
@@ -59,7 +59,7 @@ func (s *Server) HandleJournalSave() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalUpdate() http.HandlerFunc {
+func (s *Server) handleJournalUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["id"])
@@ -90,7 +90,7 @@ func (s *Server) HandleJournalUpdate() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalDelete() http.HandlerFunc {
+func (s *Server) handleJournalDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["id"])
@@ -113,7 +113,7 @@ func (s *Server) HandleJournalDelete() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalByPatient() http.HandlerFunc {
+func (s *Server) handleJournalByPatient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -140,7 +140,7 @@ func (s *Server) HandleJournalByPatient() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalDocumentDelete() http.HandlerFunc {
+func (s *Server) handleJournalDocumentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["id"])
@@ -168,7 +168,7 @@ func (s *Server) HandleJournalDocumentDelete() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalDocumentUpdate() http.HandlerFunc {
+func (s *Server) handleJournalDocumentUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["id"])
@@ -199,7 +199,7 @@ func (s *Server) HandleJournalDocumentUpdate() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalDocumentSave() http.HandlerFunc {
+func (s *Server) handleJournalDocumentSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var journalDocument protocol.JournalDocument
 		if err := json.NewDecoder(r.Body).Decode(&journalDocument); err != nil {
@@ -238,7 +238,7 @@ func (s *Server) HandleJournalDocumentSave() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalDocumentByJournal() http.HandlerFunc {
+func (s *Server) handleJournalDocumentByJournal() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		journalID, err := strconv.Atoi(vars["id"])
@@ -269,7 +269,7 @@ func (s *Server) HandleJournalDocumentByJournal() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalDocumentRead() http.HandlerFunc {
+func (s *Server) handleJournalDocumentRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		journalDocumentID, err := strconv.Atoi(vars["id"])
@@ -311,7 +311,7 @@ type MLResponse struct {
 	Data MLOutput
 }
 
-func (s *Server) HandleJournalUploadSymptoms() http.HandlerFunc {
+func (s *Server) handleJournalUploadSymptoms() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		resp, err := http.Post(os.Getenv("ML_DIAGNOSE_ENDPOINT"), "application/json", r.Body)
 		if err != nil {
@@ -334,7 +334,7 @@ func (s *Server) HandleJournalUploadSymptoms() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalMLUpload() http.HandlerFunc {
+func (s *Server) handleJournalMLUpload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var Attachments []string
 		response := make([]*MLResponse, 0)

@@ -5,16 +5,16 @@ import (
 )
 
 func (s *Server) routes() {
-	s.Router.Methods("OPTIONS").Handler(s.HandleCors())
+	s.Router.Methods("OPTIONS").Handler(s.handleCors())
 
-	s.Router.Handle("/health", s.HandleHealth()).Methods("GET")
+	s.Router.Handle("/health", s.handleHealth()).Methods("GET")
 
 	//Journal methods
-	s.Router.Handle("/journal/health", s.HandleJournalHealth()).Methods("GET")
+	s.Router.Handle("/journal/health", s.handleJournalHealth()).Methods("GET")
 
 	s.Router.Handle("/journal", //Save journal
 		s.Log(s.Authenticate(
-			s.HandleJournalSave(),
+			s.handleJournalSave(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor},
 				allowedPatient: "",
@@ -22,7 +22,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/{id:[0-9]+}", //Update journal
 		s.Log(s.Authenticate(
-			s.HandleJournalUpdate(),
+			s.handleJournalUpdate(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -30,7 +30,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/{id:[0-9]+}", // Delete journal
 		s.Log(s.Authenticate(
-			s.HandleJournalDelete(),
+			s.handleJournalDelete(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor},
 				allowedPatient: "",
@@ -38,7 +38,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/byPatient/{userId}", //Get patient journals
 		s.Log(s.Authenticate(
-			s.HandleJournalByPatient(),
+			s.handleJournalByPatient(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "userId",
@@ -46,7 +46,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/document/{id:[0-9]+}", //Delete journal documents
 		s.Log(s.Authenticate(
-			s.HandleJournalDocumentDelete(),
+			s.handleJournalDocumentDelete(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -54,7 +54,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/document/{id:[0-9]+}", //Update journal document
 		s.Log(s.Authenticate(
-			s.HandleJournalDocumentUpdate(),
+			s.handleJournalDocumentUpdate(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -62,7 +62,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/document", //Create journal document
 		s.Log(s.Authenticate(
-			s.HandleJournalDocumentSave(),
+			s.handleJournalDocumentSave(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -70,7 +70,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/document/byJournal/{id:[0-9]+}", //Get journal documents by journalID
 		s.Log(s.Authenticate(
-			s.HandleJournalDocumentByJournal(),
+			s.handleJournalDocumentByJournal(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office, models.Patient},
 				allowedPatient: "",
@@ -78,7 +78,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/document/{id:[0-9]+}", //Get journal document
 		s.Log(s.Authenticate(
-			s.HandleJournalDocumentRead(),
+			s.handleJournalDocumentRead(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office, models.Patient},
 				allowedPatient: "",
@@ -86,25 +86,25 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/journal/ml", //Upload images to ML
 		s.Log(s.Authenticate(
-			s.HandleJournalMLUpload(),
+			s.handleJournalMLUpload(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Office, models.Doctor, models.Nurse},
 				allowedPatient: "",
 			}))).Methods("POST")
 
 	s.Router.Handle("/journal/symptoms", //Upload symptoms to ML
-		s.Log(s.Authenticate(s.HandleJournalUploadSymptoms(),
+		s.Log(s.Authenticate(s.handleJournalUploadSymptoms(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient: "",
 			}))).Methods("POST")
 
 	// Patient methods
-	s.Router.Handle("/patient/health", s.HandlePatientHealth()).Methods("GET")
+	s.Router.Handle("/patient/health", s.handlePatientHealth()).Methods("GET")
 
 	s.Router.Handle("/patient", //GetPatients
 		s.Log(s.Authenticate(
-			s.HandlePatientsGet(),
+			s.handlePatientsGet(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient: "",
@@ -112,7 +112,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/diagnose", //GetDiagnoses
 		s.Log(s.Authenticate(
-			s.HandleDiagnosesGet(),
+			s.handleDiagnosesGet(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -120,7 +120,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/symptom", //GetSymptoms
 		s.Log(s.Authenticate(
-			s.HandleSymptomsGet(),
+			s.handleSymptomsGet(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -128,7 +128,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose", //CreatePatientDiagnose
 		s.Log(s.Authenticate(
-			s.HandlePatientDiagnoseSave(),
+			s.handlePatientDiagnoseSave(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor},
 				allowedPatient: "",
@@ -136,7 +136,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose", //GetDiagnoses
 		s.Log(s.Authenticate(
-			s.HandlePatientDiagnosesGet(),
+			s.handlePatientDiagnosesGet(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "userId",
@@ -144,7 +144,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose/{id:[0-9]+}",
 		s.Log(s.Authenticate(
-			s.HandlePatientDiagnoseDelete(),
+			s.handlePatientDiagnoseDelete(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor},
 				allowedPatient: "",
@@ -152,7 +152,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose/{patientDiagnoseID:[0-9]+}/symptom", //CreatePatientSymptom
 		s.Log(s.Authenticate(
-			s.HandlePatientSymptomCreate(),
+			s.handlePatientSymptomCreate(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -160,7 +160,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose/{diagnoseID:[0-9]+}/symptom", //GetPatientSymptoms
 		s.Log(s.Authenticate(
-			s.HandlePatientSymptomsGet(),
+			s.handlePatientSymptomsGet(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "userId",
@@ -168,7 +168,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //UpdatePatientSymptom
 		s.Log(s.Authenticate(
-			s.HandlePatientSymptomUpdate(),
+			s.handlePatientSymptomUpdate(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
@@ -176,18 +176,18 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/patient/{userId}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+}", //DeletePatientSymptom
 		s.Log(s.Authenticate(
-			s.HandlePatientSymptomDelete(),
+			s.handlePatientSymptomDelete(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse},
 				allowedPatient: "",
 			}))).Methods("DELETE")
 
 	//Booking methods
-	s.Router.Handle("/booking/health", s.HandleBookingHealth()).Methods("GET")
+	s.Router.Handle("/booking/health", s.handleBookingHealth()).Methods("GET")
 
 	s.Router.Handle("/booking", //CreateBooking
 		s.Log(s.Authenticate(
-			s.HandleBookingCreate(),
+			s.handleBookingCreate(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office, models.Patient},
 				allowedPatient: "",
@@ -195,7 +195,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/booking/{id:[0-9]+}", //Deletebooking
 		s.Log(s.Authenticate(
-			s.HandleBookingDelete(),
+			s.handleBookingDelete(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient: "",
@@ -203,7 +203,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/booking/byPatient/{userId}", //GetBookingsByPatient
 		s.Log(s.Authenticate(
-			s.HandleBookingsByPatient(),
+			s.handleBookingsByPatient(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
 				allowedPatient: "userId",
@@ -211,7 +211,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/booking/byEmployee/{userId}", //GetBookingsByEmployee
 		s.Log(s.Authenticate(
-			s.HandleBookingsByEmployee(),
+			s.handleBookingsByEmployee(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient: "",
@@ -220,7 +220,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/booking/availableTimesForDoctor",
 		s.Log(s.Authenticate(
-			s.HandleAvailableTimesForDoctor(),
+			s.handleAvailableTimesForDoctor(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient: "",
@@ -228,19 +228,11 @@ func (s *Server) routes() {
 			}))).Methods("POST")
 
 	// Useradmin methods
-	s.Router.Handle("/useradmin/health", s.HandleUseradminHealth()).Methods("GET") //GetHealth)
-
-	s.Router.Handle("/useradmin/{userId}", //GetUser //TODO:
-		s.Log(s.Authenticate(
-			s.HandleUseradminGetEmployee(),
-			&authenticationConfig{
-				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
-				allowedPatient: "userId",
-			}))).Methods("GET")
+	s.Router.Handle("/useradmin/health", s.handleUseradminHealth()).Methods("GET") //GetHealth)
 
 	s.Router.Handle("/admin/hospitals", //GetHospitals
 		s.Log(s.Authenticate(
-			s.HandleHospitalsGet(),
+			s.handleHospitalsGet(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient: "",
@@ -249,7 +241,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/admin/availableBeds",
 		s.Log(s.Authenticate(
-			s.HandleAvailableBeds(),
+			s.handleAvailableBeds(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient: "",
@@ -258,7 +250,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/admin/doctors/inHospital/{hospitalID:[0-9]+}",
 		s.Log(s.Authenticate(
-			s.HandleGetDoctorsInHospital(),
+			s.handleGetDoctorsInHospital(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse, models.Patient},
 				allowedPatient: "",
@@ -266,16 +258,16 @@ func (s *Server) routes() {
 			}))).Methods("GET")
 
 	// IOT Methods
-	s.Router.Handle("/iot/health", s.HandleIOTHealth()).Methods("GET") //GetHealth
+	s.Router.Handle("/iot/health", s.handleIOTHealth()).Methods("GET") //GetHealth
 
 	s.Router.Handle("/iot/uploadData",
 		s.Log(
-			s.HandleIOTUpload(),
+			s.handleIOTUpload(),
 		)).Queries("Key", "CGrtgtzxC0x5Ea6M", "SensorId", "", "Name", "", "Data", "").Methods("GET")
 
 	s.Router.Handle("/iot/{deviceID:[0-9]+}",
 		s.Log(s.Authenticate(
-			s.HandleIOTReadData(),
+			s.handleIOTReadData(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient: "",
@@ -284,7 +276,7 @@ func (s *Server) routes() {
 
 	s.Router.Handle("/iot/readDataInTimeframe",
 		s.Log(s.Authenticate(
-			s.HandleIOTReadDataInTimeframe(),
+			s.handleIOTReadDataInTimeframe(),
 			&authenticationConfig{
 				allowedRoles:   []models.UserRole{models.Doctor, models.Office, models.Nurse},
 				allowedPatient: "",

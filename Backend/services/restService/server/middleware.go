@@ -32,7 +32,7 @@ func (ch *corsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ch.router.ServeHTTP(w, r)
 }
 
-func (s *Server) HandleCors() http.HandlerFunc {
+func (s *Server) handleCors() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
@@ -59,7 +59,7 @@ func (s *Server) Log(next http.HandlerFunc) http.HandlerFunc {
 }
 
 //ReturnError is used by all the different http Handlers to return an error message is something
-//unexpected occured
+//unexpected occurred
 func (s *Server) ReturnError(w http.ResponseWriter, statusCode int, Message string) {
 	var errorMessage struct {
 		Code    int
@@ -144,19 +144,8 @@ func (s *Server) Authenticate(next http.HandlerFunc, config *authenticationConfi
 			}
 		}
 
-		// 	if config.allowIOTDevice {
-		// 		// fmt.Println(response)
-		// 		// fmt.Println(response.IOTDeviceId)
-		// 		// if response.IOTDeviceId != 0 {
-		// 		// 	allowed = true
-		// 		// }
-
-		// 		//TODO: find out what to do here properly
-		// 		allowed = true
-		// 	}
-
 		if !allowed {
-			s.ReturnError(w, http.StatusForbidden, "Could not succesfully authenticate you")
+			s.ReturnError(w, http.StatusForbidden, "Could not successfully authenticate you")
 			return
 		}
 

@@ -47,7 +47,7 @@ func execute() error {
 	protocol.RegisterJournalServiceServer(grpcServer, &js)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
+		return fmt.Errorf("faild to start gRPC server over addr: %v err: %w", os.Getenv("MSSQL_URI"), err)
 	}
 
 	return nil

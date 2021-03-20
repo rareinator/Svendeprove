@@ -10,7 +10,7 @@ import (
 	protocol "github.com/rareinator/Svendeprove/Backend/packages/protocol"
 )
 
-func (s *Server) HandlePatientHealth() http.HandlerFunc {
+func (s *Server) handlePatientHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response, err := s.PatientService.GetHealth(context.Background(), &protocol.Empty{})
 		if err != nil {
@@ -33,7 +33,7 @@ type doctor struct {
 	UserId   string `json:"UserId"`
 }
 
-func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
+func (s *Server) handleDiagnosesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response, err := s.PatientService.GetDiagnoses(context.Background(), &protocol.Empty{})
 		if err != nil {
@@ -51,7 +51,7 @@ func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleSymptomsGet() http.HandlerFunc {
+func (s *Server) handleSymptomsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response, err := s.PatientService.GetSymptoms(context.Background(), &protocol.Empty{})
 		if err != nil {
@@ -73,7 +73,7 @@ func (s *Server) HandleSymptomsGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientDiagnoseSave() http.HandlerFunc {
+func (s *Server) handlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		var patientDiagnose protocol.PatientDiagnose
@@ -97,7 +97,7 @@ func (s *Server) HandlePatientDiagnoseSave() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
+func (s *Server) handlePatientDiagnosesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -122,7 +122,7 @@ func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientDiagnoseDelete() http.HandlerFunc {
+func (s *Server) handlePatientDiagnoseDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["id"])
@@ -146,7 +146,7 @@ func (s *Server) HandlePatientDiagnoseDelete() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientSymptomCreate() http.HandlerFunc {
+func (s *Server) handlePatientSymptomCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var diagnoseSymptom protocol.DiagnoseSymptom
 		if err := json.NewDecoder(r.Body).Decode(&diagnoseSymptom); err != nil {
@@ -178,7 +178,7 @@ func (s *Server) HandlePatientSymptomCreate() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientSymptomsGet() http.HandlerFunc {
+func (s *Server) handlePatientSymptomsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["diagnoseID"])
@@ -209,7 +209,7 @@ func (s *Server) HandlePatientSymptomsGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientSymptomUpdate() http.HandlerFunc {
+func (s *Server) handlePatientSymptomUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		diagnoseID, err := strconv.Atoi(vars["diagnoseID"])
@@ -255,7 +255,7 @@ func (s *Server) HandlePatientSymptomUpdate() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandlePatientSymptomDelete() http.HandlerFunc {
+func (s *Server) handlePatientSymptomDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		diagnoseID, err := strconv.Atoi(vars["diagnoseID"])
