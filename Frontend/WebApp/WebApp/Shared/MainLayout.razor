@@ -35,9 +35,5 @@
     {
         base.OnInitialized();
         var user = (await authenticationStateTask).User;
-        if (!user.Identity.IsAuthenticated)
-        {
-            MyNavigationManager.NavigateTo($"authentication/login");
-        }
     }
 }
