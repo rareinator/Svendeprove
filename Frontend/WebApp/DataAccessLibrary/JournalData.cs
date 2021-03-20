@@ -21,6 +21,11 @@ namespace DataAccessLibrary
         }
 
         #region JOURNALS
+        /// <summary>
+        /// Sends a GET request to enpoint "/journal/byPatient/{param} to get journal by the specified patient 
+        /// </summary>
+        /// <param name="patient"></param>
+        /// <returns>List of patient journals</returns>
         public async Task<List<JournalModel>> GetJournalsByPatient(string patient)
         {
             return await _client.GetFromJsonAsync<List<JournalModel>>($"/journal/byPatient/{patient}");
