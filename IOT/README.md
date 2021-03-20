@@ -19,7 +19,7 @@ The following diagram shows the overall flow of the DHT sensor
 For the ESP8266 it is important to write the HTTP message correctly. If the message does not have the correct format, it is rejected by the API.
 
 ```c
-	sprintf(_buffer, "GET /readings/add?value=%d.%d&sensor=%s HTTP/1.1\r\nhost: %s:%s\r\n", sensorData[sensorRead], sensorData[sensorRead + 1], sensor, DOMAIN, PORT);
+	sprintf(_buffer, "GET /iot/uploadData?Key=%s&SensorId=1&Name=%s&Data=%d.%d HTTP/1.1\r\nhost: %s:%s\r\n", API_WRITE_KEY, sensor, sensorData[sensorRead], sensorData[sensorRead + 1], DOMAIN, PORT);
 ```
 The minimum required information is as follows
 - **Method**
@@ -31,14 +31,11 @@ Note that the ESP8266 library adds one newline at the end of every message sent,
 
 # API
 
-- **IP:** 192.168.43.83
-- **PORT:** 5000
-- **URI:** GET /readings/add?sensor=xx&value=yy
+- **IP:** 40.69.73.113
+- **PORT:** 80
+- **URI:** GET /iot/uploadData?Key=xx&SensorId=1&Name=zz&Data=11.22
 
 ## Storage & Format
 All readings are stored in a MongoDB database. Every sensor has its own collection where just the value of the reading and the time of the reading is stored.
 
-The time is automatically added by the API server, so it is not necessary to include this in the data that is sent from the microcontroller.
-
-- **IP:** 192.168.43.83
-- **PORT:** 27017
+The time should automatically be added by the API server, so it is not necessary to include this in the data that is sent from the microcontroller.
