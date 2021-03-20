@@ -33,7 +33,7 @@ else
                         <tr>
                             <AuthorizeView Roles="Doctor, Nurse">
                                 <Authorized>
-                                    <td><button class="btn btn-primary" @onclick="@(() => OnEditClick.InvokeAsync(booking))">Rediger</button></td>
+                                    <td><button class="btn btn-primary" @onclick="@(() => OnEditClick.InvokeAsync(booking))">Edit</button></td>
                                 </Authorized>
                             </AuthorizeView>
                             <td>@booking.BookedTime</td>
