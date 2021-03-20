@@ -18,33 +18,33 @@ type MSSQL struct {
 	db *gorm.DB
 }
 
-func NewConnection(dsn string) (MSSQL, error) {
+func NewConnection(dsn string) (*MSSQL, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second, // Slow SQL threshold
-			LogLevel:      logger.Info, // Log level
-			Colorful:      false,       // Disable color
+			SlowThreshold: time.Second,
+			LogLevel:      logger.Info,
+			Colorful:      true,
 		},
 	)
 
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{
 		Logger:         newLogger,
 		NamingStrategy: MniNamer{},
-		// NamingStrategy: schema.NamingStrategy{},
 	})
 	if err != nil {
-		return *&MSSQL{}, err
+		return nil, err
 	}
 
-	mssql := &MSSQL{
+	mssql := MSSQL{
 		db: db,
 	}
-	return *mssql, nil
+	return &mssql, nil
 }
 
 func (m *MSSQL) GetToken(tokenID string) (*DBToken, error) {
 	var token DBToken
+
 	result := m.db.First(&token, "Token = ?", tokenID)
 	if result.Error != nil {
 		return nil, result.Error
@@ -68,6 +68,7 @@ func (m *MSSQL) InsertToken(token *DBToken) error {
 
 func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {
 	var journal DBJournal
+
 	result := m.db.First(&journal, id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -78,6 +79,7 @@ func (m *MSSQL) GetJournal(id int32) (*DBJournal, error) {
 
 func (m *MSSQL) GetJournalsByPatient(username string) ([]*DBJournal, error) {
 	var journals []*DBJournal
+
 	result := m.db.Where("Patient = ?", username).Find(&journals)
 	if result.Error != nil {
 		return nil, result.Error
@@ -122,9 +124,7 @@ func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error 
 }
 
 func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error {
-	var result *gorm.DB
-	result = m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("CreationTime").Save(&journalDocument)
-
+	result := m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("CreationTime").Save(&journalDocument)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -133,10 +133,7 @@ func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error 
 }
 
 func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error {
-	var result *gorm.DB
-	result = m.db.Create(&journalDocument)
-	fmt.Println("huh")
-
+	result := m.db.Create(&journalDocument)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -148,6 +145,7 @@ func (m *MSSQL) CreateJournalDocument(journalDocument *DBJournalDocument) error 
 
 func (m *MSSQL) GetJournalDocumentsByJournal(journalID int32) ([]*DBJournalDocument, error) {
 	var journalDocuments []*DBJournalDocument
+
 	result := m.db.Where("JournalId = ?", journalID).Preload("Attachments.FileType").Preload("Attachments.FileStore").Find(&journalDocuments)
 	if result.Error != nil {
 		return nil, result.Error
@@ -158,6 +156,7 @@ func (m *MSSQL) GetJournalDocumentsByJournal(journalID int32) ([]*DBJournalDocum
 
 func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument, error) {
 	var journalDocument DBJournalDocument
+
 	result := m.db.Where("DocumentId = ?", journalDocumentID).Preload("Attachments").Preload("Attachments.FileType").Preload("Attachments.FileStore").First(&journalDocument)
 	if result.Error != nil {
 		return nil, result.Error
@@ -168,6 +167,7 @@ func (m *MSSQL) GetJournalDocument(journalDocumentID int32) (*DBJournalDocument,
 
 func (m *MSSQL) GetDiagnose(id int32) (*DBDiagnose, error) {
 	var diagnose DBDiagnose
+
 	result := m.db.First(&diagnose, id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -178,6 +178,7 @@ func (m *MSSQL) GetDiagnose(id int32) (*DBDiagnose, error) {
 
 func (m *MSSQL) GetDiagnoses() ([]*DBDiagnose, error) {
 	var diagnoses []*DBDiagnose
+
 	result := m.db.Find(&diagnoses)
 	if result.Error != nil {
 		return nil, result.Error
@@ -188,6 +189,7 @@ func (m *MSSQL) GetDiagnoses() ([]*DBDiagnose, error) {
 
 func (m *MSSQL) GetHospitals() ([]*DBHospital, error) {
 	var hospitals []*DBHospital
+
 	result := m.db.Find(&hospitals)
 	if result.Error != nil {
 		return nil, result.Error
@@ -198,6 +200,7 @@ func (m *MSSQL) GetHospitals() ([]*DBHospital, error) {
 
 func (m *MSSQL) GetDepartments() ([]*DBDepartment, error) {
 	var departments []*DBDepartment
+
 	result := m.db.Find(&departments)
 	if result.Error != nil {
 		return nil, result.Error
@@ -208,6 +211,7 @@ func (m *MSSQL) GetDepartments() ([]*DBDepartment, error) {
 
 func (m *MSSQL) GetBeds() ([]*DBBed, error) {
 	var beds []*DBBed
+
 	result := m.db.Preload("Department").Find(&beds)
 	if result.Error != nil {
 		return nil, result.Error
@@ -218,6 +222,7 @@ func (m *MSSQL) GetBeds() ([]*DBBed, error) {
 
 func (m *MSSQL) GetAvailableBeds(startDate, endDate time.Time, id int32) ([]*DBBed, error) {
 	var beds []*DBBed
+
 	result := m.db.Preload("Department").Joins(
 		"JOIN Department ON Department.DepartmentId = Bed.DepartmentId").Joins(
 		"FULL OUTER JOIN Hospitilization ON Hospitilization.BedId = Bed.BedId").Where(
@@ -235,6 +240,7 @@ func (m *MSSQL) GetAvailableBeds(startDate, endDate time.Time, id int32) ([]*DBB
 
 func (m *MSSQL) GetSymptom(id int32) (*DBSymptom, error) {
 	var symptom DBSymptom
+
 	result := m.db.First(&symptom, id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -245,6 +251,7 @@ func (m *MSSQL) GetSymptom(id int32) (*DBSymptom, error) {
 
 func (m *MSSQL) GetSymptoms() ([]*DBSymptom, error) {
 	var symptoms []*DBSymptom
+
 	result := m.db.Find(&symptoms)
 	if result.Error != nil {
 		return nil, result.Error
@@ -255,6 +262,7 @@ func (m *MSSQL) GetSymptoms() ([]*DBSymptom, error) {
 
 func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error {
 	var result *gorm.DB
+
 	if patientDiagnose.DiagnoseId == 0 {
 		result = m.db.Omit("DiagnoseId").Create(patientDiagnose)
 	} else {
@@ -270,6 +278,7 @@ func (m *MSSQL) CreatePatientDiagnose(patientDiagnose *DBPatientDiagnose) error 
 
 func (m *MSSQL) GetPatientDiagnoses(username string) ([]*DBPatientDiagnose, error) {
 	var patientDiagnoses []*DBPatientDiagnose
+
 	result := m.db.Preload(clause.Associations).Where("Patient = ?", username).Find(&patientDiagnoses)
 	if result.Error != nil {
 		return nil, result.Error
@@ -280,6 +289,7 @@ func (m *MSSQL) GetPatientDiagnoses(username string) ([]*DBPatientDiagnose, erro
 
 func (m *MSSQL) GetPatientDiagnose(id int32) (*DBPatientDiagnose, error) {
 	var patientDiagnose DBPatientDiagnose
+
 	result := m.db.First(&patientDiagnose, id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -316,6 +326,7 @@ func (m *MSSQL) CreatePatientDiagnoseSymptom(patientDiagnoseSymptom *DBPatientDi
 
 func (m *MSSQL) GetPatientDiagnoseSymptoms(patientDiagnoseId int32) ([]*DBPatientDiagnoseSymptom, error) {
 	var patientDiagnoseSymptoms []*DBPatientDiagnoseSymptom
+
 	result := m.db.Preload("Symptom").Where("PatientDiagnoseId = ?", patientDiagnoseId).Find(&patientDiagnoseSymptoms)
 	if result.Error != nil {
 		return nil, result.Error
@@ -353,6 +364,7 @@ func (m *MSSQL) CreateAttachment(attachment *DBAttachment) error {
 
 func (m *MSSQL) GetOrCreateFileTypeByName(name string) (*DBFileType, error) {
 	var fileType DBFileType
+
 	result := m.db.Where("Name = ?", name).First(&fileType)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -372,23 +384,20 @@ func (m *MSSQL) GetOrCreateFileTypeByName(name string) (*DBFileType, error) {
 
 func (m *MSSQL) GetOrCreateFileStoreByPath(path string) (*DBFileStore, error) {
 	var fileStore DBFileStore
-	fmt.Println("Finding store")
+
 	result := m.db.Where("Path = ?", path).First(&fileStore)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			fileStore.Path = path
-			fmt.Printf("Creating store%v\n\r", fileStore.Path)
 			result = m.db.Create(&fileStore)
 			if result.Error != nil {
 				return nil, result.Error
 			}
-			fmt.Println("returning stuff 1")
 			return &fileStore, nil
 		}
 		return nil, result.Error
 	}
 
-	fmt.Println("returning stuff 2")
 	return &fileStore, nil
 }
 
@@ -421,6 +430,7 @@ func (m *MSSQL) CreateExamination(examination *DBExamination) error {
 
 func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
 	var booking DBBooking
+
 	result := m.db.Preload("Hospital").First(&booking, id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -431,6 +441,7 @@ func (m *MSSQL) GetBooking(id int32) (*DBBooking, error) {
 
 func (m *MSSQL) GetHospitilizationByBookingId(id int32) (*DBHospitilization, error) {
 	var hospitilization DBHospitilization
+
 	result := m.db.Preload("Bed").Where("BookingId = ?", id).First(&hospitilization)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -444,6 +455,7 @@ func (m *MSSQL) GetHospitilizationByBookingId(id int32) (*DBHospitilization, err
 
 func (m *MSSQL) GetExaminationByBookingId(id int32) (*DBExamination, error) {
 	var examination DBExamination
+
 	result := m.db.Where("BookingId = ?", id).First(&examination)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -513,6 +525,7 @@ func (m *MSSQL) DeleteHospitilization(hospitilization *DBHospitilization) error 
 
 func (m *MSSQL) GetBookingsByPatient(username string) ([]*DBBooking, error) {
 	var bookings []*DBBooking
+
 	result := m.db.Preload("Hospital").Where("Patient = ?", username).Find(&bookings)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -526,6 +539,7 @@ func (m *MSSQL) GetBookingsByPatient(username string) ([]*DBBooking, error) {
 
 func (m *MSSQL) GetBookingsByEmployee(username string) ([]*DBBooking, error) {
 	var bookings []*DBBooking
+
 	result := m.db.Preload("Hospital").Where("Employee = ?", username).Find(&bookings)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -540,6 +554,7 @@ func (m *MSSQL) GetBookingsByEmployee(username string) ([]*DBBooking, error) {
 func (m *MSSQL) GetBookedTimesForDoctor(day time.Time, doctor string) ([]time.Time, error) {
 	var bookings []*DBBooking
 	var response []time.Time
+
 	result := m.db.Where("BookedTime BETWEEN ? AND ?", day, day.Add(time.Hour*24)).Find(&bookings)
 	if result.Error != nil {
 		return nil, result.Error

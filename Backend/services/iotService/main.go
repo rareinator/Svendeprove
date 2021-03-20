@@ -20,7 +20,9 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../../.env")
+	if err := godotenv.Load("../../.env"); err != nil {
+		return err
+	}
 
 	fmt.Println("iot service listening on")
 	fmt.Println(os.Getenv("IOT_SERVICE_ADDR"))
@@ -29,8 +31,6 @@ func execute() error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(os.Getenv("MONGO_URI"))
 
 	mongo := mongo.MongoDB{
 		Addr: os.Getenv("MONGO_URI"),
@@ -46,7 +46,7 @@ func execute() error {
 	protocol.RegisterIotServiceServer(grpcServer, &is)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("IOT_SERVICE_ADDR"), err)
+		return fmt.Errorf("faild to start gRPC server over addr: %v err: %v", os.Getenv("IOT_SERVICE_ADDR"), err)
 	}
 
 	return nil

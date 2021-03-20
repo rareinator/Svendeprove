@@ -26,8 +26,11 @@ func (s *Server) HandleJournalHealth() http.HandlerFunc {
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting in contact with the journal service %v", err))
 		} else {
+			if _, err := w.Write([]byte(response.Message)); err != nil {
+				s.ReturnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(response.Message))
 		}
 	}
 }
@@ -35,11 +38,12 @@ func (s *Server) HandleJournalHealth() http.HandlerFunc {
 func (s *Server) HandleJournalSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var journal protocol.Journal
-		json.NewDecoder(r.Body).Decode(&journal)
+		if err := json.NewDecoder(r.Body).Decode(&journal); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		employee := s.getUserId(r)
-
-		journal.CreatedBy = employee
+		journal.CreatedBy = s.getUserId(r)
 
 		response, err := s.JournalService.CreateJournal(context.Background(), &journal)
 		if err != nil {
@@ -47,9 +51,11 @@ func (s *Server) HandleJournalSave() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
-
 	}
 }
 
@@ -63,7 +69,10 @@ func (s *Server) HandleJournalUpdate() http.HandlerFunc {
 		}
 
 		var journal protocol.Journal
-		json.NewDecoder(r.Body).Decode(&journal)
+		if err := json.NewDecoder(r.Body).Decode(&journal); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		journal.JournalId = int32(ID)
 
@@ -73,8 +82,11 @@ func (s *Server) HandleJournalUpdate() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -115,11 +127,16 @@ func (s *Server) HandleJournalByPatient() http.HandlerFunc {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		if len(response.Journals) == 0 {
 			response.Journals = make([]*protocol.Journal, 0)
 		}
-		json.NewEncoder(w).Encode(response.Journals)
+
+		if err := json.NewEncoder(w).Encode(response.Journals); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -161,7 +178,10 @@ func (s *Server) HandleJournalDocumentUpdate() http.HandlerFunc {
 		}
 
 		var journalDocument protocol.JournalDocument
-		json.NewDecoder(r.Body).Decode(&journalDocument)
+		if err := json.NewDecoder(r.Body).Decode(&journalDocument); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		journalDocument.DocumentId = int32(ID)
 
@@ -170,16 +190,22 @@ func (s *Server) HandleJournalDocumentUpdate() http.HandlerFunc {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 		}
 
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
+		w.WriteHeader(http.StatusCreated)
 	}
 }
 
 func (s *Server) HandleJournalDocumentSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var journalDocument protocol.JournalDocument
-		json.NewDecoder(r.Body).Decode(&journalDocument)
+		if err := json.NewDecoder(r.Body).Decode(&journalDocument); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		journalDocument.CreatedBy = s.getUserId(r)
 
@@ -203,8 +229,12 @@ func (s *Server) HandleJournalDocumentSave() http.HandlerFunc {
 			}
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -217,29 +247,25 @@ func (s *Server) HandleJournalDocumentByJournal() http.HandlerFunc {
 			return
 		}
 
-		pr := &protocol.JournalRequest{
+		pr := protocol.JournalRequest{
 			JournalId: int32(journalID),
 		}
 
-		response, err := s.JournalService.GetJournalDocumentsByJournal(context.Background(), pr)
+		response, err := s.JournalService.GetJournalDocumentsByJournal(context.Background(), &pr)
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		//TODO: oauth fix
-
-		allowed := true
-
-		if allowed {
-			w.WriteHeader(http.StatusOK)
-			if len(response.JournalDocuments) == 0 {
-				response.JournalDocuments = make([]*protocol.JournalDocument, 0)
-			}
-			json.NewEncoder(w).Encode(response.JournalDocuments)
-		} else {
-			s.ReturnError(w, http.StatusForbidden, "Not Allowed")
+		if len(response.JournalDocuments) == 0 {
+			response.JournalDocuments = make([]*protocol.JournalDocument, 0)
 		}
+
+		if err := json.NewEncoder(w).Encode(response.JournalDocuments); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -262,8 +288,11 @@ func (s *Server) HandleJournalDocumentRead() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -292,9 +321,16 @@ func (s *Server) HandleJournalUploadSymptoms() http.HandlerFunc {
 		defer resp.Body.Close()
 
 		buf, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
+		if _, err := w.Write(buf); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(resp.StatusCode)
-		w.Write(buf)
 	}
 }
 
@@ -303,7 +339,10 @@ func (s *Server) HandleJournalMLUpload() http.HandlerFunc {
 		var Attachments []string
 		response := make([]*MLResponse, 0)
 
-		json.NewDecoder(r.Body).Decode(&Attachments)
+		if err := json.NewDecoder(r.Body).Decode(&Attachments); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		for _, attachment := range Attachments {
 			fmt.Println(attachment)
@@ -320,7 +359,11 @@ func (s *Server) HandleJournalMLUpload() http.HandlerFunc {
 			buf := make([]byte, size)
 
 			fReader := bufio.NewReader(img)
-			fReader.Read(buf)
+			if _, err := fReader.Read(buf); err != nil {
+				s.ReturnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
 			base64Str := base64.StdEncoding.EncodeToString(buf)
 			requestBody, err := json.Marshal(map[string]string{
 				"scan": base64Str,
@@ -352,14 +395,15 @@ func (s *Server) HandleJournalMLUpload() http.HandlerFunc {
 				return
 			}
 
-			// fmt.Printf("got code %v\n\r", data.Data.Code)
 			data.Data = *jsonResponse
 			data.Url = attachment
 			response = append(response, data)
 		}
 
+		if err := json.NewEncoder(w).Encode(&response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response)
-
 	}
 }

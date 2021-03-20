@@ -20,7 +20,9 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../../.env")
+	if err := godotenv.Load("../../.env"); err != nil {
+		return err
+	}
 
 	fmt.Println("Useradmin service listening on")
 	fmt.Println(os.Getenv("USERADMIN_SERVICE_ADDR"))
@@ -37,7 +39,7 @@ func execute() error {
 		return err
 	}
 	ps := useradmin.UseradminServer{
-		DB:            &sql,
+		DB:            sql,
 		ListenAddress: os.Getenv("USERADMIN_SERVICE_ADDR"),
 	}
 

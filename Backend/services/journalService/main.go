@@ -20,7 +20,9 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../../.env")
+	if err := godotenv.Load("../../.env"); err != nil {
+		return err
+	}
 
 	fmt.Println("journal service listening on")
 	fmt.Println(os.Getenv("JOURNAL_SERVICE_ADDR"))
@@ -37,7 +39,7 @@ func execute() error {
 		return err
 	}
 	js := journal.JournalServer{
-		DB: &sql,
+		DB: sql,
 	}
 
 	grpcServer := grpc.NewServer()
@@ -45,7 +47,7 @@ func execute() error {
 	protocol.RegisterJournalServiceServer(grpcServer, &js)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
+		return fmt.Errorf("faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
 	}
 
 	return nil

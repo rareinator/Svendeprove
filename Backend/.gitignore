@@ -2,3 +2,4 @@
 .envProd
 .envDev
 *.dockerfile
+vendor/

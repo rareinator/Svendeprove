@@ -374,7 +374,3 @@ func (b *BookingServer) GetAvailableTimesForDoctor(ctx context.Context, request 
 
 	return &times, nil
 }
-
-func removeTime(slice []time.Time, s int) []time.Time {
-	return append(slice[:s], slice[s+1:]...)
-}

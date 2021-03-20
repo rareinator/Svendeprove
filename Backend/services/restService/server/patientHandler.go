@@ -12,16 +12,17 @@ import (
 
 func (s *Server) HandlePatientHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		p := &protocol.Empty{}
-
-		response, err := s.PatientService.GetHealth(context.Background(), p)
+		response, err := s.PatientService.GetHealth(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusAccepted, err.Error())
 			return
 		}
 
+		if _, err := w.Write([]byte(response.Message)); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(response.Message))
 	}
 }
 
@@ -44,7 +45,9 @@ func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
 		if len(response.Diagnoses) == 0 {
 			response.Diagnoses = make([]*protocol.Diagnose, 0)
 		}
-		json.NewEncoder(w).Encode(response.Diagnoses)
+		if err := json.NewEncoder(w).Encode(response.Diagnoses); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+		}
 	}
 }
 
@@ -56,11 +59,16 @@ func (s *Server) HandleSymptomsGet() http.HandlerFunc {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		if len(response.Symptoms) == 0 {
 			response.Symptoms = make([]*protocol.Symptom, 0)
 		}
-		json.NewEncoder(w).Encode(response.Symptoms)
+
+		if err := json.NewEncoder(w).Encode(response.Symptoms); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 
 	}
 }
@@ -69,7 +77,10 @@ func (s *Server) HandlePatientDiagnoseSave() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		var patientDiagnose protocol.PatientDiagnose
-		json.NewDecoder(r.Body).Decode(&patientDiagnose)
+		if err := json.NewDecoder(r.Body).Decode(&patientDiagnose); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		patientDiagnose.Patient = vars["userId"]
 
 		response, err := s.PatientService.CreatePatientDiagnose(context.Background(), &patientDiagnose)
@@ -78,8 +89,11 @@ func (s *Server) HandlePatientDiagnoseSave() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -97,11 +111,14 @@ func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		if len(response.PatientDiagnoses) == 0 {
 			response.PatientDiagnoses = make([]*protocol.PatientDiagnose, 0)
 		}
-		json.NewEncoder(w).Encode(response.PatientDiagnoses)
+		if err := json.NewEncoder(w).Encode(response.PatientDiagnoses); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -132,7 +149,10 @@ func (s *Server) HandlePatientDiagnoseDelete() http.HandlerFunc {
 func (s *Server) HandlePatientSymptomCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var diagnoseSymptom protocol.DiagnoseSymptom
-		json.NewDecoder(r.Body).Decode(&diagnoseSymptom)
+		if err := json.NewDecoder(r.Body).Decode(&diagnoseSymptom); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["patientDiagnoseID"])
@@ -149,8 +169,12 @@ func (s *Server) HandlePatientSymptomCreate() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -177,7 +201,11 @@ func (s *Server) HandlePatientSymptomsGet() http.HandlerFunc {
 		if len(response.DiagnoseSymptoms) == 0 {
 			response.DiagnoseSymptoms = make([]*protocol.DiagnoseSymptom, 0)
 		}
-		json.NewEncoder(w).Encode(response.DiagnoseSymptoms)
+
+		if err := json.NewEncoder(w).Encode(response.DiagnoseSymptoms); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 }
 
@@ -197,7 +225,10 @@ func (s *Server) HandlePatientSymptomUpdate() http.HandlerFunc {
 		}
 
 		var newDiagnoseSymptom protocol.DiagnoseSymptom
-		json.NewDecoder(r.Body).Decode(&newDiagnoseSymptom)
+		if err := json.NewDecoder(r.Body).Decode(&newDiagnoseSymptom); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		oldDiagnoseSymptom := protocol.DiagnoseSymptom{
 			SymptomId:         int32(ID),
@@ -215,8 +246,12 @@ func (s *Server) HandlePatientSymptomUpdate() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 

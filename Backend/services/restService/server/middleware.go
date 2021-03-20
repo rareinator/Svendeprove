@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -43,14 +44,22 @@ func (s *Server) Log(next http.HandlerFunc) http.HandlerFunc {
 		if os.Getenv("IS_DEV") == "TRUE" {
 			fmt.Print(message)
 		} else {
-			os.Mkdir("./log", 0644)
-			ioutil.WriteFile("./log/restLog.log", []byte(message), 0644)
+			if err := os.Mkdir("./log", 0644); err != nil {
+				s.ReturnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			if err := ioutil.WriteFile("./log/restLog.log", []byte(message), 0644); err != nil {
+				s.ReturnError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 
 		next(w, r)
 	}
 }
 
+//ReturnError is used by all the different http Handlers to return an error message is something
+//unexpected occured
 func (s *Server) ReturnError(w http.ResponseWriter, statusCode int, Message string) {
 	var errorMessage struct {
 		Code    int
@@ -61,9 +70,12 @@ func (s *Server) ReturnError(w http.ResponseWriter, statusCode int, Message stri
 	errorMessage.Code = statusCode
 	errorMessage.Message = Message
 
-	fmt.Printf("ERROR!!!! Code: %v Message: %v\n\r", errorMessage.Code, errorMessage.Message)
+	log.Printf("ERROR!!!! Code: %v Message: %v\n\r", errorMessage.Code, errorMessage.Message)
 
-	json.NewEncoder(w).Encode(&errorMessage)
+	if err := json.NewEncoder(w).Encode(&errorMessage); err != nil {
+		log.Printf("Could not encode error\n\rERROR!!!! Code: %v Message: %v\n\r", errorMessage.Code, errorMessage.Message)
+		return
+	}
 }
 
 func (s *Server) Authenticate(next http.HandlerFunc, config *authenticationConfig) http.HandlerFunc {

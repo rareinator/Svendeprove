@@ -26,6 +26,10 @@ func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 		}
 
 		users, _, err := client.Group.ListGroupUsers(context.Background(), "00gbttsw3ArE8GSCV5d6", &query.Params{})
+		if err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		result := make([]*doctor, 0)
 
@@ -45,8 +49,11 @@ func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 
 		}
 
+		if err := json.NewEncoder(w).Encode(&result); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&result)
 	}
 }
 
@@ -86,8 +93,11 @@ func (s *Server) HandlePatientsGet() http.HandlerFunc {
 
 		}
 
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(result)
 	}
 }
 
@@ -101,8 +111,11 @@ func (s *Server) HandleUseradminHealth() http.HandlerFunc {
 			return
 		}
 
+		if _, err := w.Write([]byte(response.Message)); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(response.Message))
 	}
 }
 
@@ -120,8 +133,11 @@ func (s *Server) HandleUseradminGetEmployee() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -134,15 +150,21 @@ func (s *Server) HandleHospitalsGet() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(&response.Hospitals); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response.Hospitals)
 	}
 }
 
 func (s *Server) HandleAvailableBeds() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request protocol.BedsRequest
-		json.NewDecoder(r.Body).Decode(&request)
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		respsone, err := s.UseradminService.GetAvailableBeds(context.Background(), &request)
 		if err != nil {
@@ -150,8 +172,10 @@ func (s *Server) HandleAvailableBeds() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(&respsone.Beds); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&respsone.Beds)
-
 	}
 }

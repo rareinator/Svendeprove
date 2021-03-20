@@ -37,7 +37,6 @@ func (i *IotServer) UploadData(ctx context.Context, input *IOTData) (*IOTData, e
 	}
 
 	return input, nil
-
 }
 
 func (i *IotServer) ReadData(ctx context.Context, request *Request) (*IOTDatas, error) {
@@ -63,7 +62,6 @@ func (i *IotServer) ReadData(ctx context.Context, request *Request) (*IOTDatas, 
 	}
 
 	return &response, nil
-
 }
 
 func (i *IotServer) ReadDataInTimeFrame(ctx context.Context, request *IOTTimeframeRequest) (*IOTDatas, error) {

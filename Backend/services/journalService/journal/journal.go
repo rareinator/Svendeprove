@@ -21,7 +21,7 @@ func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest)
 		return nil, err
 	}
 
-	result := &Journal{
+	result := Journal{
 		JournalId:    dbJournal.JournalId,
 		CreationTime: dbJournal.CreationTime.Format("02/01/2006 15:04:05"),
 		Intro:        dbJournal.Intro,
@@ -29,7 +29,7 @@ func (j *JournalServer) GetJournal(ctx context.Context, journal *JournalRequest)
 		CreatedBy:    dbJournal.CreatedBy,
 	}
 
-	return result, nil
+	return &result, nil
 }
 
 func (j *JournalServer) GetHealth(ctx context.Context, e *Empty) (*Health, error) {
@@ -37,7 +37,7 @@ func (j *JournalServer) GetHealth(ctx context.Context, e *Empty) (*Health, error
 }
 
 func (j *JournalServer) GetJournalsByPatient(ctx context.Context, ur *UserRequest) (*Journals, error) {
-	journals := &Journals{}
+	journals := Journals{}
 	journals.Journals = make([]*Journal, 0)
 
 	dbJournals, err := j.DB.GetJournalsByPatient(ur.UserId)
@@ -46,7 +46,7 @@ func (j *JournalServer) GetJournalsByPatient(ctx context.Context, ur *UserReques
 	}
 
 	for _, dbJournal := range dbJournals {
-		journal := &Journal{
+		journal := Journal{
 			JournalId:    dbJournal.JournalId,
 			CreationTime: dbJournal.CreationTime.Format("02/01/2006 15:04:05"),
 			Intro:        dbJournal.Intro,
@@ -54,10 +54,10 @@ func (j *JournalServer) GetJournalsByPatient(ctx context.Context, ur *UserReques
 			CreatedBy:    dbJournal.CreatedBy,
 		}
 
-		journals.Journals = append(journals.Journals, journal)
+		journals.Journals = append(journals.Journals, &journal)
 	}
 
-	return journals, nil
+	return &journals, nil
 
 }
 
@@ -254,7 +254,7 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 			}
 		}
 
-		journalDocument := &JournalDocument{
+		journalDocument := JournalDocument{
 			DocumentId:   dbJournalDocument.DocumentId,
 			Content:      dbJournalDocument.Content,
 			JournalId:    dbJournalDocument.JournalId,
@@ -265,7 +265,7 @@ func (j *JournalServer) GetJournalDocumentsByJournal(ctx context.Context, jr *Jo
 			Attachments:  attachments,
 		}
 
-		journalDocuments.JournalDocuments = append(journalDocuments.JournalDocuments, journalDocument)
+		journalDocuments.JournalDocuments = append(journalDocuments.JournalDocuments, &journalDocument)
 	}
 
 	return &journalDocuments, nil

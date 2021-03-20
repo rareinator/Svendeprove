@@ -20,8 +20,11 @@ func (s *Server) HandleIOTHealth() http.HandlerFunc {
 			return
 		}
 
+		if _, err := w.Write([]byte(response.Message)); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(response.Message))
 	}
 }
 
@@ -43,8 +46,11 @@ func (s *Server) HandleIOTUpload() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -67,9 +73,11 @@ func (s *Server) HandleIOTReadData() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(&response.IOTDatas); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response.IOTDatas)
-
 	}
 }
 
@@ -87,7 +95,10 @@ func (s *Server) HandleIOTReadDataInTimeframe() http.HandlerFunc {
 			return
 		}
 
+		if err := json.NewEncoder(w).Encode(&response.IOTDatas); err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response.IOTDatas)
 	}
 }

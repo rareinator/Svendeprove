@@ -34,7 +34,6 @@ func (m *MongoDB) UploadData(ctx context.Context, data *Device) error {
 	if err != nil {
 		return err
 	}
-	defer client.Disconnect(ctx)
 
 	svendeProveDB := client.Database("Svendeprove")
 	devicesCollection := svendeProveDB.Collection("Devices")
@@ -45,7 +44,9 @@ func (m *MongoDB) UploadData(ctx context.Context, data *Device) error {
 		return err
 	}
 
-	fmt.Println("aha")
+	if err := client.Disconnect(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -55,7 +56,6 @@ func (m *MongoDB) ReadData(ctx context.Context, deviceID int32) ([]*Device, erro
 	if err != nil {
 		return nil, err
 	}
-	defer client.Disconnect(ctx)
 
 	svendeProveDB := client.Database("Svendeprove")
 	devicesCollection := svendeProveDB.Collection("Devices")
@@ -82,6 +82,10 @@ func (m *MongoDB) ReadData(ctx context.Context, deviceID int32) ([]*Device, erro
 
 	cur.Close(ctx)
 
+	if err := client.Disconnect(ctx); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 
@@ -90,7 +94,6 @@ func (m *MongoDB) ReadDataInTimeFrame(ctx context.Context, timeStart, timeEnd ti
 	if err != nil {
 		return nil, err
 	}
-	defer client.Disconnect(ctx)
 
 	svendeProveDB := client.Database("Svendeprove")
 	devicesCollection := svendeProveDB.Collection("Devices")
@@ -115,6 +118,10 @@ func (m *MongoDB) ReadDataInTimeFrame(ctx context.Context, timeStart, timeEnd ti
 	}
 
 	cur.Close(ctx)
+
+	if err := client.Disconnect(ctx); err != nil {
+		return nil, err
+	}
 
 	return results, nil
 }

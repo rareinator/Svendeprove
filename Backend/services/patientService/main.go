@@ -20,7 +20,9 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../../.env")
+	if err := godotenv.Load("../../.env"); err != nil {
+		return err
+	}
 
 	fmt.Println("Patient service listening on")
 	fmt.Println(os.Getenv("PATIENT_SERVICE_ADDR"))
@@ -37,7 +39,7 @@ func execute() error {
 		return err
 	}
 	ps := patient.PatientServer{
-		DB:            &sql,
+		DB:            sql,
 		ListenAddress: os.Getenv("PATIENT_SERVICE_ADDR"),
 	}
 
@@ -46,7 +48,7 @@ func execute() error {
 	protocol.RegisterPatientServiceServer(grpcServer, &ps)
 
 	if err := grpcServer.Serve(lis); err != nil {
-		return fmt.Errorf("Faild to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
+		return fmt.Errorf("failed to start gRPC server over addr: %v err: %v", os.Getenv("MSSQL_URI"), err)
 	}
 
 	return nil

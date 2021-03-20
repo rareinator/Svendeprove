@@ -7,7 +7,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rareinator/Svendeprove/Backend/packages/protocol"
 	"github.com/rareinator/Svendeprove/Backend/services/restService/server"
-	"github.com/tidwall/buntdb"
 	"google.golang.org/grpc"
 )
 
@@ -19,11 +18,14 @@ func main() {
 }
 
 func execute() error {
-	godotenv.Load("../../.env")
+	if err := godotenv.Load("../../.env"); err != nil {
+		return err
+	}
 
 	srv := server.NewServer()
 
 	var journalConn *grpc.ClientConn
+
 	journalConn, err := grpc.Dial(os.Getenv("JOURNAL_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
@@ -31,6 +33,7 @@ func execute() error {
 	defer journalConn.Close()
 
 	var patientConn *grpc.ClientConn
+
 	patientConn, err = grpc.Dial(os.Getenv("PATIENT_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
@@ -38,6 +41,7 @@ func execute() error {
 	defer patientConn.Close()
 
 	var bookingConn *grpc.ClientConn
+
 	bookingConn, err = grpc.Dial(os.Getenv("BOOKING_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
@@ -45,6 +49,7 @@ func execute() error {
 	defer bookingConn.Close()
 
 	var useradminConn *grpc.ClientConn
+
 	useradminConn, err = grpc.Dial(os.Getenv("USERADMIN_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
@@ -52,19 +57,12 @@ func execute() error {
 	defer useradminConn.Close()
 
 	var iotConn *grpc.ClientConn
+
 	iotConn, err = grpc.Dial(os.Getenv("IOT_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
 	defer iotConn.Close()
-
-	localDB, err := buntdb.Open("data.db")
-	if err != nil {
-		return err
-	}
-	defer localDB.Close()
-
-	srv.LocalDB = localDB
 
 	srv.JournalService = protocol.NewJournalServiceClient(journalConn)
 	srv.PatientService = protocol.NewPatientServiceClient(patientConn)
@@ -74,7 +72,9 @@ func execute() error {
 
 	srv.StaticFileDir = "./static"
 
-	srv.ServeHTTP()
+	if err := srv.ServeHTTP(); err != nil {
+		return err
+	}
 
 	return nil
 }
