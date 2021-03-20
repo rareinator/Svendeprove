@@ -1,10 +1,12 @@
 import os
 import ast
+import cv2
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
 
+IMG_SIZE = 96
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -18,11 +20,21 @@ class PredictionService():
     def predict(self, data):
         return self.model.predict(data)[0]
 
-    def save_csv_data(self, data, name):
+    def _save_csv_data(self, data, name):
         with open(__location__ + "/data/csv/" + name, "w") as f:
             f.write(data)
 
-    def train(self, data_file):
+    #Format image for machine learning predictions
+    def _format_image(self, filepath):
+        img_array = cv2.imread(filepath, cv2.IMREAD_COLOR)
+        image = cv2.resize(img_array, (IMG_SIZE,IMG_SIZE))
+        image = np.reshape(img_array, (-1, IMG_SIZE,IMG_SIZE,3))
+        image = tf.image.convert_image_dtype(image, tf.float32)
+        os.remove(filepath)
+        return image
+
+    ### BETA Feature ###
+    def _train(self, data_file):
         training_data = pd.read_csv("data/csv/" + data_file)
 
         # Convert string list to actual list type
