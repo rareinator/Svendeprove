@@ -19,14 +19,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PatientServiceClient interface {
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
-	GetDiagnose(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Diagnose, error)
 	GetDiagnoses(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Diagnoses, error)
 	GetSymptoms(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Symptoms, error)
-	GetSymptom(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Symptom, error)
 	CreatePatientDiagnose(ctx context.Context, in *PatientDiagnose, opts ...grpc.CallOption) (*PatientDiagnose, error)
 	GetPatientDiagnoses(ctx context.Context, in *Request, opts ...grpc.CallOption) (*PatientDiagnoses, error)
-	GetPatientDiagnose(ctx context.Context, in *Request, opts ...grpc.CallOption) (*PatientDiagnose, error)
-	UpdatePatientDiagnose(ctx context.Context, in *PatientDiagnose, opts ...grpc.CallOption) (*PatientDiagnose, error)
 	DeletePatientDiagnose(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Status, error)
 	CreateDiagnoseSymptom(ctx context.Context, in *DiagnoseSymptom, opts ...grpc.CallOption) (*DiagnoseSymptom, error)
 	GetDiagnoseSymptoms(ctx context.Context, in *Request, opts ...grpc.CallOption) (*DiagnoseSymptoms, error)
@@ -51,15 +47,6 @@ func (c *patientServiceClient) GetHealth(ctx context.Context, in *Empty, opts ..
 	return out, nil
 }
 
-func (c *patientServiceClient) GetDiagnose(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Diagnose, error) {
-	out := new(Diagnose)
-	err := c.cc.Invoke(ctx, "/PatientService/GetDiagnose", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *patientServiceClient) GetDiagnoses(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Diagnoses, error) {
 	out := new(Diagnoses)
 	err := c.cc.Invoke(ctx, "/PatientService/GetDiagnoses", in, out, opts...)
@@ -78,15 +65,6 @@ func (c *patientServiceClient) GetSymptoms(ctx context.Context, in *Empty, opts 
 	return out, nil
 }
 
-func (c *patientServiceClient) GetSymptom(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Symptom, error) {
-	out := new(Symptom)
-	err := c.cc.Invoke(ctx, "/PatientService/GetSymptom", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *patientServiceClient) CreatePatientDiagnose(ctx context.Context, in *PatientDiagnose, opts ...grpc.CallOption) (*PatientDiagnose, error) {
 	out := new(PatientDiagnose)
 	err := c.cc.Invoke(ctx, "/PatientService/CreatePatientDiagnose", in, out, opts...)
@@ -99,24 +77,6 @@ func (c *patientServiceClient) CreatePatientDiagnose(ctx context.Context, in *Pa
 func (c *patientServiceClient) GetPatientDiagnoses(ctx context.Context, in *Request, opts ...grpc.CallOption) (*PatientDiagnoses, error) {
 	out := new(PatientDiagnoses)
 	err := c.cc.Invoke(ctx, "/PatientService/GetPatientDiagnoses", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *patientServiceClient) GetPatientDiagnose(ctx context.Context, in *Request, opts ...grpc.CallOption) (*PatientDiagnose, error) {
-	out := new(PatientDiagnose)
-	err := c.cc.Invoke(ctx, "/PatientService/GetPatientDiagnose", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *patientServiceClient) UpdatePatientDiagnose(ctx context.Context, in *PatientDiagnose, opts ...grpc.CallOption) (*PatientDiagnose, error) {
-	out := new(PatientDiagnose)
-	err := c.cc.Invoke(ctx, "/PatientService/UpdatePatientDiagnose", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -173,14 +133,10 @@ func (c *patientServiceClient) DeleteDiagnoseSymptom(ctx context.Context, in *Di
 // for forward compatibility
 type PatientServiceServer interface {
 	GetHealth(context.Context, *Empty) (*Health, error)
-	GetDiagnose(context.Context, *Request) (*Diagnose, error)
 	GetDiagnoses(context.Context, *Empty) (*Diagnoses, error)
 	GetSymptoms(context.Context, *Empty) (*Symptoms, error)
-	GetSymptom(context.Context, *Request) (*Symptom, error)
 	CreatePatientDiagnose(context.Context, *PatientDiagnose) (*PatientDiagnose, error)
 	GetPatientDiagnoses(context.Context, *Request) (*PatientDiagnoses, error)
-	GetPatientDiagnose(context.Context, *Request) (*PatientDiagnose, error)
-	UpdatePatientDiagnose(context.Context, *PatientDiagnose) (*PatientDiagnose, error)
 	DeletePatientDiagnose(context.Context, *Request) (*Status, error)
 	CreateDiagnoseSymptom(context.Context, *DiagnoseSymptom) (*DiagnoseSymptom, error)
 	GetDiagnoseSymptoms(context.Context, *Request) (*DiagnoseSymptoms, error)
@@ -196,29 +152,17 @@ type UnimplementedPatientServiceServer struct {
 func (UnimplementedPatientServiceServer) GetHealth(context.Context, *Empty) (*Health, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
-func (UnimplementedPatientServiceServer) GetDiagnose(context.Context, *Request) (*Diagnose, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDiagnose not implemented")
-}
 func (UnimplementedPatientServiceServer) GetDiagnoses(context.Context, *Empty) (*Diagnoses, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDiagnoses not implemented")
 }
 func (UnimplementedPatientServiceServer) GetSymptoms(context.Context, *Empty) (*Symptoms, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSymptoms not implemented")
 }
-func (UnimplementedPatientServiceServer) GetSymptom(context.Context, *Request) (*Symptom, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSymptom not implemented")
-}
 func (UnimplementedPatientServiceServer) CreatePatientDiagnose(context.Context, *PatientDiagnose) (*PatientDiagnose, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePatientDiagnose not implemented")
 }
 func (UnimplementedPatientServiceServer) GetPatientDiagnoses(context.Context, *Request) (*PatientDiagnoses, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPatientDiagnoses not implemented")
-}
-func (UnimplementedPatientServiceServer) GetPatientDiagnose(context.Context, *Request) (*PatientDiagnose, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPatientDiagnose not implemented")
-}
-func (UnimplementedPatientServiceServer) UpdatePatientDiagnose(context.Context, *PatientDiagnose) (*PatientDiagnose, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePatientDiagnose not implemented")
 }
 func (UnimplementedPatientServiceServer) DeletePatientDiagnose(context.Context, *Request) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePatientDiagnose not implemented")
@@ -266,24 +210,6 @@ func _PatientService_GetHealth_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PatientService_GetDiagnose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServiceServer).GetDiagnose(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PatientService/GetDiagnose",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).GetDiagnose(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PatientService_GetDiagnoses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -320,24 +246,6 @@ func _PatientService_GetSymptoms_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PatientService_GetSymptom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServiceServer).GetSymptom(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PatientService/GetSymptom",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).GetSymptom(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PatientService_CreatePatientDiagnose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PatientDiagnose)
 	if err := dec(in); err != nil {
@@ -370,42 +278,6 @@ func _PatientService_GetPatientDiagnoses_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PatientServiceServer).GetPatientDiagnoses(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PatientService_GetPatientDiagnose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServiceServer).GetPatientDiagnose(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PatientService/GetPatientDiagnose",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).GetPatientDiagnose(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PatientService_UpdatePatientDiagnose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatientDiagnose)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServiceServer).UpdatePatientDiagnose(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PatientService/UpdatePatientDiagnose",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServiceServer).UpdatePatientDiagnose(ctx, req.(*PatientDiagnose))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -512,10 +384,6 @@ var PatientService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PatientService_GetHealth_Handler,
 		},
 		{
-			MethodName: "GetDiagnose",
-			Handler:    _PatientService_GetDiagnose_Handler,
-		},
-		{
 			MethodName: "GetDiagnoses",
 			Handler:    _PatientService_GetDiagnoses_Handler,
 		},
@@ -524,24 +392,12 @@ var PatientService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PatientService_GetSymptoms_Handler,
 		},
 		{
-			MethodName: "GetSymptom",
-			Handler:    _PatientService_GetSymptom_Handler,
-		},
-		{
 			MethodName: "CreatePatientDiagnose",
 			Handler:    _PatientService_CreatePatientDiagnose_Handler,
 		},
 		{
 			MethodName: "GetPatientDiagnoses",
 			Handler:    _PatientService_GetPatientDiagnoses_Handler,
-		},
-		{
-			MethodName: "GetPatientDiagnose",
-			Handler:    _PatientService_GetPatientDiagnose_Handler,
-		},
-		{
-			MethodName: "UpdatePatientDiagnose",
-			Handler:    _PatientService_UpdatePatientDiagnose_Handler,
 		},
 		{
 			MethodName: "DeletePatientDiagnose",
@@ -768,8 +624,6 @@ var IotService_ServiceDesc = grpc.ServiceDesc{
 type BookingServiceClient interface {
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
 	CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
-	GetBooking(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Booking, error)
-	UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
 	DeleteBooking(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Status, error)
 	GetBookingsByPatient(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Bookings, error)
 	GetBookingsByEmployee(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Bookings, error)
@@ -796,24 +650,6 @@ func (c *bookingServiceClient) GetHealth(ctx context.Context, in *Empty, opts ..
 func (c *bookingServiceClient) CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error) {
 	out := new(Booking)
 	err := c.cc.Invoke(ctx, "/BookingService/CreateBooking", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *bookingServiceClient) GetBooking(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Booking, error) {
-	out := new(Booking)
-	err := c.cc.Invoke(ctx, "/BookingService/GetBooking", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *bookingServiceClient) UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error) {
-	out := new(Booking)
-	err := c.cc.Invoke(ctx, "/BookingService/UpdateBooking", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -862,8 +698,6 @@ func (c *bookingServiceClient) GetAvailableTimesForDoctor(ctx context.Context, i
 type BookingServiceServer interface {
 	GetHealth(context.Context, *Empty) (*Health, error)
 	CreateBooking(context.Context, *Booking) (*Booking, error)
-	GetBooking(context.Context, *Request) (*Booking, error)
-	UpdateBooking(context.Context, *Booking) (*Booking, error)
 	DeleteBooking(context.Context, *Request) (*Status, error)
 	GetBookingsByPatient(context.Context, *Request) (*Bookings, error)
 	GetBookingsByEmployee(context.Context, *Request) (*Bookings, error)
@@ -880,12 +714,6 @@ func (UnimplementedBookingServiceServer) GetHealth(context.Context, *Empty) (*He
 }
 func (UnimplementedBookingServiceServer) CreateBooking(context.Context, *Booking) (*Booking, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBooking not implemented")
-}
-func (UnimplementedBookingServiceServer) GetBooking(context.Context, *Request) (*Booking, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBooking not implemented")
-}
-func (UnimplementedBookingServiceServer) UpdateBooking(context.Context, *Booking) (*Booking, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateBooking not implemented")
 }
 func (UnimplementedBookingServiceServer) DeleteBooking(context.Context, *Request) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBooking not implemented")
@@ -944,42 +772,6 @@ func _BookingService_CreateBooking_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BookingServiceServer).CreateBooking(ctx, req.(*Booking))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BookingService_GetBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookingServiceServer).GetBooking(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/BookingService/GetBooking",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).GetBooking(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BookingService_UpdateBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Booking)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookingServiceServer).UpdateBooking(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/BookingService/UpdateBooking",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).UpdateBooking(ctx, req.(*Booking))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1072,14 +864,6 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookingService_CreateBooking_Handler,
 		},
 		{
-			MethodName: "GetBooking",
-			Handler:    _BookingService_GetBooking_Handler,
-		},
-		{
-			MethodName: "UpdateBooking",
-			Handler:    _BookingService_UpdateBooking_Handler,
-		},
-		{
 			MethodName: "DeleteBooking",
 			Handler:    _BookingService_DeleteBooking_Handler,
 		},
@@ -1104,7 +888,6 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JournalServiceClient interface {
-	GetJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Journal, error)
 	CreateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error)
 	DeleteJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Status, error)
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
@@ -1124,15 +907,6 @@ type journalServiceClient struct {
 
 func NewJournalServiceClient(cc grpc.ClientConnInterface) JournalServiceClient {
 	return &journalServiceClient{cc}
-}
-
-func (c *journalServiceClient) GetJournal(ctx context.Context, in *JournalRequest, opts ...grpc.CallOption) (*Journal, error) {
-	out := new(Journal)
-	err := c.cc.Invoke(ctx, "/JournalService/GetJournal", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *journalServiceClient) CreateJournal(ctx context.Context, in *Journal, opts ...grpc.CallOption) (*Journal, error) {
@@ -1238,7 +1012,6 @@ func (c *journalServiceClient) CreateAttachment(ctx context.Context, in *Attachm
 // All implementations must embed UnimplementedJournalServiceServer
 // for forward compatibility
 type JournalServiceServer interface {
-	GetJournal(context.Context, *JournalRequest) (*Journal, error)
 	CreateJournal(context.Context, *Journal) (*Journal, error)
 	DeleteJournal(context.Context, *JournalRequest) (*Status, error)
 	GetHealth(context.Context, *Empty) (*Health, error)
@@ -1257,9 +1030,6 @@ type JournalServiceServer interface {
 type UnimplementedJournalServiceServer struct {
 }
 
-func (UnimplementedJournalServiceServer) GetJournal(context.Context, *JournalRequest) (*Journal, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetJournal not implemented")
-}
 func (UnimplementedJournalServiceServer) CreateJournal(context.Context, *Journal) (*Journal, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateJournal not implemented")
 }
@@ -1304,24 +1074,6 @@ type UnsafeJournalServiceServer interface {
 
 func RegisterJournalServiceServer(s grpc.ServiceRegistrar, srv JournalServiceServer) {
 	s.RegisterService(&JournalService_ServiceDesc, srv)
-}
-
-func _JournalService_GetJournal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(JournalRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(JournalServiceServer).GetJournal(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/JournalService/GetJournal",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JournalServiceServer).GetJournal(ctx, req.(*JournalRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _JournalService_CreateJournal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1530,10 +1282,6 @@ var JournalService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*JournalServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetJournal",
-			Handler:    _JournalService_GetJournal_Handler,
-		},
-		{
 			MethodName: "CreateJournal",
 			Handler:    _JournalService_CreateJournal_Handler,
 		},
@@ -1589,8 +1337,6 @@ type UseradminServiceClient interface {
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
 	GetEmployee(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*User, error)
 	GetPatients(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Users, error)
-	GetDepartments(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Departments, error)
-	GetBeds(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Beds, error)
 	GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error)
 	GetHospitals(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Hospitals, error)
 }
@@ -1630,24 +1376,6 @@ func (c *useradminServiceClient) GetPatients(ctx context.Context, in *Empty, opt
 	return out, nil
 }
 
-func (c *useradminServiceClient) GetDepartments(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Departments, error) {
-	out := new(Departments)
-	err := c.cc.Invoke(ctx, "/UseradminService/GetDepartments", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *useradminServiceClient) GetBeds(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Beds, error) {
-	out := new(Beds)
-	err := c.cc.Invoke(ctx, "/UseradminService/GetBeds", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *useradminServiceClient) GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error) {
 	out := new(Beds)
 	err := c.cc.Invoke(ctx, "/UseradminService/GetAvailableBeds", in, out, opts...)
@@ -1673,8 +1401,6 @@ type UseradminServiceServer interface {
 	GetHealth(context.Context, *Empty) (*Health, error)
 	GetEmployee(context.Context, *UserRequest) (*User, error)
 	GetPatients(context.Context, *Empty) (*Users, error)
-	GetDepartments(context.Context, *Empty) (*Departments, error)
-	GetBeds(context.Context, *Empty) (*Beds, error)
 	GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error)
 	GetHospitals(context.Context, *Empty) (*Hospitals, error)
 	mustEmbedUnimplementedUseradminServiceServer()
@@ -1692,12 +1418,6 @@ func (UnimplementedUseradminServiceServer) GetEmployee(context.Context, *UserReq
 }
 func (UnimplementedUseradminServiceServer) GetPatients(context.Context, *Empty) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPatients not implemented")
-}
-func (UnimplementedUseradminServiceServer) GetDepartments(context.Context, *Empty) (*Departments, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDepartments not implemented")
-}
-func (UnimplementedUseradminServiceServer) GetBeds(context.Context, *Empty) (*Beds, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBeds not implemented")
 }
 func (UnimplementedUseradminServiceServer) GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableBeds not implemented")
@@ -1772,42 +1492,6 @@ func _UseradminService_GetPatients_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UseradminService_GetDepartments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UseradminServiceServer).GetDepartments(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/UseradminService/GetDepartments",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetDepartments(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UseradminService_GetBeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UseradminServiceServer).GetBeds(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/UseradminService/GetBeds",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetBeds(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UseradminService_GetAvailableBeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BedsRequest)
 	if err := dec(in); err != nil {
@@ -1862,14 +1546,6 @@ var UseradminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPatients",
 			Handler:    _UseradminService_GetPatients_Handler,
-		},
-		{
-			MethodName: "GetDepartments",
-			Handler:    _UseradminService_GetDepartments_Handler,
-		},
-		{
-			MethodName: "GetBeds",
-			Handler:    _UseradminService_GetBeds_Handler,
 		},
 		{
 			MethodName: "GetAvailableBeds",

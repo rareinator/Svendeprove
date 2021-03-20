@@ -88,16 +88,12 @@ message DiagnoseSymptomUpdateRequest {
 service PatientService {
   rpc GetHealth(Empty) returns (Health) {}
 
-  rpc GetDiagnose(Request) returns (Diagnose) {}
   rpc GetDiagnoses(Empty) returns (Diagnoses) {}
 
   rpc GetSymptoms(Empty) returns (Symptoms) {}
-  rpc GetSymptom(Request) returns (Symptom) {}
 
   rpc CreatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
   rpc GetPatientDiagnoses(Request) returns (PatientDiagnoses) {}
-  rpc GetPatientDiagnose(Request) returns (PatientDiagnose) {}
-  rpc UpdatePatientDiagnose(PatientDiagnose) returns (PatientDiagnose) {}
   rpc DeletePatientDiagnose(Request) returns (Status) {}
 
   rpc CreateDiagnoseSymptom(DiagnoseSymptom) returns (DiagnoseSymptom) {}
@@ -187,8 +183,6 @@ service BookingService {
   rpc GetHealth(Empty) returns (Health) {}
   
   rpc CreateBooking(Booking) returns (Booking) {}
-  rpc GetBooking(Request) returns (Booking) {}
-  rpc UpdateBooking(Booking) returns (Booking) {}
   rpc DeleteBooking(Request) returns (Status) {}
   rpc GetBookingsByPatient(Request) returns (Bookings) {}
   rpc GetBookingsByEmployee(Request) returns (Bookings) {}
@@ -242,7 +236,6 @@ message Attachment {
 }
 
 service JournalService {
-  rpc GetJournal(JournalRequest) returns (Journal) {}
   rpc CreateJournal(Journal) returns (Journal) {}
   rpc DeleteJournal(JournalRequest) returns (Status) {}
   rpc GetHealth(Empty) returns (Health) {}
@@ -289,8 +282,6 @@ service UseradminService {
 
   rpc GetEmployee(UserRequest) returns (User) {}
   rpc GetPatients(Empty) returns (Users) {}
-  rpc GetDepartments(Empty) returns (Departments) {}
-  rpc GetBeds(Empty) returns (Beds) {}
   rpc GetAvailableBeds(BedsRequest) returns (Beds) {}
 
   rpc GetHospitals(Empty) returns (Hospitals) {}

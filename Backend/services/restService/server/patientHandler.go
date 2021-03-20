@@ -32,24 +32,6 @@ type doctor struct {
 	UserId   string `json:"UserId"`
 }
 
-func (s *Server) HandleDiagnoseGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		p := protocol.Request{
-			UserId: vars["userId"],
-		}
-
-		response, err := s.PatientService.GetDiagnose(context.Background(), &p)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
-	}
-}
-
 func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response, err := s.PatientService.GetDiagnoses(context.Background(), &protocol.Empty{})
@@ -63,25 +45,6 @@ func (s *Server) HandleDiagnosesGet() http.HandlerFunc {
 			response.Diagnoses = make([]*protocol.Diagnose, 0)
 		}
 		json.NewEncoder(w).Encode(response.Diagnoses)
-	}
-}
-
-func (s *Server) HandleSymptomGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		p := protocol.Request{
-			UserId: vars["userId"],
-		}
-
-		response, err := s.PatientService.GetSymptom(context.Background(), &p)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response)
 	}
 }
 
@@ -139,55 +102,6 @@ func (s *Server) HandlePatientDiagnosesGet() http.HandlerFunc {
 			response.PatientDiagnoses = make([]*protocol.PatientDiagnose, 0)
 		}
 		json.NewEncoder(w).Encode(response.PatientDiagnoses)
-	}
-}
-
-func (s *Server) HandlePatientDiagnoseGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.ReturnError(w, http.StatusNotFound, "Diagnose for that id not found")
-			return
-		}
-
-		pr := protocol.Request{
-			Id: int32(id),
-		}
-
-		response, err := s.PatientService.GetPatientDiagnose(context.Background(), &pr)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
-	}
-}
-
-func (s *Server) HandlePatientDiagnoseUpdate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		ID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.ReturnError(w, http.StatusNotFound, "Diagnose for that id not found")
-			return
-		}
-
-		var patientDiagnose protocol.PatientDiagnose
-		json.NewDecoder(r.Body).Decode(&patientDiagnose)
-
-		patientDiagnose.PatientDiagnoseId = int32(ID)
-
-		response, err := s.PatientService.UpdatePatientDiagnose(context.Background(), &patientDiagnose)
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(response)
 	}
 }
 

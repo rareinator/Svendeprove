@@ -105,17 +105,3 @@
 * [x] UploadData /iot/uploadData?Key=sdfgasfa&sensorId=1&Date=22 POST
 * [x] ReadData /iot/{deviceID:[0-9]+} GET
 * [x] ReadDataInTimeFrame /iot/readDataInTimeframe POST
-
-# to delete
-* [ ] GetBeds /admin/beds GET
-* [ ] GetDepartments /admin/departments GET
-* [ ] ReadBooking /booking/{id:[0-9]+} GET
-* [ ] UpdateBooking /booking/{id:[0-9]+} POST
-* [ ] ReadJournal /journal/{id:[0-9]+} GET
-* [ ] GetDiagnose /diagnose/{id:[0-9]+} GET
-* [ ] GetSymptom /symptom/{id:[0-9]+} GET
-* [ ] GetPatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} GET
-* [ ] UpdatePatientDiagnose /patient/{patientID:[0-9]+}/diagnose/{id:[0-9]+} POST
-* [ ] GetPatientSymptoms /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom GET
-* [ ] UpdatePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} POST
-* [ ] DeletePatientSymptom /patient/{patientID:[0-9]+}/diagnose/{diagnoseID:[0-9]+}/symptom/{id:[0-9]+} DELETE

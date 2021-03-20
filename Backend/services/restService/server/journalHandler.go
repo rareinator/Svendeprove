@@ -53,30 +53,6 @@ func (s *Server) HandleJournalSave() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleJournalRead() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		i, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			s.ReturnError(w, http.StatusNotFound, "No journal found for that id")
-			return
-		}
-
-		j := &protocol.JournalRequest{
-			JournalId: int32(i),
-		}
-
-		response, err := s.JournalService.GetJournal(context.Background(), j)
-		if err != nil {
-			s.ReturnError(w, http.StatusNotFound, "No journal found for that id")
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
-	}
-}
-
 func (s *Server) HandleJournalUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

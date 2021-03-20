@@ -139,34 +139,6 @@ func (s *Server) HandleHospitalsGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleDepartmentsGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		response, err := s.UseradminService.GetDepartments(context.Background(), &protocol.Empty{})
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response.Departments)
-	}
-}
-
-func (s *Server) HandleBedsGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		response, err := s.UseradminService.GetBeds(context.Background(), &protocol.Empty{})
-		if err != nil {
-			s.ReturnError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(&response.Beds)
-	}
-}
-
 func (s *Server) HandleAvailableBeds() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request protocol.BedsRequest
