@@ -31,9 +31,9 @@
                        EnableDropDown="true"
                        placeholder="Søg efter læge/sygeplejerske navn..."
                        Disabled="@isEmployeeDisabled">
-        <SelectedTemplate Context="userName">
+        <SelectedTemplate Context="userId">
             @{
-                var selectedEmployee = LoadSelectedEmployee(userName);
+                var selectedEmployee = LoadSelectedEmployee(userId);
 
                 <text>@selectedEmployee?.Name</text>
             }
@@ -120,7 +120,7 @@
     protected override async Task OnInitializedAsync()
     {
         hospitals = await BookingData.GetHospitals();
-        SelectedBooking.Patient = SelectedPatient.UserName;
+        SelectedBooking.Patient = SelectedPatient.UserId;
 
         if (SelectedBooking.BookingId != 0)
         {
@@ -148,12 +148,14 @@
         return await Task.FromResult(availableEmployees.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
     }
 
-    private string ConvertEmployee(UserModel employee) => employee?.UserName;
+    private string ConvertEmployee(UserModel employee) => employee?.UserId;
 
-    private UserModel LoadSelectedEmployee(string userName) => availableEmployees.FirstOrDefault(p => p.UserName == userName);
+    private UserModel LoadSelectedEmployee(string userId) => availableEmployees.FirstOrDefault(p => p.UserId == userId);
 
     private async Task SelectedEmployeeChanged(string employee)
     {
+        Console.WriteLine("ahh");
+        Console.WriteLine(employee);
         SelectedBooking.Employee = employee;
         isDayDisabled = false;
         isTimesDisabled = false;
@@ -167,6 +169,8 @@
             Day = day,
             Doctor = SelectedBooking.Employee
         };
+
+        Console.WriteLine("changed");
 
         availableTimes = await BookingData.GetAvailableTimes(data);
         SelectedBooking.BookedTime = availableTimes.FirstOrDefault();

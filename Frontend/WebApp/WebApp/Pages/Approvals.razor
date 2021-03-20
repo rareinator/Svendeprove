@@ -33,7 +33,7 @@ else
                                 <td>@booking.BookedTime</td>
                                 <td>@booking.BookedEnd</td>
                                 <td>@booking.Description</td>
-                                <td>@patients.Where(p => p.UserName == booking.Patient).FirstOrDefault().Name</td>
+                                <td>@patients.Where(p => p.UserId == booking.Patient).FirstOrDefault().Name</td>
                             </tr>
                         }
                     }
@@ -52,9 +52,9 @@ else
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        string userName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
+        string userID = user.Claims.Where(c => c.Type == "sub").FirstOrDefault().Value;
 
-        bookings = await BookingData.GetBookingsByEmployee(userName);
+        bookings = await BookingData.GetBookingsByEmployee(userID);
         patients = await PatientData.GetPatients();
     }
 
