@@ -1,7 +1,7 @@
 ﻿@page "/ViewDocument/{DocumentId:int}"
 
 <h4>
-    <button type="button" class="btn btn-primary" @onclick="Back">Back</button>&nbsp;
+    <button type="button" class="btn btn-primary" @onclick="Back">Tilbage</button>&nbsp;
     @* AUTHORIZATION HERE *@
     <AuthorizeView Roles="Doctor, Nurse">
         <Authorized>
@@ -38,7 +38,7 @@
         }
     
     </div>
-    <button type="button" class="btn btn-success align-self-center" @onclick="() => GetPrediction(SelectedDocument.Attachments)">Knap</button>
+    <button type="button" class="btn btn-success align-self-center" disabled="@isDisabled" @onclick="() => GetPrediction(SelectedDocument.Attachments)">Hent Forudsigelse</button>
 </div>
 }
 
@@ -50,6 +50,8 @@
     public int DocumentId { get; set; }
 
     private JournalDocumentModel SelectedDocument = new JournalDocumentModel();
+
+    private bool isDisabled = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -83,6 +85,7 @@
     async void GetPrediction(List<AttachmentModel> attachments)
     {
         List<string> paths = new List<string>();
+        isDisabled = true;
 
         foreach (var attachment in attachments)
         {

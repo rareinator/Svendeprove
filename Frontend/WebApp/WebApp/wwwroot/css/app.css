@@ -53,3 +53,8 @@ a, .btn-link {
     max-height: 80vh;
     overflow-y: auto;
 }
+
+.sidebar {
+    background-image: linear-gradient( 180deg, #2BAFE2 0%, rgb(68, 198, 190) 95%) !important;
+}
+
