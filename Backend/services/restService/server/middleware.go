@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -38,11 +39,12 @@ func (s *Server) HandleCors() http.HandlerFunc {
 
 func (s *Server) Log(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("request received:")
-		fmt.Printf("%v called %v\n\rresource %v\n\r", r.RemoteAddr, r.Method, r.RequestURI)
-
-		if r.Method == "POST" {
-			fmt.Printf("Body: \b\r%v\n\r", r.Body)
+		message := fmt.Sprintf("request received:\n\r%v called %v\n\rresource %v\n\r", r.RemoteAddr, r.Method, r.RequestURI)
+		if os.Getenv("IS_DEV") == "TRUE" {
+			fmt.Print(message)
+		} else {
+			os.Mkdir("./log", 0644)
+			ioutil.WriteFile("./log/restLog.log", []byte(message), 0644)
 		}
 
 		next(w, r)

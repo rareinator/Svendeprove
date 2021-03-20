@@ -371,13 +371,9 @@ func (s *Server) routes() {
 	s.Router.Handle("/iot/health", s.HandleIOTHealth()).Methods("GET") //GetHealth
 
 	s.Router.Handle("/iot/uploadData",
-		s.Log(s.Authenticate(
+		s.Log(
 			s.HandleIOTUpload(),
-			&authenticationConfig{
-				allowedRoles:   []models.UserRole{},
-				allowedPatient: "",
-				allowIOTDevice: true,
-			}))).Queries("Key", "CGrtgtzxC0x5Ea6M", "SensorId", "", "Name", "", "Data", "").Methods("GET")
+		)).Queries("Key", "CGrtgtzxC0x5Ea6M", "SensorId", "", "Name", "", "Data", "").Methods("GET")
 
 	s.Router.Handle("/iot/{deviceID:[0-9]+}",
 		s.Log(s.Authenticate(
