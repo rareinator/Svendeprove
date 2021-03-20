@@ -161,7 +161,7 @@
 
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
-        if (user.IsInRole("Patients"))
+        if (!user.IsInRole("Patients"))
         {
             diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserName);
         }
