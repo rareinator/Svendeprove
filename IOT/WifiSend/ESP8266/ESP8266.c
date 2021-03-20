@@ -281,6 +281,6 @@ void SendApiData(char sensor[], uint8_t sensorRead, uint8_t sensorData[])
 	ESP8266_Start(0, DOMAIN, PORT);
 	
 	memset(_buffer, 0, 150);
-	sprintf(_buffer, "GET /readings/add?value=%d.%d&sensor=%s HTTP/1.1\r\nhost: %s:%s\r\n", sensorData[sensorRead], sensorData[sensorRead + 1], sensor, DOMAIN, PORT);
+	sprintf(_buffer, "GET /iot/uploadData?Key=%s&SensorId=1&Name=%s&Data=%d.%d HTTP/1.1\r\nhost: %s:%s\r\n", API_WRITE_KEY, sensor, sensorData[sensorRead], sensorData[sensorRead + 1], DOMAIN, PORT);
 	ESP8266_Send(_buffer);
 }

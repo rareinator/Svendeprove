@@ -34,10 +34,9 @@
 #define BOTH_STATION_AND_ACCESPOINT		3
 
 /* Define Required fields shown below */
-#define DOMAIN				"192.168.43.83"
-#define PORT				"5000"
-#define API_WRITE_KEY		"FAPEQ7SZ701O8CCS"
-#define CHANNEL_ID			"1217129"
+#define DOMAIN				"40.69.73.113"
+#define PORT				"80"
+#define API_WRITE_KEY		"CGrtgtzxC0x5Ea6M"
 
 #define SSID				"Simon"
 #define PASSWORD			"P455w0rd"
