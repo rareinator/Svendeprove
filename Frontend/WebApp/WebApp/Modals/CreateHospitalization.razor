@@ -23,12 +23,12 @@
 
     <h5>Start</h5>
     <div class="form-group">
-        <input class="form-control" type="datetime" @bind-value="SelectedStart" disabled="@isDayDisabled" />
+        <input class="form-control" type="date" @bind-value="SelectedStart" disabled="@isDayDisabled" />
     </div>
 
     <h5>Slut</h5>
     <div class="form-group">
-        <input class="form-control" type="datetime" @bind-value="SelectedEnd" disabled="@isDayDisabled" />
+        <input class="form-control" type="date" @bind-value="SelectedEnd" disabled="@isDayDisabled" />
     </div>
 
     <h5>Seng</h5>
@@ -92,7 +92,7 @@
         get => _selectedStart;
         set
         {
-            _selectedStart = value;
+            _selectedStart = value.Date;
             SelectedStartChanged(value);
         }
     }
@@ -103,7 +103,7 @@
         get => _selectedEnd;
         set
         {
-            _selectedEnd = value;
+            _selectedEnd = value.Date;
             SelectedEndChanged(value);
         }
     }
