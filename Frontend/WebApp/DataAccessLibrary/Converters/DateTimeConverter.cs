@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace DataAccessLibrary.Converters
 {
+    /// <summary>
+    /// Converts JSON Datetime string to Datetime format "dd/MM/yyyy HH:mm:ss".
+    /// </summary>
     public class DateTimeConverter : JsonConverter<DateTime>
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
