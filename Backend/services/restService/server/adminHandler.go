@@ -17,7 +17,7 @@ import (
 func (s *Server) HandleGetDoctorsInHospital() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		requestedHospitalId := vars["hospitalIDs"]
+		requestedHospitalId := vars["hospitalID"]
 
 		_, client, err := okta.NewClient(context.Background(), okta.WithOrgUrl(os.Getenv("OKTA_URL")), okta.WithToken(os.Getenv("OKTA_SDK_TOKEN")))
 		if err != nil {
