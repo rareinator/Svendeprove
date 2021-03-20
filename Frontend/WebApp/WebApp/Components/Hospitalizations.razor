@@ -43,6 +43,21 @@ else
                             <td>@booking.Description</td>
                         </tr>
                     }
+                    else
+                    {
+                        <tr style="background-color:lightcoral">
+                            <AuthorizeView Roles="Doctor, Nurse">
+                                <Authorized>
+                                    <td><button class="btn btn-primary" @onclick="@(() => OnEditClick.InvokeAsync(booking))">Rediger</button></td>
+                                </Authorized>
+                            </AuthorizeView>
+                            <td>@booking.BookedTime</td>
+                            <td>@booking.BookedEnd</td>
+                            <td>@booking.Hospital.Name</td>
+                            <td>@booking.Hospital.Address</td>
+                            <td>@booking.Description</td>
+                        </tr>
+                    }
                 }
             }
         </tbody>

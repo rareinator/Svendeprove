@@ -168,15 +168,15 @@
         private async Task SelectedPatientChanged(UserModel patient)
         {
             selectedPatient = patient;
-            journals = await JournalData.GetJournalsByPatient(patient.UserName);
-            bookings = await BookingData.GetBookingsByPatient(patient.UserName);
+            journals = await JournalData.GetJournalsByPatient(patient.UserId);
+            bookings = await BookingData.GetBookingsByPatient(patient.UserId);
 
 
             var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authstate.User;
             if (!user.IsInRole("Patients"))
             {
-                diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserName);
+                diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserId);
             }
         }
 
@@ -334,23 +334,8 @@
             }
         }
 
-        private async void Login()
+        private void Login()
         {
-
-            var authenticationState = await authenticationStateTask;
-
-            if (authenticationState?.User?.Identity is null || !authenticationState.User.Identity.IsAuthenticated)
-            {
-                var returnUrl = MyNavigationManager.ToBaseRelativePath(MyNavigationManager.Uri);
-
-                if (string.IsNullOrWhiteSpace(returnUrl))
-                {
-                    MyNavigationManager.NavigateTo("authentication/login", true);
-                }
-                else
-                {
-                    MyNavigationManager.NavigateTo($"authentication/login?returnUrl={returnUrl}", true);
-                }
-            }
+            MyNavigationManager.NavigateTo("authentication/login", true);
         }
     }
