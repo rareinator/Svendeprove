@@ -35,22 +35,25 @@ def test_machine_learning_model_loaded(data):
 
 def test_scan_model_prediction_positive(data):
     Prediction = PredictionService("scan")
-    img = _format_image("test_positive.jpg")
+
+    img = _format_image("test_pos.jpg")
     result = Prediction.predict(img)
+
     assert result[1] * 100.0 > 50.0
     assert result[0] * 100.0 < 50.0
 
 def test_scan_model_prediction_negative(data):
     Prediction = PredictionService("scan")
-    img = _format_image("test_negative.jpg")
+
+    img = _format_image("test_neg.jpg")
     result = Prediction.predict(img)
+    
     assert result[0] * 100.0 > 50.0
     assert result[1] * 100.0 < 50.0
 
-def _format_image(self, filepath):
+def _format_image(filepath):
     img_array = cv2.imread(filepath, cv2.IMREAD_COLOR)
     image = cv2.resize(img_array, (IMG_SIZE,IMG_SIZE))
     image = np.reshape(img_array, (-1, IMG_SIZE,IMG_SIZE,3))
     image = tf.image.convert_image_dtype(image, tf.float32)
-    os.remove(filepath)
     return image

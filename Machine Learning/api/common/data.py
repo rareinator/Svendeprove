@@ -18,11 +18,11 @@ class Diagnosis(object):
 
 class DataCache(object):
     def __init__(self):
-        self.diagnosis = self.load_diagnosis()
-        self.symptoms = self.load_symptoms()
-        self.set_relations()
+        self.diagnosis = self._load_diagnosis()
+        self.symptoms = self._load_symptoms()
+        self._set_relations()
 
-    def load_diagnosis(self):
+    def _load_diagnosis(self):
         diagnosis = []
         with open(__location__ + "/data/csv/dis.csv", "r") as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -31,7 +31,7 @@ class DataCache(object):
                 diagnosis.append(Diagnosis(row[0], row[4]))
         return diagnosis
 
-    def load_symptoms(self):
+    def _load_symptoms(self):
         symptoms = []
         with open(__location__ + "/data/csv/sym.csv", "r") as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -40,7 +40,7 @@ class DataCache(object):
                 symptoms.append(Symptom(row[2], row[3]))
         return symptoms
 
-    def set_relations(self):
+    def _set_relations(self):
         with open(__location__ + "/data/csv/sym_dis.csv", "r") as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             next(reader, None)
