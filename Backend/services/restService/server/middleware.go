@@ -97,13 +97,6 @@ func (s *Server) Authenticate(next http.HandlerFunc, config *authenticationConfi
 			return
 		}
 
-		if reqToken == "override" { //TODO: REMOVE
-			next(w, r)
-			return
-		}
-
-		fmt.Printf("---------TOKEN-----------\n\r%v\n\r\n\r", reqToken)
-
 		toValidate := map[string]string{}
 		toValidate["aud"] = os.Getenv("OKTA_AUTH_ENDPOINT")
 		toValidate["cid"] = os.Getenv("OKTA_CLIENT_ID")
