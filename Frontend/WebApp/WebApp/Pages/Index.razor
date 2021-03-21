@@ -97,7 +97,7 @@
                         <Hospitalizations OnEditClick="ShowHospitalizationModal" Bookings="bookings" />
                     </div>
                 </TabPage>
-                <AuthorizeView Roles="Doctor">
+                <AuthorizeView Roles="Doctor, Nurse">
                     <Authorized>
                         <TabPage Text="Diagnoser">
                             <div class="d-flex flex-column p-4">
@@ -105,10 +105,15 @@
                                 {
                                     <p><b>Patient:</b> @selectedPatient.Name</p>
                                     <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
-                                    <button @onclick="() => ShowDiagnoseModal(new PatientDiagnoseModel { PatientDiagnoseId = 0 })"
-                                            class="btn btn-primary align-self-end mb-2 mr-4">
-                                        Opret ny Diagnose
-                                    </button>
+                                    <AuthorizeView Context="doc" Roles="Doctor">
+                                        <Authorized>
+                                            <button @onclick="() => ShowDiagnoseModal(new PatientDiagnoseModel { PatientDiagnoseId = 0 })"
+                                                    class="btn btn-primary align-self-end mb-2 mr-4">
+                                                Opret ny Diagnose
+                                            </button>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                    
                                 }
 
                                 <Diagnoses Diagnosis="diagnosis" />
