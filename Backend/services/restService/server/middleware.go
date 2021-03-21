@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -45,8 +46,10 @@ func (s *Server) Log(next http.HandlerFunc) http.HandlerFunc {
 			fmt.Print(message)
 		} else {
 			if err := os.Mkdir("./log", 0644); err != nil {
-				s.ReturnError(w, http.StatusInternalServerError, err.Error())
-				return
+				if !errors.Is(err, os.ErrExist) {
+					s.ReturnError(w, http.StatusInternalServerError, err.Error())
+					return
+				}
 			}
 			if err := ioutil.WriteFile("./log/restLog.log", []byte(message), 0644); err != nil {
 				s.ReturnError(w, http.StatusInternalServerError, err.Error())

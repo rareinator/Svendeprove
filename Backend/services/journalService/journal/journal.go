@@ -119,6 +119,18 @@ func (j *JournalServer) DeleteJournalDocument(ctx context.Context, jdr *JournalD
 		DocumentId: jdr.JournalDocumentId,
 	}
 
+	document, err := j.DB.GetJournalDocument(dbJournalDocument.DocumentId)
+	if err != nil {
+		return &Status{Success: false}, err
+	}
+
+	// Needs to make sure we delete the attachments first
+	for _, attachment := range document.Attachments {
+		if err := j.DB.DeleteAttachment(&attachment); err != nil {
+			return &Status{Success: false}, err
+		}
+	}
+
 	if err := j.DB.DeleteJournalDocument(&dbJournalDocument); err != nil {
 		return &Status{Success: false}, err
 	}

@@ -99,6 +99,15 @@ func (m *MSSQL) DeleteJournalDocument(journalDocument *DBJournalDocument) error 
 	return nil
 }
 
+func (m *MSSQL) DeleteAttachment(attachment *DBAttachment) error {
+	result := m.db.Where("AttachmentId = ?", attachment.AttachmentId).Delete(attachment)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (m *MSSQL) UpdateJournalDocument(journalDocument *DBJournalDocument) error {
 	result := m.db.Where("DocumentId = ?", journalDocument.DocumentId).Omit("CreationTime").Save(&journalDocument)
 	if result.Error != nil {
