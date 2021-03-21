@@ -1,6 +1,5 @@
 ﻿@page "/journal/{JournalId:int}"
 <button type="button" class="btn btn-primary" @onclick="Back">Tilbage</button>&nbsp;
-@* IF AROUND THIS CHECK IF NURSE OR DOCTOR ROLE *@
 <AuthorizeView Roles="Doctor, Nurse">
     <Authorized>
         <button type="button" class="btn btn-primary" @onclick="NewJournalDocument">Opret</button>
@@ -8,7 +7,6 @@
 </AuthorizeView>
 <br />
 <br />
-@* /////////////////////////////// *@
 @if (journalDocuments.Count == 0)
 {
     <h2>Ingen dokumenter at vise!</h2>

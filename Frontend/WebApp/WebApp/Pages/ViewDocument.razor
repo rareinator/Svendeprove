@@ -2,13 +2,11 @@
 
 <h4>
     <button type="button" class="btn btn-primary" @onclick="Back">Tilbage</button>&nbsp;
-    @* AUTHORIZATION HERE *@
     <AuthorizeView Roles="Doctor, Nurse">
         <Authorized>
             <button type="button" class="btn btn-secondary" @onclick="EditDocument">Ret</button>
         </Authorized>
     </AuthorizeView>
-    @* ///////////////// *@
 </h4>
 <br />
 <i>@SelectedDocument.CreationTime</i>
