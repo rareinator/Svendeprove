@@ -149,6 +149,7 @@
                     selectedPatient.UserName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
                     selectedPatient.Name = user.Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
                     selectedPatient.SocialIdNr = user.Claims.Where(c => c.Type == "social_id").FirstOrDefault().Value;
+                    selectedPatient.UserId = user.Claims.Where(c => c.Type == "sub").FirstOrDefault().Value;
                     await SelectedPatientChanged(selectedPatient);
                 }
                 else
@@ -247,7 +248,7 @@
                 }
                 else
                 {
-                    bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
+                    bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
                 }
             }
         }
@@ -297,7 +298,7 @@
                 // Hvis booking er slettet
                 else
                 {
-                    bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserName);
+                    bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
                 }
             }
         }
@@ -319,7 +320,7 @@
                     {
                         Diagnose = new DiagnoseModel(),
                         Symptoms = new List<SymptomModel>(),
-                        Patient = selectedPatient.UserName
+                        Patient = selectedPatient.UserId
                     });
             }
 
