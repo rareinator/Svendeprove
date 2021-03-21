@@ -101,11 +101,11 @@ func (s *Server) handlePatientsGet() http.HandlerFunc {
 	}
 }
 
-func (s *Server) handleUseradminHealth() http.HandlerFunc {
+func (s *Server) handleAdminHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u := protocol.Empty{}
 
-		response, err := s.UseradminService.GetHealth(context.Background(), &u)
+		response, err := s.AdminService.GetHealth(context.Background(), &u)
 		if err != nil {
 			s.ReturnError(w, http.StatusServiceUnavailable, err.Error())
 			return
@@ -122,7 +122,7 @@ func (s *Server) handleUseradminHealth() http.HandlerFunc {
 func (s *Server) handleHospitalsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		response, err := s.UseradminService.GetHospitals(context.Background(), &protocol.Empty{})
+		response, err := s.AdminService.GetHospitals(context.Background(), &protocol.Empty{})
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -144,7 +144,7 @@ func (s *Server) handleAvailableBeds() http.HandlerFunc {
 			return
 		}
 
-		respsone, err := s.UseradminService.GetAvailableBeds(context.Background(), &request)
+		respsone, err := s.AdminService.GetAvailableBeds(context.Background(), &request)
 		if err != nil {
 			s.ReturnError(w, http.StatusInternalServerError, err.Error())
 			return

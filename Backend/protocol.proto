@@ -277,7 +277,7 @@ message Departments {
 
 
 
-service UseradminService {
+service AdminService {
   rpc GetHealth(Empty) returns (Health) {}
   
   rpc GetPatients(Empty) returns (Users) {}

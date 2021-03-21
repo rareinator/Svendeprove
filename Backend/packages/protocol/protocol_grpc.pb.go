@@ -1294,194 +1294,194 @@ var JournalService_ServiceDesc = grpc.ServiceDesc{
 	Metadata: "protocol.proto",
 }
 
-// UseradminServiceClient is the client API for UseradminService service.
+// AdminServiceClient is the client API for AdminService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UseradminServiceClient interface {
+type AdminServiceClient interface {
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
 	GetPatients(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Users, error)
 	GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error)
 	GetHospitals(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Hospitals, error)
 }
 
-type useradminServiceClient struct {
+type adminServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUseradminServiceClient(cc grpc.ClientConnInterface) UseradminServiceClient {
-	return &useradminServiceClient{cc}
+func NewAdminServiceClient(cc grpc.ClientConnInterface) AdminServiceClient {
+	return &adminServiceClient{cc}
 }
 
-func (c *useradminServiceClient) GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error) {
+func (c *adminServiceClient) GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error) {
 	out := new(Health)
-	err := c.cc.Invoke(ctx, "/UseradminService/GetHealth", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdminService/GetHealth", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *useradminServiceClient) GetPatients(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Users, error) {
+func (c *adminServiceClient) GetPatients(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Users, error) {
 	out := new(Users)
-	err := c.cc.Invoke(ctx, "/UseradminService/GetPatients", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdminService/GetPatients", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *useradminServiceClient) GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error) {
+func (c *adminServiceClient) GetAvailableBeds(ctx context.Context, in *BedsRequest, opts ...grpc.CallOption) (*Beds, error) {
 	out := new(Beds)
-	err := c.cc.Invoke(ctx, "/UseradminService/GetAvailableBeds", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdminService/GetAvailableBeds", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *useradminServiceClient) GetHospitals(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Hospitals, error) {
+func (c *adminServiceClient) GetHospitals(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Hospitals, error) {
 	out := new(Hospitals)
-	err := c.cc.Invoke(ctx, "/UseradminService/GetHospitals", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdminService/GetHospitals", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UseradminServiceServer is the server API for UseradminService service.
-// All implementations must embed UnimplementedUseradminServiceServer
+// AdminServiceServer is the server API for AdminService service.
+// All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility
-type UseradminServiceServer interface {
+type AdminServiceServer interface {
 	GetHealth(context.Context, *Empty) (*Health, error)
 	GetPatients(context.Context, *Empty) (*Users, error)
 	GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error)
 	GetHospitals(context.Context, *Empty) (*Hospitals, error)
-	mustEmbedUnimplementedUseradminServiceServer()
+	mustEmbedUnimplementedAdminServiceServer()
 }
 
-// UnimplementedUseradminServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedUseradminServiceServer struct {
+// UnimplementedAdminServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedAdminServiceServer struct {
 }
 
-func (UnimplementedUseradminServiceServer) GetHealth(context.Context, *Empty) (*Health, error) {
+func (UnimplementedAdminServiceServer) GetHealth(context.Context, *Empty) (*Health, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
-func (UnimplementedUseradminServiceServer) GetPatients(context.Context, *Empty) (*Users, error) {
+func (UnimplementedAdminServiceServer) GetPatients(context.Context, *Empty) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPatients not implemented")
 }
-func (UnimplementedUseradminServiceServer) GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error) {
+func (UnimplementedAdminServiceServer) GetAvailableBeds(context.Context, *BedsRequest) (*Beds, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableBeds not implemented")
 }
-func (UnimplementedUseradminServiceServer) GetHospitals(context.Context, *Empty) (*Hospitals, error) {
+func (UnimplementedAdminServiceServer) GetHospitals(context.Context, *Empty) (*Hospitals, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHospitals not implemented")
 }
-func (UnimplementedUseradminServiceServer) mustEmbedUnimplementedUseradminServiceServer() {}
+func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 
-// UnsafeUseradminServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UseradminServiceServer will
+// UnsafeAdminServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AdminServiceServer will
 // result in compilation errors.
-type UnsafeUseradminServiceServer interface {
-	mustEmbedUnimplementedUseradminServiceServer()
+type UnsafeAdminServiceServer interface {
+	mustEmbedUnimplementedAdminServiceServer()
 }
 
-func RegisterUseradminServiceServer(s grpc.ServiceRegistrar, srv UseradminServiceServer) {
-	s.RegisterService(&UseradminService_ServiceDesc, srv)
+func RegisterAdminServiceServer(s grpc.ServiceRegistrar, srv AdminServiceServer) {
+	s.RegisterService(&AdminService_ServiceDesc, srv)
 }
 
-func _UseradminService_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AdminService_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UseradminServiceServer).GetHealth(ctx, in)
+		return srv.(AdminServiceServer).GetHealth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/UseradminService/GetHealth",
+		FullMethod: "/AdminService/GetHealth",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetHealth(ctx, req.(*Empty))
+		return srv.(AdminServiceServer).GetHealth(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UseradminService_GetPatients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AdminService_GetPatients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UseradminServiceServer).GetPatients(ctx, in)
+		return srv.(AdminServiceServer).GetPatients(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/UseradminService/GetPatients",
+		FullMethod: "/AdminService/GetPatients",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetPatients(ctx, req.(*Empty))
+		return srv.(AdminServiceServer).GetPatients(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UseradminService_GetAvailableBeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AdminService_GetAvailableBeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BedsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UseradminServiceServer).GetAvailableBeds(ctx, in)
+		return srv.(AdminServiceServer).GetAvailableBeds(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/UseradminService/GetAvailableBeds",
+		FullMethod: "/AdminService/GetAvailableBeds",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetAvailableBeds(ctx, req.(*BedsRequest))
+		return srv.(AdminServiceServer).GetAvailableBeds(ctx, req.(*BedsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UseradminService_GetHospitals_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AdminService_GetHospitals_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UseradminServiceServer).GetHospitals(ctx, in)
+		return srv.(AdminServiceServer).GetHospitals(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/UseradminService/GetHospitals",
+		FullMethod: "/AdminService/GetHospitals",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UseradminServiceServer).GetHospitals(ctx, req.(*Empty))
+		return srv.(AdminServiceServer).GetHospitals(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// UseradminService_ServiceDesc is the grpc.ServiceDesc for UseradminService service.
+// AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var UseradminService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "UseradminService",
-	HandlerType: (*UseradminServiceServer)(nil),
+var AdminService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "AdminService",
+	HandlerType: (*AdminServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetHealth",
-			Handler:    _UseradminService_GetHealth_Handler,
+			Handler:    _AdminService_GetHealth_Handler,
 		},
 		{
 			MethodName: "GetPatients",
-			Handler:    _UseradminService_GetPatients_Handler,
+			Handler:    _AdminService_GetPatients_Handler,
 		},
 		{
 			MethodName: "GetAvailableBeds",
-			Handler:    _UseradminService_GetAvailableBeds_Handler,
+			Handler:    _AdminService_GetAvailableBeds_Handler,
 		},
 		{
 			MethodName: "GetHospitals",
-			Handler:    _UseradminService_GetHospitals_Handler,
+			Handler:    _AdminService_GetHospitals_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

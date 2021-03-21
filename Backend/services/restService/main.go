@@ -24,41 +24,31 @@ func execute() error {
 
 	srv := server.NewServer()
 
-	var journalConn *grpc.ClientConn
-
 	journalConn, err := grpc.Dial(os.Getenv("JOURNAL_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
 	defer journalConn.Close()
 
-	var patientConn *grpc.ClientConn
-
-	patientConn, err = grpc.Dial(os.Getenv("PATIENT_REMOTE_ADDR"), grpc.WithInsecure())
+	patientConn, err := grpc.Dial(os.Getenv("PATIENT_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
 	defer patientConn.Close()
 
-	var bookingConn *grpc.ClientConn
-
-	bookingConn, err = grpc.Dial(os.Getenv("BOOKING_REMOTE_ADDR"), grpc.WithInsecure())
+	bookingConn, err := grpc.Dial(os.Getenv("BOOKING_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
 	defer bookingConn.Close()
 
-	var useradminConn *grpc.ClientConn
-
-	useradminConn, err = grpc.Dial(os.Getenv("USERADMIN_REMOTE_ADDR"), grpc.WithInsecure())
+	adminConn, err := grpc.Dial(os.Getenv("ADMIN_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
-	defer useradminConn.Close()
+	defer adminConn.Close()
 
-	var iotConn *grpc.ClientConn
-
-	iotConn, err = grpc.Dial(os.Getenv("IOT_REMOTE_ADDR"), grpc.WithInsecure())
+	iotConn, err := grpc.Dial(os.Getenv("IOT_REMOTE_ADDR"), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
@@ -67,7 +57,7 @@ func execute() error {
 	srv.JournalService = protocol.NewJournalServiceClient(journalConn)
 	srv.PatientService = protocol.NewPatientServiceClient(patientConn)
 	srv.BookingService = protocol.NewBookingServiceClient(bookingConn)
-	srv.UseradminService = protocol.NewUseradminServiceClient(useradminConn)
+	srv.AdminService = protocol.NewAdminServiceClient(adminConn)
 	srv.IotService = protocol.NewIotServiceClient(iotConn)
 
 	srv.StaticFileDir = "./static"

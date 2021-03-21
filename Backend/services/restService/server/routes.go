@@ -228,7 +228,7 @@ func (s *Server) routes() {
 			}))).Methods("POST")
 
 	// Useradmin methods
-	s.Router.Handle("/useradmin/health", s.handleUseradminHealth()).Methods("GET") //GetHealth)
+	s.Router.Handle("/useradmin/health", s.handleAdminHealth()).Methods("GET") //GetHealth)
 
 	s.Router.Handle("/admin/hospitals", //GetHospitals
 		s.Log(s.Authenticate(

@@ -10,13 +10,13 @@ import (
 )
 
 type Server struct {
-	Router           *mux.Router
-	StaticFileDir    string
-	JournalService   protocol.JournalServiceClient
-	PatientService   protocol.PatientServiceClient
-	BookingService   protocol.BookingServiceClient
-	UseradminService protocol.UseradminServiceClient
-	IotService       protocol.IotServiceClient
+	Router         *mux.Router
+	StaticFileDir  string
+	JournalService protocol.JournalServiceClient
+	PatientService protocol.PatientServiceClient
+	BookingService protocol.BookingServiceClient
+	AdminService   protocol.AdminServiceClient
+	IotService     protocol.IotServiceClient
 }
 
 func NewServer() *Server {
