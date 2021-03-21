@@ -16,7 +16,8 @@
                 <AuthorizeView Roles="Patients">
                     <Authorized>
                         <p>
-                            Her kan du se dine Journaler, Undersøgelser og Indlæggelser, samt anmode om Undersøgelser.
+                            Her kan du se dine Journaler, Undersøgelser og Indlæggelser <br />
+                            Samt anmode om Undersøgelser.
                         </p>
                     </Authorized>
                 </AuthorizeView>
@@ -70,6 +71,8 @@
                         {
                             <p><b>Patient:</b> @selectedPatient.Name</p>
                             <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                            <p><b>Bemærk:</b></p>
+                            <p>Hvis en booking ikke er godkendt endnu markeres denne rød.</p>
                             <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
                         }
 
@@ -82,6 +85,8 @@
                         {
                             <p><b>Patient:</b> @selectedPatient.Name</p>
                             <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                            <p><b>Bemærk:</b></p>
+                            <p>Hvis en booking ikke er godkendt endnu markeres denne rød.</p>
                             <AuthorizeView Roles="Doctor">
                                 <Authorized>
                                     <button @onclick="() => ShowHospitalizationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Indlæggelse</button>
@@ -257,12 +262,12 @@
         {
             var parameters = new ModalParameters();
             parameters.Add(nameof(CreateHospitalization.SelectedPatient), selectedPatient);
-            // Hvis opdatering af eksiterende Booking
+            // If update of existing Booking
             if (booking.BookingId != 0)
             {
                 parameters.Add(nameof(CreateHospitalization.SelectedBooking), booking);
             }
-            // Hvis helt ny Booking
+            // Else a new Booking
             else
             {
                 parameters.Add(nameof(CreateHospitalization.SelectedBooking),
@@ -280,22 +285,22 @@
             if (!result.Cancelled)
             {
                 BookingModel updatedBooking = (BookingModel)result.Data;
-                // Hvis booking ikke er slettet
+                // If Booking not deleted
                 if (updatedBooking != null)
                 {
-                    // Hvis helt ny Booking
+                    // If completely new Booking
                     if (updatedBooking.BookingId == 0)
                     {
                         BookingModel newBooking = await BookingData.InsertBooking(updatedBooking);
                         bookings.Add(newBooking);
                     }
-                    // Hvis opdatering af Booking
+                    // Else update existing Booking
                     else
                     {
                         await BookingData.UpdateBooking(updatedBooking);
                     }
                 }
-                // Hvis booking er slettet
+                // Else delete Booking
                 else
                 {
                     bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
@@ -307,12 +312,12 @@
         {
             var parameters = new ModalParameters();
             parameters.Add(nameof(CreateDiagnose.Patient), selectedPatient);
-            // Hvis opdatering af eksiterende Diagnose
+            // If update of existing Diagnose
             if (patientDiagnose.PatientDiagnoseId != 0)
             {
                 parameters.Add(nameof(CreateDiagnose.SelectedPatientDiagnose), patientDiagnose);
             }
-            // Hvis helt ny Diagnose
+            // Else a new Booking
             else
             {
                 parameters.Add(nameof(CreateDiagnose.SelectedPatientDiagnose),
