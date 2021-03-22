@@ -1,7 +1,6 @@
 syntax = "proto3";
 option go_package = ".;protocol";
 
-
 message Empty {
 
 }
@@ -67,8 +66,6 @@ message Diagnoses {
   repeated Diagnose Diagnoses = 1;
 }
 
-
-
 message DiagnoseSymptom {
   int32 SymptomId = 1;
   int32 PatientDiagnoseId = 2;
@@ -83,7 +80,6 @@ message DiagnoseSymptomUpdateRequest {
   DiagnoseSymptom Old = 1;
   DiagnoseSymptom New = 2;
 }
-
 
 service PatientService {
   rpc GetHealth(Empty) returns (Health) {}
@@ -183,6 +179,7 @@ service BookingService {
   rpc GetHealth(Empty) returns (Health) {}
   
   rpc CreateBooking(Booking) returns (Booking) {}
+  rpc UpdateBooking(Booking) returns (Booking) {}
   rpc DeleteBooking(Request) returns (Status) {}
   rpc GetBookingsByPatient(Request) returns (Bookings) {}
   rpc GetBookingsByEmployee(Request) returns (Bookings) {}
@@ -243,7 +240,6 @@ service JournalService {
   rpc UpdateJournal(Journal) returns (Journal) {}
   rpc GetJournalsByPatient(UserRequest) returns (Journals) {}
 
-  
   rpc CreateJournalDocument(JournalDocument) returns (JournalDocument) {}
   rpc UpdateJournalDocument(JournalDocument) returns (JournalDocument) {}
   rpc DeleteJournalDocument(JournalDocumentRequest) returns (Status) {}
@@ -265,8 +261,6 @@ message Hospitals {
   repeated Hospital Hospitals = 1;
 }
 
-
-
 message Beds {
   repeated Bed Beds = 1;
 }
@@ -274,8 +268,6 @@ message Beds {
 message Departments {
   repeated Department Departments = 1;
 }
-
-
 
 service AdminService {
   rpc GetHealth(Empty) returns (Health) {}

@@ -48,6 +48,31 @@ func (s *Server) handleBookingCreate() http.HandlerFunc {
 	}
 }
 
+func (s *Server) HandleBookingUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		bookingID, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			s.ReturnError(w, http.StatusNotFound, "No booking found with that id")
+			return
+		}
+
+		var booking protocol.Booking
+		json.NewDecoder(r.Body).Decode(&booking)
+
+		booking.BookingId = int32(bookingID)
+
+		response, err := s.BookingService.UpdateBooking(context.Background(), &booking)
+		if err != nil {
+			s.ReturnError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
 func (s *Server) handleBookingDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

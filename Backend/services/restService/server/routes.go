@@ -193,6 +193,14 @@ func (s *Server) routes() {
 				allowedPatient: "",
 			}))).Methods("POST")
 
+	s.Router.Handle("/booking/{id:[0-9]+}", //UpdateBooking
+		s.Log(s.Authenticate(
+			s.HandleBookingUpdate(),
+			&authenticationConfig{
+				allowedRoles:   []models.UserRole{models.Doctor, models.Nurse, models.Office},
+				allowedPatient: "",
+			}))).Methods("POST")
+
 	s.Router.Handle("/booking/{id:[0-9]+}", //Deletebooking
 		s.Log(s.Authenticate(
 			s.handleBookingDelete(),

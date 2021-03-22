@@ -624,6 +624,7 @@ var IotService_ServiceDesc = grpc.ServiceDesc{
 type BookingServiceClient interface {
 	GetHealth(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Health, error)
 	CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
+	UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error)
 	DeleteBooking(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Status, error)
 	GetBookingsByPatient(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Bookings, error)
 	GetBookingsByEmployee(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Bookings, error)
@@ -650,6 +651,15 @@ func (c *bookingServiceClient) GetHealth(ctx context.Context, in *Empty, opts ..
 func (c *bookingServiceClient) CreateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error) {
 	out := new(Booking)
 	err := c.cc.Invoke(ctx, "/BookingService/CreateBooking", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookingServiceClient) UpdateBooking(ctx context.Context, in *Booking, opts ...grpc.CallOption) (*Booking, error) {
+	out := new(Booking)
+	err := c.cc.Invoke(ctx, "/BookingService/UpdateBooking", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -698,6 +708,7 @@ func (c *bookingServiceClient) GetAvailableTimesForDoctor(ctx context.Context, i
 type BookingServiceServer interface {
 	GetHealth(context.Context, *Empty) (*Health, error)
 	CreateBooking(context.Context, *Booking) (*Booking, error)
+	UpdateBooking(context.Context, *Booking) (*Booking, error)
 	DeleteBooking(context.Context, *Request) (*Status, error)
 	GetBookingsByPatient(context.Context, *Request) (*Bookings, error)
 	GetBookingsByEmployee(context.Context, *Request) (*Bookings, error)
@@ -714,6 +725,9 @@ func (UnimplementedBookingServiceServer) GetHealth(context.Context, *Empty) (*He
 }
 func (UnimplementedBookingServiceServer) CreateBooking(context.Context, *Booking) (*Booking, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBooking not implemented")
+}
+func (UnimplementedBookingServiceServer) UpdateBooking(context.Context, *Booking) (*Booking, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBooking not implemented")
 }
 func (UnimplementedBookingServiceServer) DeleteBooking(context.Context, *Request) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBooking not implemented")
@@ -772,6 +786,24 @@ func _BookingService_CreateBooking_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BookingServiceServer).CreateBooking(ctx, req.(*Booking))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookingService_UpdateBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Booking)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).UpdateBooking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/BookingService/UpdateBooking",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).UpdateBooking(ctx, req.(*Booking))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -862,6 +894,10 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBooking",
 			Handler:    _BookingService_CreateBooking_Handler,
+		},
+		{
+			MethodName: "UpdateBooking",
+			Handler:    _BookingService_UpdateBooking_Handler,
 		},
 		{
 			MethodName: "DeleteBooking",
