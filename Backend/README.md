@@ -23,10 +23,10 @@ OKTA_AUTH_ENDPOINT=
 IS_DEV=TRUE
 ```
 
-The rest you can just use the default
+For the rest you can just use the default
 
 ```
-REST_SERVICE_ADDR=0.0.0.0:8080
+HTTP_SERVICE_ADDR=0.0.0.0:8080
 AUTHENTICATION_SERVICE_ADDR=0.0.0.0:9000
 JOURNAL_SERVICE_ADDR=0.0.0.0:9001
 BOOKING_SERVICE_ADDR=0.0.0.0:9002
@@ -55,7 +55,7 @@ Once thats all done its a matter of going into the services and running
 go run
 ```
 
-If all done correctly you can access the REST endpoint via the address you used from the env, default is localhost:8080
+If all done correctly you can access the HTTP/JSON endpoint via the address you used from the env, default is localhost:8080
 
 So access http://localhost:8080/health and you should see this response
 ```
@@ -64,8 +64,8 @@ So access http://localhost:8080/health and you should see this response
 
 
 # Structure
-## restService
-All of the handlers for the different endpoints are all located in the services/restServer/server package
+## HTTP/JSON Service
+All of the handlers for the different endpoints are all located in the services/httpService/server package
 They start with the root name of their URL path and then Handler. so For example JournalByPatient would be /journal/byPatient/{usernamer}
 therefore it would be in the journalHandler.go
 
