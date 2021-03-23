@@ -30,7 +30,7 @@ Install-Package System.Net.Http.Json -ProjectName DataAccesLibrary
 [Http JSON](https://www.nuget.org/packages/System.Net.Http.Json/5.0.0)
 
 # Dependency Injection
-All dependency injections  should be kept in the Program.cs file and is done as follows:
+All dependency injections  should be kept in the Program.cs file and is used as follows:
 
 ```C#
 builder.Services.AddScoped<IPatientData, PatientData>();
