@@ -1,0 +1,71 @@
+﻿@page "/journal/{JournalId:int}"
+<button type="button" class="btn btn-primary" @onclick="Back">Tilbage</button>&nbsp;
+<AuthorizeView Roles="Doctor, Nurse">
+    <Authorized>
+        <button type="button" class="btn btn-primary" @onclick="NewJournalDocument">Opret</button>
+    </Authorized>
+</AuthorizeView>
+<br />
+<br />
+@if (journalDocuments.Count == 0)
+{
+    <h2>Ingen dokumenter at vise!</h2>
+}
+else
+{
+    @foreach (var document in journalDocuments)
+    {
+        <a href="ViewDocument/@document.DocumentId"><h2>@document.CreationTime - @document.Title</h2></a>
+        <div class="form-group">
+            @((MarkupString)document.Summary)
+            @if (document.Attachments != null)
+            {
+                <p>@document.Attachments.Count fil(er)</p>
+            }
+        </div>
+        <hr />
+    }
+}
+
+@code {
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [Parameter]
+    public int JournalId { get; set; }
+
+    List<JournalDocumentModel> journalDocuments = new List<JournalDocumentModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        journalDocuments = await JournalData.GetJournalDocuments(JournalId);
+    }
+
+    private async Task NewJournalDocument()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateDocument.SelectedDocument),
+            new JournalDocumentModel
+            {
+                CreationTime = DateTime.Now,
+                JournalId = JournalId,
+                Attachments = new List<AttachmentModel>()
+            });
+
+        var createDocument = Modal.Show<CreateDocument>("Opret Dokument", parameters);
+        var result = await createDocument.Result;
+
+        if (!result.Cancelled)
+        {
+
+            JournalDocumentModel newDocument = await JournalData.InsertJournalDocument((JournalDocumentModel)result.Data);
+            journalDocuments.Add(newDocument);
+        }
+    }
+
+    void Back()
+    {
+        string url = MyNavigationManager.ToAbsoluteUri($"/").AbsoluteUri;
+        MyNavigationManager.NavigateTo(url);
+    }
+}

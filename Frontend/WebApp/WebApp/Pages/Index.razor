@@ -1,0 +1,352 @@
+﻿@page "/"
+
+    <AuthorizeView Context="page">
+        <Authorized>
+            <div class="d-flex justify-content-center align-items-center flex-column">
+                <h1>Oversigt</h1>
+
+                <AuthorizeView Roles="Doctor, Nurse">
+                    <Authorized>
+                        <p>
+                            Her kan du se Journaler, Undersøgelser og Indlæggelser for en patient. <br />
+                            Samt oprette nye Journaler, Undersøgelser og Indlæggelser.
+                        </p>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView Roles="Patients">
+                    <Authorized>
+                        <p>
+                            Her kan du se dine Journaler, Undersøgelser og Indlæggelser <br />
+                            Samt anmode om Undersøgelser.
+                        </p>
+                    </Authorized>
+                </AuthorizeView>
+                <div class="m-4 w-25">
+
+                    <AuthorizeView Roles="Doctor, Nurse">
+                        <Authorized>
+                            <BlazoredTypeahead SearchMethod="GetPatientsLocal"
+                                               TValue="UserModel"
+                                               TItem="UserModel"
+                                               Value="selectedPatient"
+                                               ValueChanged="SelectedPatientChanged"
+                                               ValueExpression="@(() => selectedPatient)"
+                                               DisableClear="true"
+                                               placeholder="Søg efter patient navn...">
+                                <SelectedTemplate Context="patient">
+                                    @patient.Name - @patient.SocialIdNr
+                                </SelectedTemplate>
+                                <ResultTemplate Context="patient">
+                                    @patient.Name @patient.SocialIdNr
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+
+
+
+            <TabControl>
+                <TabPage Text="Journaler">
+
+                    <div class="d-flex flex-column p-4">
+                        @if (selectedPatient != null)
+                        {
+                            <p><b>Patient:</b> @selectedPatient.Name</p>
+                            <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                            <AuthorizeView Roles="Doctor, Nurse">
+                                <Authorized>
+                                    <button @onclick="ShowJournalModal" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Journal</button>
+                                </Authorized>
+                            </AuthorizeView>
+                        }
+
+                        <Journals journals="journals" />
+                    </div>
+                </TabPage>
+                <TabPage Text="Undersøgelser">
+                    <div class="d-flex flex-column p-4">
+                        @if (selectedPatient != null)
+                        {
+                            <p><b>Patient:</b> @selectedPatient.Name</p>
+                            <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                            <p><b>Bemærk:</b></p>
+                            <p>Hvis en booking ikke er godkendt endnu markeres denne rød.</p>
+                            <button @onclick="() => ShowExaminationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Undersøgelse</button>
+                        }
+
+                        <Examinations OnEditClick="ShowExaminationModal" Bookings="bookings" />
+                    </div>
+                </TabPage>
+                <TabPage Text="Indlæggelser">
+                    <div class="d-flex flex-column p-4">
+                        @if (selectedPatient != null)
+                        {
+                            <p><b>Patient:</b> @selectedPatient.Name</p>
+                            <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                            <p><b>Bemærk:</b></p>
+                            <p>Hvis en booking ikke er godkendt endnu markeres denne rød.</p>
+                            <AuthorizeView Roles="Doctor">
+                                <Authorized>
+                                    <button @onclick="() => ShowHospitalizationModal(new BookingModel { BookingId = 0})" class="btn btn-primary align-self-end mb-2 mr-4">Opret ny Indlæggelse</button>
+                                </Authorized>
+                            </AuthorizeView>
+                        }
+
+                        <Hospitalizations OnEditClick="ShowHospitalizationModal" Bookings="bookings" />
+                    </div>
+                </TabPage>
+                <AuthorizeView Roles="Doctor, Nurse">
+                    <Authorized>
+                        <TabPage Text="Diagnoser">
+                            <div class="d-flex flex-column p-4">
+                                @if (selectedPatient != null)
+                                {
+                                    <p><b>Patient:</b> @selectedPatient.Name</p>
+                                    <p><b>Social Id Nr.:</b> @selectedPatient.SocialIdNr</p>
+                                    <AuthorizeView Context="doc" Roles="Doctor">
+                                        <Authorized>
+                                            <button @onclick="() => ShowDiagnoseModal(new PatientDiagnoseModel { PatientDiagnoseId = 0 })"
+                                                    class="btn btn-primary align-self-end mb-2 mr-4">
+                                                Opret ny Diagnose
+                                            </button>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                    
+                                }
+
+                                <Diagnoses Diagnosis="diagnosis" />
+                            </div>
+                        </TabPage>
+                    </Authorized>
+                </AuthorizeView>
+
+            </TabControl>
+        </Authorized>
+        <NotAuthorized>
+            <div class="d-flex flex-column justify-content-center align-items-center vh-100">
+                <img src="/img/hospiinc.png" alt="Logo" />
+                <h1>Hospi Inc</h1>
+                <button class="btn btn-success" @onclick="Login">Login</button>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    @code {
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+        [CascadingParameter]
+        public IModalService Modal { get; set; }
+
+        private List<UserModel> patients;
+        private UserModel selectedPatient;
+
+        private List<JournalModel> journals;
+        private List<BookingModel> bookings;
+        private List<PatientDiagnoseModel> diagnosis;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authstate.User;
+
+            if (user.Identity.IsAuthenticated)
+            {
+                if (user.IsInRole("Patients"))
+                {
+                    selectedPatient = new UserModel();
+                    selectedPatient.UserName = user.Claims.Where(c => c.Type == "preferred_username").FirstOrDefault().Value;
+                    selectedPatient.Name = user.Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
+                    selectedPatient.SocialIdNr = user.Claims.Where(c => c.Type == "social_id").FirstOrDefault().Value;
+                    selectedPatient.UserId = user.Claims.Where(c => c.Type == "sub").FirstOrDefault().Value;
+                    await SelectedPatientChanged(selectedPatient);
+                }
+                else
+                {
+
+                    patients = await PatientData.GetPatients();
+                }
+            }
+        }
+
+        private async Task<IEnumerable<UserModel>> GetPatientsLocal(string searchText)
+        {
+            return await Task.FromResult(patients.Where(x => x.Name.ToLower().Contains(searchText.ToLower()) || x.SocialIdNr.Contains(searchText)).ToList());
+        }
+
+
+        private async Task SelectedPatientChanged(UserModel patient)
+        {
+            selectedPatient = patient;
+            journals = await JournalData.GetJournalsByPatient(patient.UserId);
+            bookings = await BookingData.GetBookingsByPatient(patient.UserId);
+
+
+            var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authstate.User;
+            if (!user.IsInRole("Patients"))
+            {
+                diagnosis = await PatientData.GetDiagnosisByPatient(patient.UserId);
+            }
+        }
+
+        private async Task ShowJournalModal()
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(CreateJournal.Patient), selectedPatient);
+
+            var createJournal = Modal.Show<CreateJournal>("Opret Journal", parameters);
+            var result = await createJournal.Result;
+
+
+            if (!result.Cancelled)
+            {
+                JournalModel newJournal = await JournalData.InsertJournal((JournalModel)result.Data);
+                journals.Add(newJournal);
+            }
+        }
+
+        private async Task ShowExaminationModal(BookingModel booking)
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(CreateExamimation.SelectedPatient), selectedPatient);
+            if (booking.BookingId != 0)
+            {
+                parameters.Add(nameof(CreateExamimation.SelectedBooking), booking);
+                parameters.Add(nameof(CreateExamimation.availableEmployees), await BookingData.GetAvailableEmployees(booking.Hospital.HospitalId));
+            }
+            else
+            {
+                bool approved = false;
+
+                var authState = await authenticationStateTask;
+                var user = authState.User;
+                var userRole = user.Claims.Where(c => c.Type == "user_role").FirstOrDefault();
+
+                if (userRole.Value == "Doctor" || userRole.Value == "Nurse")
+                {
+                    approved = true;
+                }
+
+                parameters.Add(nameof(CreateExamimation.SelectedBooking),
+                    new BookingModel
+                    {
+                        Type = BookingType.Examination,
+                        Approved = approved
+                    });
+            }
+
+            var createJournal = Modal.Show<CreateExamimation>("Opret Undersøgelse", parameters);
+            var result = await createJournal.Result;
+
+
+            if (!result.Cancelled)
+            {
+                BookingModel updatedBooking = (BookingModel)result.Data;
+                if (updatedBooking != null)
+                {
+                    if (updatedBooking.BookingId == 0)
+                    {
+                        BookingModel newBooking = await BookingData.InsertBooking(updatedBooking);
+                        bookings.Add(newBooking);
+                    }
+                    else
+                    {
+                        await BookingData.UpdateBooking(updatedBooking);
+                    }
+                }
+                else
+                {
+                    bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
+                }
+            }
+        }
+
+        private async Task ShowHospitalizationModal(BookingModel booking)
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(CreateHospitalization.SelectedPatient), selectedPatient);
+            // If update of existing Booking
+            if (booking.BookingId != 0)
+            {
+                parameters.Add(nameof(CreateHospitalization.SelectedBooking), booking);
+            }
+            // Else a new Booking
+            else
+            {
+                parameters.Add(nameof(CreateHospitalization.SelectedBooking),
+                    new BookingModel
+                    {
+                        Type = BookingType.Hospitilization,
+                        Approved = true
+                    });
+            }
+
+            var createJournal = Modal.Show<CreateHospitalization>("Opret Indlæggelse", parameters);
+            var result = await createJournal.Result;
+
+
+            if (!result.Cancelled)
+            {
+                BookingModel updatedBooking = (BookingModel)result.Data;
+                // If Booking not deleted
+                if (updatedBooking != null)
+                {
+                    // If completely new Booking
+                    if (updatedBooking.BookingId == 0)
+                    {
+                        BookingModel newBooking = await BookingData.InsertBooking(updatedBooking);
+                        bookings.Add(newBooking);
+                    }
+                    // Else update existing Booking
+                    else
+                    {
+                        await BookingData.UpdateBooking(updatedBooking);
+                    }
+                }
+                // Else delete Booking
+                else
+                {
+                    bookings = await BookingData.GetBookingsByPatient(selectedPatient.UserId);
+                }
+            }
+        }
+
+        private async Task ShowDiagnoseModal(PatientDiagnoseModel patientDiagnose)
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(CreateDiagnose.Patient), selectedPatient);
+            // If update of existing Diagnose
+            if (patientDiagnose.PatientDiagnoseId != 0)
+            {
+                parameters.Add(nameof(CreateDiagnose.SelectedPatientDiagnose), patientDiagnose);
+            }
+            // Else a new Booking
+            else
+            {
+                parameters.Add(nameof(CreateDiagnose.SelectedPatientDiagnose),
+                    new PatientDiagnoseModel
+                    {
+                        Diagnose = new DiagnoseModel(),
+                        Symptoms = new List<SymptomModel>(),
+                        Patient = selectedPatient.UserId
+                    });
+            }
+
+            var createDiagnose = Modal.Show<CreateDiagnose>("Opret Diagnose", parameters);
+            var result = await createDiagnose.Result;
+
+
+            if (!result.Cancelled)
+            {
+                PatientDiagnoseModel newPatientDiagnose = await PatientData.InsertPatientDiagnose((PatientDiagnoseModel)result.Data);
+                diagnosis.Add(newPatientDiagnose);
+            }
+        }
+
+        private void Login()
+        {
+            MyNavigationManager.NavigateTo("authentication/login", true);
+        }
+    }

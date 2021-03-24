@@ -1,0 +1,114 @@
+﻿
+<BlazoredTypeahead SearchMethod="GetSymptomsLocal"
+                   @bind-Values="SelectedPatientDiagnose.Symptoms"
+                   DisableClear="true"
+                   EnableDropDown="true"
+                   placeholder="Søg efter symptom...">
+    <SelectedTemplate Context="symptom">
+        @symptom.Description
+    </SelectedTemplate>
+    <ResultTemplate Context="symptom">
+        @symptom.Description
+    </ResultTemplate>
+</BlazoredTypeahead>
+<button class="btn btn-success" @onclick="GetDiagnosePredictions">Hent forudsigelser</button>
+
+@if (diagnosePredicts != null)
+{
+    <h5>Forudsagte diagnoser</h5>
+    @foreach (var diagnosePredict in diagnosePredicts)
+    {
+        <p>@diagnosePredict.Name</p>
+    }
+}
+
+<h5>Diagnose</h5>
+<div class="form-group">
+    <BlazoredTypeahead SearchMethod="GetDiagnosisLocal"
+                       @bind-Value="SelectedPatientDiagnose.Diagnose"
+                       DisableClear="true"
+                       EnableDropDown="true"
+                       placeholder="Søg efter diagnoser...">
+        <SelectedTemplate>
+            @context.Description
+        </SelectedTemplate>
+        <ResultTemplate>
+            @context.Description
+        </ResultTemplate>
+    </BlazoredTypeahead>
+</div>
+
+<br />
+
+<button class="btn btn-primary" @onclick="Save">
+    Gem
+</button>&nbsp;
+
+<!-- Only show delete button if not a new record -->
+@if (SelectedPatientDiagnose.PatientDiagnoseId.ToString() != "0")
+{
+    <button class="btn btn-danger" @onclick="Delete">
+        Slet
+    </button>
+}
+<br />
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public UserModel Patient { get; set; }
+    [Parameter]
+    public PatientDiagnoseModel SelectedPatientDiagnose { get; set; }
+
+    private List<SymptomModel> Symptoms = new List<SymptomModel>();
+    private List<DiagnoseModel> Diagnosis = new List<DiagnoseModel>();
+
+    private List<DiagnoseDto> diagnosePredicts;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Symptoms = await PatientData.GetSymptoms();
+        Diagnosis = await PatientData.GetDiagnosis();
+    }
+
+    private async Task<IEnumerable<SymptomModel>> GetSymptomsLocal(string searchText)
+    {
+        return await Task.FromResult(Symptoms.Where(x => x.Description.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+    private async Task GetDiagnosePredictions()
+    {
+        SymptomsDto data = new SymptomsDto
+        {
+            Age = Patient.Age,
+            Gender = Patient.Gender,
+            Symptoms = SelectedPatientDiagnose.Symptoms.Select(s => s.Description).ToList()
+        };
+
+        DiagnosePredictDto prediction = await PatientData.GetDiagnosePrediction(data);
+
+        diagnosePredicts = prediction.Diagnosis;
+
+        StateHasChanged();
+    }
+
+    private async Task<IEnumerable<DiagnoseModel>> GetDiagnosisLocal(string searchText)
+    {
+        return await Task.FromResult(Diagnosis.Where(x => x.Description.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+    private async Task Save()
+    {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(SelectedPatientDiagnose));
+    }
+
+    private async Task Delete()
+    {
+        await PatientData.DeletePatientDiagnose(SelectedPatientDiagnose);
+        await BlazoredModal.CloseAsync();
+    }
+}

@@ -1,0 +1,8 @@
+diff a/Frontend/WebApp/DataAccessLibrary/Models/UserModel.cs b/Frontend/WebApp/DataAccessLibrary/Models/UserModel.cs	(rejected hunks)
+@@ -16,5 +16,6 @@
+         public string PostalCode { get; set; }
+         public string Country { get; set; }
+         public string SocialIdNr { get; set; }
++        public string UserId {get;set;}
+     }
+ }

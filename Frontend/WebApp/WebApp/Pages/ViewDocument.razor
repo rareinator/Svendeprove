@@ -1,0 +1,113 @@
+﻿@page "/ViewDocument/{DocumentId:int}"
+
+<h4>
+    <button type="button" class="btn btn-primary" @onclick="Back">Tilbage</button>&nbsp;
+    <AuthorizeView Roles="Doctor, Nurse">
+        <Authorized>
+            <button type="button" class="btn btn-secondary" @onclick="EditDocument">Ret</button>
+        </Authorized>
+    </AuthorizeView>
+</h4>
+<br />
+<i>@SelectedDocument.CreationTime</i>
+<div>
+    <h1>@SelectedDocument.Title</h1>
+</div>
+<hr />
+<div>
+    <div>
+        @((MarkupString)SelectedDocument.Content)
+    </div>
+</div>
+@if (SelectedDocument.Attachments != null)
+{
+<div class="d-flex flex-column">
+    <div class="d-flex flex-wrap justify-content-around">
+        @foreach (var attacment in SelectedDocument.Attachments)
+        {
+        <div class="d-flex flex-column">
+            <img src="@attacment.Path" alt="Journal Document Photo" class="img-thumbnail img-fluid" />
+            @if (attacment.Prediction != null)
+            {
+                <p>@attacment.Prediction.positive <b>Positive</b></p>
+                <p>@attacment.Prediction.negative <b>Negative</b></p>
+            }
+        </div>
+        }
+    
+    </div>
+    <button type="button" class="btn btn-success align-self-center" disabled="@isDisabled" @onclick="() => GetPrediction(SelectedDocument.Attachments)">Hent Forudsigelse</button>
+</div>
+}
+
+@code {
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [Parameter]
+    public int DocumentId { get; set; }
+
+    private JournalDocumentModel SelectedDocument = new JournalDocumentModel();
+
+    private bool isDisabled = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectedDocument = await JournalData.GetJournalDocument(DocumentId);
+    }
+
+    private async Task EditDocument()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CreateDocument.SelectedDocument), SelectedDocument);
+
+        var createDocument = Modal.Show<CreateDocument>("Ret Dokument", parameters);
+        var result = await createDocument.Result;
+
+        if (!result.Cancelled)
+        {
+            JournalDocumentModel document = (JournalDocumentModel)result.Data;
+            if (document != null)
+            {
+                await JournalData.UpdateJournalDocument(document);
+            }
+            else
+            {
+                StateHasChanged();
+                Back();
+            }
+        }
+    }
+
+    async void GetPrediction(List<AttachmentModel> attachments)
+    {
+        List<string> paths = new List<string>();
+        isDisabled = true;
+
+        foreach (var attachment in attachments)
+        {
+            paths.Add(attachment.Path);
+        }
+
+        List<CancerPredictionDto> predictions = await JournalData.GetPredictions(paths);
+
+        foreach (var prediction in predictions)
+        {
+            AttachmentModel attachment = SelectedDocument.Attachments.Where(a => a.Path == prediction.Url).FirstOrDefault();
+
+            attachment.Prediction = new Prediction
+            {
+                positive = prediction.Data.prediction.positive,
+                negative = prediction.Data.prediction.negative
+            };
+            StateHasChanged();
+        }
+    }
+
+    void Back()
+    {
+        string url = MyNavigationManager.ToAbsoluteUri($"/journal/{SelectedDocument.JournalId}").AbsoluteUri;
+        MyNavigationManager.NavigateTo(url);
+    }
+}

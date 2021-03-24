@@ -1,0 +1,184 @@
+﻿
+@if (SelectedBooking.BookingId == 0)
+{
+    <h5>Hospital</h5>
+    <div class="form-group">
+        <BlazoredTypeahead SearchMethod="GetHospitalsLocal"
+                           TValue="HospitalModel"
+                           TItem="HospitalModel"
+                           Value="SelectedBooking.Hospital"
+                           ValueChanged="SelectedHospitalChanged"
+                           ValueExpression="@(() => SelectedBooking.Hospital)"
+                           DisableClear="true"
+                           EnableDropDown="true"
+                           placeholder="Søg efter hospitals navn...">
+            <SelectedTemplate>
+                @context.Name - @context.Address
+            </SelectedTemplate>
+            <ResultTemplate>
+                @context.Name - @context.Address
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+
+    <h5>Start</h5>
+    <div class="form-group">
+        <input class="form-control" type="date" @bind-value="SelectedStart" disabled="@isDayDisabled" />
+    </div>
+
+    <h5>Slut</h5>
+    <div class="form-group">
+        <input class="form-control" type="date" @bind-value="SelectedEnd" disabled="@isDayDisabled" />
+    </div>
+
+    <h5>Seng</h5>
+    <div class="form-group">
+        <BlazoredTypeahead SearchMethod="GetBedsLocal"
+                           TValue="BedModel"
+                           TItem="BedModel"
+                           Value="SelectedBooking.Bed"
+                           ValueChanged="SelectedBedChanged"
+                           ValueExpression="@(() => SelectedBooking.Bed)"
+                           DisableClear="true"
+                           EnableDropDown="true"
+                           placeholder="Søg efter sengs navn eller afdelings navn..."
+                           Disabled="isBedsDisabled">
+            <SelectedTemplate>
+                @context.Name - @context.Department.Name
+            </SelectedTemplate>
+            <ResultTemplate>
+                @context.Name - @context.Department.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+}
+
+<h5>Beskrivelse</h5>
+<div class="form-group">
+    <input class="form-control" type="text" @bind="SelectedBooking.Description" />
+</div>
+<br />
+
+<button class="btn btn-primary" @onclick="Save">
+    Gem
+</button>&nbsp;
+
+<!-- Only show delete button if not a new record -->
+@if (SelectedBooking.BookingId.ToString() != "0")
+{
+    <button class="btn btn-danger" @onclick="Delete">
+        Slet
+    </button>
+}
+<br />
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public UserModel SelectedPatient { get; set; }
+    [Parameter]
+    public BookingModel SelectedBooking { get; set; }
+    [Parameter]
+    public HospitalModel SelectedHospital { get; set; }
+
+    List<BedModel> availableBeds;
+    List<HospitalModel> hospitals;
+
+    DateTime _selectedStart;
+    public DateTime SelectedStart
+    {
+        get => _selectedStart;
+        set
+        {
+            _selectedStart = value.Date;
+            SelectedStartChanged(value);
+        }
+    }
+
+    DateTime _selectedEnd;
+    public DateTime SelectedEnd
+    {
+        get => _selectedEnd;
+        set
+        {
+            _selectedEnd = value.Date;
+            SelectedEndChanged(value);
+        }
+    }
+
+    bool isBedsDisabled = true;
+    bool isDayDisabled = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hospitals = await BookingData.GetHospitals();
+
+
+        SelectedBooking.Patient = SelectedPatient.UserId;
+
+        if (SelectedBooking.BookingId != 0)
+        {
+            isDayDisabled = false;
+        }
+    }
+
+    private async Task<IEnumerable<HospitalModel>> GetHospitalsLocal(string searchText)
+    {
+        return await Task.FromResult(hospitals.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+    private async Task<IEnumerable<BedModel>> GetBedsLocal(string searchText)
+    {
+        return await Task.FromResult(availableBeds
+            .Where(x => x.Name.ToLower().Contains(searchText.ToLower()) ||
+            x.Department.Name.ToLower().Contains(searchText.ToLower()))
+            .ToList());
+    }
+
+
+    private void SelectedHospitalChanged(HospitalModel hospital)
+    {
+        SelectedBooking.Hospital = hospital;
+        SelectedStart = DateTime.Now;
+        SelectedEnd = DateTime.Now.AddDays(2);
+        isDayDisabled = false;
+        isBedsDisabled = false;
+    }
+
+    private void SelectedStartChanged(DateTime value)
+    {
+        SelectedBooking.BookedTime = value;
+    }
+
+    private async Task SelectedEndChanged(DateTime value)
+    {
+        SelectedBooking.BookedEnd = value;
+        AvailableBedDto dto = new AvailableBedDto
+        {
+            BookedTime = SelectedBooking.BookedTime,
+            BookedEnd = SelectedBooking.BookedEnd,
+            HospitalId = SelectedBooking.Hospital.HospitalId
+        };
+
+        availableBeds = await BookingData.GetAvailableBeds(dto);
+    }
+
+    private void SelectedBedChanged(BedModel bed)
+    {
+        SelectedBooking.Bed = bed;
+    }
+
+    private async Task Save()
+    {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(SelectedBooking));
+    }
+
+    private async Task Delete()
+    {
+        await BookingData.DeleteBooking(SelectedBooking.BookingId);
+
+        await BlazoredModal.CloseAsync();
+    }
+}

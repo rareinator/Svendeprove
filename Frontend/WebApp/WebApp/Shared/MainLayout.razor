@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+<div class="page">
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+    <div class="main">
+        <AuthorizeView>
+            <Authorized>
+                <div class="top-row px-4">
+                    <h4>Velkommen</h4>
+                    <h4 class="ml-md-auto">@context.User.Identity.Name</h4>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public UserModel user = new UserModel();
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        var user = (await authenticationStateTask).User;
+    }
+}
